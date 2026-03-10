@@ -3382,6 +3382,30 @@
   // "home.top-level-communities.help": "Select a community to browse its collections.",
   "home.top-level-communities.help": "इसके संग्रह ब्राउज़ करने के लिए एक समुदाय चुनें।",
 
+  // "home.subheading": "Digital Repository for Legal Resources",
+  "home.subheading": "कानूनी संसाधनों के लिए डिजिटल रिपॉजिटरी",
+
+  // "home.paragraph1": "NyayNest is a comprehensive digital repository dedicated to legal documents and resources.",
+  "home.paragraph1": "NyayNest कानूनी दस्तावेजों और संसाधनों के लिए समर्पित एक व्यापक डिजिटल रिपॉजिटरी है।",
+
+  // "home.paragraph2": "Access a wide range of case laws, judgments, statutes, and legal literature.",
+  "home.paragraph2": "केस लॉ, निर्णय, अधिनियम और कानूनी साहित्य की एक विस्तृत श्रृंखला तक पहुंचें।",
+
+  // "home.paragraph3": "Search and browse through collections organized by subject, jurisdiction, and date.",
+  "home.paragraph3": "विषय, अधिकार क्षेत्र और तारीख द्वारा व्यवस्थित संग्रहों के माध्यम से खोजें और ब्राउज़ करें।",
+
+  // "home.paragraph4": "Contribute to the legal community by uploading and sharing relevant documents.",
+  "home.paragraph4": "प्रासंगिक दस्तावेजों को अपलोड और साझा करके कानूनी समुदाय में योगदान दें।",
+
+  // "home.temp1": "Get Started",
+  "home.temp1": "शुरू करें",
+
+  // "home.temp2": "Browse Documents",
+  "home.temp2": "दस्तावेज़ ब्राउज़ करें",
+
+  // "home.temp3": "Advanced Search",
+  "home.temp3": "उन्नत खोज",
+
   // "info.accessibility-settings.breadcrumbs": "Accessibility settings",
   // TODO New key - Add a translation
   "info.accessibility-settings.breadcrumbs": "Accessibility settings",
@@ -11130,5 +11154,10 @@
   // TODO New key - Add a translation
   "item.preview.organization.alternateName": "Alternative name",
 
+  // "Nyay": "Nyay",
+  "Nyay": "न्याय",
+
+  // "Nest": "Nest",
+  "Nest": "नेस्ट",
 
 }

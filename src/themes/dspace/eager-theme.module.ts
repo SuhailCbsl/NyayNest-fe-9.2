@@ -22,14 +22,8 @@ const DECLARATIONS = [
 ];
 
 @NgModule({
-  imports: [
-    CommonModule,
-    RootModule,
-    ...DECLARATIONS,
-  ],
-  providers: [
-    ...ENTRY_COMPONENTS.map((component) => ({ provide: component })),
-  ],
+  imports: [CommonModule, RootModule, ...DECLARATIONS],
+  providers: [...ENTRY_COMPONENTS.map((component) => ({ provide: component }))],
 })
 /**
  * This module is included in the main bundle that gets downloaded at first page load. So it should
@@ -40,5 +34,4 @@ const DECLARATIONS = [
  *
  * Themed EntryComponents should also be added here
  */
-export class EagerThemeModule {
-}
+export class EagerThemeModule {}

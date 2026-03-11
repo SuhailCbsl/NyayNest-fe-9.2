@@ -247,7 +247,6 @@ export class DefaultAppConfig implements AppConfig {
             style: 'text-muted',
             icon: 'fa-circle-xmark',
           },
-
         ],
       },
     },
@@ -260,36 +259,7 @@ export class DefaultAppConfig implements AppConfig {
   // When set to active, users will be able to switch to the use of this language in the user interface.
   languages: LangConfig[] = [
     { code: 'en', label: 'English', active: true },
-    { code: 'ar', label: 'العربية', active: true },
-    { code: 'bn', label: 'বাংলা', active: true },
-    { code: 'ca', label: 'Català', active: true },
-    { code: 'cs', label: 'Čeština', active: true },
-    { code: 'de', label: 'Deutsch', active: true },
-    { code: 'el', label: 'Ελληνικά', active: true },
-    { code: 'es', label: 'Español', active: true },
-    { code: 'fa', label: 'فارسی', active: true },
-    { code: 'fi', label: 'Suomi', active: true },
-    { code: 'fr', label: 'Français', active: true },
-    { code: 'gd', label: 'Gàidhlig', active: true },
-    { code: 'gu', label: 'ગુજરાતી', active: true },
     { code: 'hi', label: 'हिंदी', active: true },
-    { code: 'hu', label: 'Magyar', active: true },
-    { code: 'it', label: 'Italiano', active: true },
-    { code: 'kk', label: 'Қазақ', active: true },
-    { code: 'lv', label: 'Latviešu', active: true },
-    { code: 'mr', label: 'मराठी', active: true },
-    { code: 'nl', label: 'Nederlands', active: true },
-    { code: 'pl', label: 'Polski', active: true },
-    { code: 'pt-PT', label: 'Português', active: true },
-    { code: 'pt-BR', label: 'Português do Brasil', active: true },
-    { code: 'ru', label: 'Русский', active: true },
-    { code: 'sr-lat', label: 'Srpski (lat)', active: true },
-    { code: 'sr-cyr', label: 'Српски', active: true },
-    { code: 'sv', label: 'Svenska', active: true },
-    { code: 'ta', label: 'தமிழ்', active: true },
-    { code: 'tr', label: 'Türkçe', active: true },
-    { code: 'uk', label: 'Yкраї́нська', active: true },
-    { code: 'vi', label: 'Tiếng Việt', active: true },
   ];
 
   // Browse-By Pages
@@ -429,34 +399,34 @@ export class DefaultAppConfig implements AppConfig {
           // Insert <link rel="icon" href="assets/dspace/images/favicons/favicon.ico" sizes="any"/> into the <head> of the page.
           tagName: 'link',
           attributes: {
-            'rel': 'icon',
-            'href': 'assets/dspace/images/favicons/favicon.ico',
-            'sizes': 'any',
+            rel: 'icon',
+            href: 'assets/dspace/images/favicons/favicon.ico',
+            sizes: 'any',
           },
         },
         {
           // Insert <link rel="icon" href="assets/dspace/images/favicons/favicon.svg" type="image/svg+xml"/> into the <head> of the page.
           tagName: 'link',
           attributes: {
-            'rel': 'icon',
-            'href': 'assets/dspace/images/favicons/favicon.svg',
-            'type': 'image/svg+xml',
+            rel: 'icon',
+            href: 'assets/dspace/images/favicons/favicon.svg',
+            type: 'image/svg+xml',
           },
         },
         {
           // Insert <link rel="apple-touch-icon" href="assets/dspace/images/favicons/apple-touch-icon.png"/> into the <head> of the page.
           tagName: 'link',
           attributes: {
-            'rel': 'apple-touch-icon',
-            'href': 'assets/dspace/images/favicons/apple-touch-icon.png',
+            rel: 'apple-touch-icon',
+            href: 'assets/dspace/images/favicons/apple-touch-icon.png',
           },
         },
         {
           // Insert <link rel="manifest" href="assets/dspace/images/favicons/manifest.webmanifest"/> into the <head> of the page.
           tagName: 'link',
           attributes: {
-            'rel': 'manifest',
-            'href': 'assets/dspace/images/favicons/manifest.webmanifest',
+            rel: 'manifest',
+            href: 'assets/dspace/images/favicons/manifest.webmanifest',
           },
         },
       ],
@@ -512,8 +482,8 @@ export class DefaultAppConfig implements AppConfig {
 
   // Configuration that determines the metadata sorting of community and collection edition and creation when there are not a search query.
   comcolSelectionSort: DiscoverySortConfig = {
-    sortField:'dc.title',
-    sortDirection:'ASC',
+    sortField: 'dc.title',
+    sortDirection: 'ASC',
   };
 
   qualityAssuranceConfig: QualityAssuranceConfig = {
@@ -522,7 +492,6 @@ export class DefaultAppConfig implements AppConfig {
     },
     pageSize: 5,
   };
-
 
   search: SearchConfig = {
     advancedFilters: {
@@ -540,32 +509,37 @@ export class DefaultAppConfig implements AppConfig {
           color: '#B8DAFF',
           title: 'admin-notify-dashboard.NOTIFY.incoming.accepted',
           config: 'NOTIFY.incoming.accepted',
-          description: 'admin-notify-dashboard.NOTIFY.incoming.accepted.description',
+          description:
+            'admin-notify-dashboard.NOTIFY.incoming.accepted.description',
         },
         {
           color: '#D4EDDA',
           title: 'admin-notify-dashboard.NOTIFY.incoming.processed',
           config: 'NOTIFY.incoming.processed',
-          description: 'admin-notify-dashboard.NOTIFY.incoming.processed.description',
+          description:
+            'admin-notify-dashboard.NOTIFY.incoming.processed.description',
         },
         {
           color: '#FDBBC7',
           title: 'admin-notify-dashboard.NOTIFY.incoming.failure',
           config: 'NOTIFY.incoming.failure',
-          description: 'admin-notify-dashboard.NOTIFY.incoming.failure.description',
+          description:
+            'admin-notify-dashboard.NOTIFY.incoming.failure.description',
         },
         {
           color: '#FDBBC7',
           title: 'admin-notify-dashboard.NOTIFY.incoming.untrusted',
           config: 'NOTIFY.incoming.untrusted',
-          description: 'admin-notify-dashboard.NOTIFY.incoming.untrusted.description',
+          description:
+            'admin-notify-dashboard.NOTIFY.incoming.untrusted.description',
         },
         {
           color: '#43515F',
           title: 'admin-notify-dashboard.NOTIFY.incoming.involvedItems',
           textColor: '#fff',
           config: 'NOTIFY.incoming.involvedItems',
-          description: 'admin-notify-dashboard.NOTIFY.incoming.involvedItems.description',
+          description:
+            'admin-notify-dashboard.NOTIFY.incoming.involvedItems.description',
         },
       ],
     },
@@ -576,32 +550,37 @@ export class DefaultAppConfig implements AppConfig {
           color: '#D4EDDA',
           title: 'admin-notify-dashboard.NOTIFY.outgoing.delivered',
           config: 'NOTIFY.outgoing.delivered',
-          description: 'admin-notify-dashboard.NOTIFY.outgoing.delivered.description',
+          description:
+            'admin-notify-dashboard.NOTIFY.outgoing.delivered.description',
         },
         {
           color: '#B8DAFF',
           title: 'admin-notify-dashboard.NOTIFY.outgoing.queued',
           config: 'NOTIFY.outgoing.queued',
-          description: 'admin-notify-dashboard.NOTIFY.outgoing.queued.description',
+          description:
+            'admin-notify-dashboard.NOTIFY.outgoing.queued.description',
         },
         {
           color: '#FDEEBB',
           title: 'admin-notify-dashboard.NOTIFY.outgoing.queued_for_retry',
           config: 'NOTIFY.outgoing.queued_for_retry',
-          description: 'admin-notify-dashboard.NOTIFY.outgoing.queued_for_retry.description',
+          description:
+            'admin-notify-dashboard.NOTIFY.outgoing.queued_for_retry.description',
         },
         {
           color: '#FDBBC7',
           title: 'admin-notify-dashboard.NOTIFY.outgoing.failure',
           config: 'NOTIFY.outgoing.failure',
-          description: 'admin-notify-dashboard.NOTIFY.outgoing.failure.description',
+          description:
+            'admin-notify-dashboard.NOTIFY.outgoing.failure.description',
         },
         {
           color: '#43515F',
           title: 'admin-notify-dashboard.NOTIFY.outgoing.involvedItems',
           textColor: '#fff',
           config: 'NOTIFY.outgoing.involvedItems',
-          description: 'admin-notify-dashboard.NOTIFY.outgoing.involvedItems.description',
+          description:
+            'admin-notify-dashboard.NOTIFY.outgoing.involvedItems.description',
         },
       ],
     },
@@ -617,22 +596,18 @@ export class DefaultAppConfig implements AppConfig {
 
   // Leaflet tile providers and other configurable attributes
   geospatialMapViewer: GeospatialMapConfig = {
-    spatialMetadataFields: [
-      'dcterms.spatial',
-    ],
+    spatialMetadataFields: ['dcterms.spatial'],
     spatialFacetDiscoveryConfiguration: 'geospatial',
     spatialPointFilterName: 'point',
     enableItemPageFields: false,
     enableSearchViewMode: false,
     enableBrowseMap: false,
-    tileProviders: [
-      'OpenStreetMap.Mapnik',
-    ],
+    tileProviders: ['OpenStreetMap.Mapnik'],
     // Starting centre point for maps (before drawing and zooming to markers)
     // Defaults to Istanbul
     defaultCentrePoint: {
       lat: 41.015137,
-      lng: 28.979530,
+      lng: 28.97953,
     },
   };
 

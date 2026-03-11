@@ -111,7 +111,7 @@
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "buildTarget": "dspace-angular:build",
+            "buildTarget": "dspace-angular:build:development",
             "port": 4000
           },
           "configurations": {

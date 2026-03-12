@@ -152,6 +152,7 @@
     "pem": "1.14.8",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.0",
+    "tailwindcss": "^4.1.18",
     "uuid": "^8.3.2",
     "xhr2": "^0.2.1",
     "zone.js": "~0.15.1"
@@ -172,6 +173,7 @@
     "@fortawesome/fontawesome-free": "^6.7.2",
     "@ngrx/store-devtools": "^20.1.0",
     "@ngtools/webpack": "^20.3.10",
+    "@smarttools/eslint-plugin-rxjs": "^1.0.22",
     "@stylistic/eslint-plugin": "^3.1.0",
     "@types/deep-freeze": "0.1.5",
     "@types/ejs": "^3.1.2",
@@ -201,7 +203,6 @@
     "eslint-plugin-jsdoc": "^61.4.1",
     "eslint-plugin-jsonc": "^2.21.0",
     "eslint-plugin-lodash": "^7.4.0",
-    "@smarttools/eslint-plugin-rxjs": "^1.0.22",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.3.0",
     "express-static-gzip": "^2.2.0",

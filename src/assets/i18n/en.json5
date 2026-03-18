@@ -7229,7 +7229,7 @@
   "item.preview.organization.address.addressLocality": "City",
 
   "item.preview.organization.alternateName": "Alternative name",
-
+  // Start custom key from here==========================================
   Nyay: "Nyay",
   Nest: "Nest",
   "home.paragraph1": "NyayNest is a robust and secure digital solution designed to revolutionize the way",
@@ -7240,4 +7240,23 @@
   "home.temp1": "Get Started",
   "home.temp2": "Centralized Digital Repository",
   "home.temp3": "Advanced Search & Filters",
+  // Dashboard
+  "dashboard.high_court": "High Court",
+  "dashboard.district_court": "District Court",
+  "dashboard.case_overview": "Case Overview",
+  "dashboard.total_cases": "Total Cases",
+  "dashboard.disposed": "Disposed",
+  "dashboard.pending": "Pending",
+  "dashboard.criminal_cases": "Criminal Cases",
+  "dashboard.civil_cases": "Civil Cases",
+  "dashboard.session_cases": "Session Cases",
+  "dashboard.pending": "Pending",
+  "dashboard.case_types": "Case Types",
+  "dashboard.current_date_time": "{{date}} | {{time}} IST",
+
+  // Footer
+  "footer.link.nyaynest": "Copyright © 2026 NyayNest ",
+  "footer.link.poweredby": " - Powered by",
+  "footer.link.version": "v1.0.0",
+  "footer.link.cbsl": "CBSL Group",
 }

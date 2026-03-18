@@ -71,6 +71,12 @@ export const APP_ROUTES: Route[] = [
         ],
       },
       {
+        path: 'home',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      },
+
+      {
         path: 'reload/:rnd',
         component: ThemedPageNotFoundComponent,
         pathMatch: 'full',
@@ -86,7 +92,7 @@ export const APP_ROUTES: Route[] = [
           dsoPath: 'site',
         },
         providers: [provideSuggestionNotificationsState()],
-        canActivate: [endUserAgreementCurrentUserGuard],
+        canActivate: [notAuthenticatedGuard, endUserAgreementCurrentUserGuard],
         resolve: {
           site: homePageResolver,
           tracking: viewTrackerResolver,

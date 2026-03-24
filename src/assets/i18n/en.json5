@@ -7259,4 +7259,9 @@
   "footer.link.poweredby": " - Powered by",
   "footer.link.version": "v1.0.0",
   "footer.link.cbsl": "CBSL Group",
+
+  //report
+  "menu.section.reports.audittrail": "Audit Trail Report",
+  "menu.section.reports.data-upload": "Data Upload Report",
+  "menu.section.reports.datatrend": "Data Trend Report",
 }

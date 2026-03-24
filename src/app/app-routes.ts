@@ -75,7 +75,12 @@ export const APP_ROUTES: Route[] = [
         redirectTo: 'dashboard',
         pathMatch: 'full',
       },
-
+      {
+        path: 'report',
+        loadChildren: () =>
+          import('./report/report-routes').then((m) => m.ROUTES),
+        canActivate: [endUserAgreementCurrentUserGuard, authenticatedGuard],
+      },
       {
         path: 'reload/:rnd',
         component: ThemedPageNotFoundComponent,

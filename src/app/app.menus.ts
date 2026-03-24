@@ -33,6 +33,7 @@ import { StatisticsMenuProvider } from './shared/menu/providers/statistics.menu'
 import { SystemWideAlertMenuProvider } from './shared/menu/providers/system-wide-alert.menu';
 import { WithdrawnReinstateItemMenuProvider } from './shared/menu/providers/withdrawn-reinstate-item.menu';
 import { WorkflowMenuProvider } from './shared/menu/providers/workflow.menu';
+import { ReportMenuProvider } from './report/report-menu.provider';
 
 /**
  * Represents and builds the menu structure for the three available menus (public navbar, admin sidebar and the dso edit
@@ -60,18 +61,19 @@ export const MENUS = buildMenuStructure({
     NewMenuProvider,
     EditMenuProvider,
     ImportMenuProvider,
-    ExportMenuProvider,
-    NotificationsMenuProvider,
+    // ExportMenuProvider,
+    ReportMenuProvider,
+    // NotificationsMenuProvider,
     AccessControlMenuProvider,
     AdminSearchMenuProvider,
     CreateReportMenuProvider,
     RegistriesMenuProvider,
-    CurationMenuProvider,
+    // CurationMenuProvider,
     ProcessesMenuProvider,
-    WorkflowMenuProvider,
-    HealthMenuProvider,
-    SystemWideAlertMenuProvider,
-    CoarNotifyMenuProvider,
+    // WorkflowMenuProvider,
+    // HealthMenuProvider,
+    // SystemWideAlertMenuProvider,
+    // CoarNotifyMenuProvider,
   ],
   [MenuID.DSO_EDIT]: [
     DsoOptionMenuProvider.withSubs([
@@ -84,18 +86,13 @@ export const MENUS = buildMenuStructure({
         MenuRoute.COLLECTION_PAGE,
         MenuRoute.ITEM_PAGE,
       ),
-      WithdrawnReinstateItemMenuProvider.onRoute(
-        MenuRoute.ITEM_PAGE,
-      ),
-      VersioningMenuProvider.onRoute(
-        MenuRoute.ITEM_PAGE,
-      ),
-      OrcidMenuProvider.onRoute(
-        MenuRoute.ITEM_PAGE,
-      ),
-      ClaimMenuProvider.onRoute(
-        MenuRoute.ITEM_PAGE,
-      ),
+      WithdrawnReinstateItemMenuProvider.onRoute(MenuRoute.ITEM_PAGE),
+      VersioningMenuProvider.onRoute(MenuRoute.ITEM_PAGE),
+      OrcidMenuProvider.onRoute(MenuRoute.ITEM_PAGE),
+      ClaimMenuProvider.onRoute(MenuRoute.ITEM_PAGE),
     ]),
   ],
 });
+/**
+ * Provider which are removed have been commented out instead of deleted, to make it easier to add them back in the future if needed.
+ */

@@ -29,13 +29,9 @@ import { IdleModalComponent } from './shared/idle-modal/idle-modal.component';
 import { NotificationComponent } from './shared/notifications/notification/notification.component';
 import { NotificationsBoardComponent } from './shared/notifications/notifications-board/notifications-board.component';
 
-const IMPORTS = [
-  CommonModule,
-  NgbModule,
-];
+const IMPORTS = [CommonModule, NgbModule];
 
-const PROVIDERS = [
-];
+const PROVIDERS = [];
 
 const DECLARATIONS = [
   RootComponent,
@@ -66,22 +62,11 @@ const DECLARATIONS = [
   ContextHelpToggleComponent,
 ];
 
-const EXPORTS = [
-];
+const EXPORTS = [];
 
 @NgModule({
-  imports: [
-    ...IMPORTS,
-    ...DECLARATIONS,
-  ],
-  providers: [
-    ...PROVIDERS,
-  ],
-  exports: [
-    ...EXPORTS,
-    ...DECLARATIONS,
-  ],
+  imports: [...IMPORTS, ...DECLARATIONS],
+  providers: [...PROVIDERS],
+  exports: [...EXPORTS, ...DECLARATIONS],
 })
-export class RootModule {
-
-}
+export class RootModule {}

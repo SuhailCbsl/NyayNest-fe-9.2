@@ -28,25 +28,17 @@ import {
 } from '@ngrx/store';
 import { ScrollToModule } from '@nicky-lenaers/ngx-scroll-to';
 import { NgxMaskModule } from 'ngx-mask';
-
-import {
-  APP_CONFIG,
-  AppConfig,
-} from '../config/app-config.interface';
+// primeng
+import { providePrimeNG } from 'primeng/config';
+import Lara from '@primeng/themes/lara';
+import { APP_CONFIG, AppConfig } from '../config/app-config.interface';
 import { StoreDevModules } from '../config/store/devtools';
 import { environment } from '../environments/environment';
 import { EagerThemesModule } from '../themes/eager-themes.module';
 import { appEffects } from './app.effects';
 import { MENUS } from './app.menus';
-import {
-  appMetaReducers,
-  debugMetaReducers,
-} from './app.metareducers';
-import {
-  appReducers,
-  AppState,
-  storeModuleConfig,
-} from './app.reducer';
+import { appMetaReducers, debugMetaReducers } from './app.metareducers';
+import { appReducers, AppState, storeModuleConfig } from './app.reducer';
 import {
   APP_ROUTES,
   APP_ROUTING_CONF,
@@ -57,10 +49,7 @@ import { AuthInterceptor } from './core/auth/auth.interceptor';
 import { DspaceRestInterceptor } from './core/dspace-rest/dspace-rest.interceptor';
 import { LocaleInterceptor } from './core/locale/locale.interceptor';
 import { LogInterceptor } from './core/log/log.interceptor';
-import {
-  models,
-  provideCore,
-} from './core/provide-core';
+import { models, provideCore } from './core/provide-core';
 import { ClientCookieService } from './core/services/client-cookie.service';
 import { ListableModule } from './core/shared/listable.module';
 import { XsrfInterceptor } from './core/xsrf/xsrf.interceptor';
@@ -81,12 +70,17 @@ export function getConfig() {
 
 const getBaseHref = (document: Document, appConfig: AppConfig): string => {
   const baseTag = document.querySelector('head > base');
-  baseTag.setAttribute('href', `${appConfig.ui.nameSpace}${appConfig.ui.nameSpace.endsWith('/') ? '' : '/'}`);
+  baseTag.setAttribute(
+    'href',
+    `${appConfig.ui.nameSpace}${appConfig.ui.nameSpace.endsWith('/') ? '' : '/'}`,
+  );
   return baseTag.getAttribute('href');
 };
 
 export function getMetaReducers(appConfig: AppConfig): MetaReducer<AppState>[] {
-  return appConfig.debug ? [...appMetaReducers, ...debugMetaReducers] : appMetaReducers;
+  return appConfig.debug
+    ? [...appMetaReducers, ...debugMetaReducers]
+    : appMetaReducers;
 }
 
 export const commonAppConfig: ApplicationConfig = {
@@ -156,6 +150,7 @@ export const commonAppConfig: ApplicationConfig = {
       useClass: DspaceRestInterceptor,
       multi: true,
     },
+    providePrimeNG({ theme: { preset: { theme: Lara } } }),
     // register the dynamic matcher used by form. MUST be provided by the app module
     ...DYNAMIC_MATCHER_PROVIDERS,
 
@@ -165,7 +160,6 @@ export const commonAppConfig: ApplicationConfig = {
     provideCore(),
   ],
 };
-
 
 /* Use models object so all decorators are actually called */
 const modelList = models;

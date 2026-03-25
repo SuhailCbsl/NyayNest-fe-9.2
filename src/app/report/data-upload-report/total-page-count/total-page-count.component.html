@@ -1,0 +1,42 @@
+<!-- BACKDROP -->
+<div class="cnr-backdrop" *ngIf="show" (click)="close()"></div>
+
+<!-- MODAL CENTERED -->
+<div class="cnr-modal" *ngIf="show">
+  <div
+    class="cnr-modal-box cnr-popup-animate"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="cnr-modal-header">
+      <h3>Total Page Count</h3>
+      <button class="close-btn" (click)="close()">×</button>
+    </div>
+
+    <div class="cnr-modal-body">
+      <div class="table-responsive mt-3">
+        <table
+          class="table table-bordered table-striped text-center align-middle"
+        >
+          <thead class="table-primary">
+            <tr>
+              <th>Collection Name</th>
+              <th>Total Page Count</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let row of totalPageCountList">
+              <td>{{ row.collection_name }}</td>
+              <td>{{ row.page_count }}</td>
+            </tr>
+
+            <tr class="table-secondary fw-bold">
+              <td>Total</td>
+              <td>{{ totalPages }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

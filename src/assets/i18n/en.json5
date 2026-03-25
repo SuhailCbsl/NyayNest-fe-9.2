@@ -7264,4 +7264,7 @@
   "menu.section.reports.audittrail": "Audit Trail Report",
   "menu.section.reports.data-upload": "Data Upload Report",
   "menu.section.reports.datatrend": "Data Trend Report",
+  "datatrendreport.breadcrumbs": "Data Trend Report",
+  "audittrailreports.breadcrumbs": "Audit Trail Report",
+  "datauploadreport.breadcrumbs": "Data Upload Report",
 }

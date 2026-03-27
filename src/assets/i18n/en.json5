@@ -7267,4 +7267,17 @@
   "datatrendreport.breadcrumbs": "Data Trend Report",
   "audittrailreports.breadcrumbs": "Audit Trail Report",
   "datauploadreport.breadcrumbs": "Data Upload Report",
+  "dataupload.report.search": "Search",
+  "dataupload.report.update_upload_item": "Update Upload Item",
+  "dataupload.report.total_page_count": "Total Page Count",
+  "dataupload.report.export": "Export As",
+  "dataupload.report.export.csv": "Export as CSV",
+  "dataupload.report.export.pdf": "Export as PDF",
+
+  "audit.trail.report.search.placeholder": "Search",
+  "audittrail.report.search": "Search",
+  "audittrail.report.reset": "Reset",
+  "audittrail.report.export": "Export As",
+  "audittrail.report.export.csv": "Export as CSV",
+  "audittrail.report.export.pdf": "Export as PDF",
 }

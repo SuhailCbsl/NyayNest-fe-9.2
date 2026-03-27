@@ -1,1 +1,173 @@
-<p>audit-trail-report works!</p>
+<!-- Top toolbar (Search + Dates + Export) -->
+<div class="top-toolbar">
+  <div class="toolbar-left">
+    <!-- Search -->
+    <div class="search-wrap">
+      <input
+        type="text"
+        class="form-control"
+        [placeholder]="'audit.trail.report.search.placeholder' | translate"
+        [(ngModel)]="searchText"
+        (input)="applyFilter()"
+        aria-label="Search"
+      />
+      <span class="search-icon">
+        <i class="pi pi-search"></i>
+      </span>
+    </div>
+
+    <!-- From Date -->
+    <div class="date-wrap">
+      <input
+        id="fromDate"
+        type="text"
+        placeholder="DD/MM/YYYY"
+        ngbDatepicker
+        #dFrom="ngbDatepicker"
+        [(ngModel)]="fromDateModel"
+        (dateSelect)="onFromDateSelect($event)"
+        (click)="dFrom.toggle()"
+        class="form-control"
+        readonly
+      />
+      <span class="calendar-icon"><i class="pi pi-calendar"></i></span>
+    </div>
+
+    <!-- To Date -->
+    <div class="date-wrap">
+      <input
+        id="toDate"
+        type="text"
+        placeholder="DD/MM/YYYY"
+        ngbDatepicker
+        #dTo="ngbDatepicker"
+        [(ngModel)]="toDateModel"
+        (dateSelect)="onToDateSelect($event)"
+        (click)="dTo.toggle()"
+        class="form-control"
+        readonly
+      />
+      <span class="calendar-icon"><i class="pi pi-calendar"></i></span>
+    </div>
+
+    <!-- Search & Reset Buttons -->
+    <div class="btn-cluster">
+      <button type="button" class="btn btn-primary" (click)="searchAuditData()">
+        {{ "audittrail.report.search" | translate }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        (click)="resetCalendar()"
+      >
+        {{ "audittrail.report.reset" | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Export Dropdown -->
+  <div class="toolbar-right">
+    <div ngbDropdown class="d-inline-block">
+      <button class="btn btn-outline-primary dropdown-toggle" ngbDropdownToggle>
+        <i class="not-hovering">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="27"
+            height="27"
+            viewBox="0 0 27 27"
+            fill="none"
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M9.95025 8.89351C10.2798 9.22301 10.814 9.22301 11.1435 8.89351L13.0781 6.95888V16.1719C13.0781 16.6379 13.4559 17.0156 13.9219 17.0156C14.3878 17.0156 14.7656 16.6379 14.7656 16.1719V6.95888L16.7003 8.89351C17.0298 9.22301 17.5639 9.22301 17.8935 8.89351C18.223 8.56401 18.223 8.02977 17.8935 7.70027L14.5185 4.32527C14.1889 3.99577 13.6548 3.99577 13.3253 4.32527L9.95025 7.70027C9.62075 8.02977 9.62075 8.56401 9.95025 8.89351Z"
+              fill="#E85B11"
+            />
+            <path
+              d="M13.9219 22.9219C18.8925 22.9219 22.9219 18.8925 22.9219 13.9219H18.7031C17.6425 13.9219 17.1122 13.9219 16.7826 14.2514C16.4531 14.5809 16.4531 15.1112 16.4531 16.1719C16.4531 17.5698 15.3198 18.7031 13.9219 18.7031C12.524 18.7031 11.3906 17.5698 11.3906 16.1719C11.3906 15.1112 11.3906 14.5809 11.0611 14.2514C10.7316 13.9219 10.2013 13.9219 9.14062 13.9219H4.92188C4.92188 18.8925 8.95131 22.9219 13.9219 22.9219Z"
+              fill="#E85B11"
+            />
+          </svg>
+        </i>
+        <i class="hovering">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="27"
+            height="27"
+            viewBox="0 0 27 27"
+            fill="none"
+          >
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M9.95025 8.89351C10.2798 9.22301 10.814 9.22301 11.1435 8.89351L13.0781 6.95888V16.1719C13.0781 16.6379 13.4559 17.0156 13.9219 17.0156C14.3878 17.0156 14.7656 16.6379 14.7656 16.1719V6.95888L16.7003 8.89351C17.0298 9.22301 17.5639 9.22301 17.8935 8.89351C18.223 8.56401 18.223 8.02977 17.8935 7.70027L14.5185 4.32527C14.1889 3.99576 13.6548 3.99576 13.3253 4.32527L9.95025 7.70027C9.62075 8.02977 9.62075 8.56401 9.95025 8.89351Z"
+              fill="white"
+            />
+            <path
+              d="M13.9219 22.9219C18.8925 22.9219 22.9219 18.8925 22.9219 13.9219H18.7031C17.6425 13.9219 17.1122 13.9219 16.7826 14.2514C16.4531 14.5809 16.4531 15.1112 16.4531 16.1719C16.4531 17.5698 15.3198 18.7031 13.9219 18.7031C12.524 18.7031 11.3906 17.5698 11.3906 16.1719C11.3906 15.1112 11.3906 14.5809 11.0611 14.2514C10.7316 13.9219 10.2013 13.9219 9.14062 13.9219H4.92188C4.92188 18.8925 8.95131 22.9219 13.9219 22.9219Z"
+              fill="white"
+            />
+          </svg>
+        </i>
+        {{ "audittrail.report.export" | translate }}
+      </button>
+      <div ngbDropdownMenu class="dropdown-menu">
+        <button ngbDropdownItem (click)="exportCSV()">
+          {{ "audittrail.report.export.csv" | translate }}
+        </button>
+        <button ngbDropdownItem (click)="exportPDF()">
+          {{ "audittrail.report.export.pdf" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Boxed Table with Horizontal Scroll -->
+<div class="table-box">
+  <div class="table-scroll">
+    <table class="table audit-table">
+      <thead>
+        <tr>
+          <th>S. No.</th>
+          <th>User Email</th>
+          <th>User ID</th>
+          <th>Action</th>
+          <th>Date & Time</th>
+          <th>Handle</th>
+          <th>URL</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let e of events; let i = index">
+          <td class="sno">
+            {{ (currentPage - 1) * resultsPerPage + i + 1 }}
+          </td>
+          <td>{{ e.userName }}</td>
+          <td class="mono">{{ e.userId }}</td>
+          <td class="action-td">{{ e.action }}</td>
+          <td>{{ e.eventTime }}</td>
+          <td>{{ handleDisplay(e?.handle) }}</td>
+          <td class="url-cell">{{ e.url }}</td>
+        </tr>
+
+        <tr *ngIf="!isLoading && events.length === 0">
+          <td colspan="6" class="text-center py-4">No records found.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pager">
+    <ngb-pagination
+      [collectionSize]="filteredEvents.length"
+      [pageSize]="resultsPerPage"
+      [(page)]="currentPage"
+      [maxSize]="5"
+      [boundaryLinks]="true"
+      (pageChange)="onPageChange($event)"
+    ></ngb-pagination>
+  </div>
+</div>

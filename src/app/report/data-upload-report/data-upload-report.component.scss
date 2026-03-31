@@ -282,3 +282,8 @@ button:disabled:hover {
 .overlay-content {
   text-align: center;
 }
+button.btn:disabled {
+  cursor: not-allowed !important;
+  pointer-events: all !important; // important fix
+  opacity: 0.6;
+}

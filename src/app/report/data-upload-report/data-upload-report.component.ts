@@ -4,7 +4,6 @@ import {
   NgbDateParserFormatter,
   NgbDatepickerModule,
   NgbDateStruct,
-  NgbPagination,
   NgbPaginationModule,
 } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
@@ -16,6 +15,7 @@ import { NotificationsService } from 'src/app/shared/notifications/notifications
 import { HttpClient } from '@angular/common/http';
 import { TotalPageCountComponent } from './total-page-count/total-page-count.component';
 import { CommonModule } from '@angular/common';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'ds-data-upload-report',
@@ -26,6 +26,7 @@ import { CommonModule } from '@angular/common';
     TotalPageCountComponent,
     NgbPaginationModule,
     NgbDatepickerModule,
+    ButtonModule,
   ],
   templateUrl: './data-upload-report.component.html',
   styleUrl: './data-upload-report.component.scss',

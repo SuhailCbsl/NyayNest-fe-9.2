@@ -7280,4 +7280,12 @@
   "audittrail.report.export": "Export As",
   "audittrail.report.export.csv": "Export as CSV",
   "audittrail.report.export.pdf": "Export as PDF",
+
+  // Single item upload
+  "submission.sections.submit.progressbar.describe.caseDetails": "Case Details",
+  "submission.sections.submit.progressbar.describe.petitionerDetails": "Petitioner Details",
+  "submission.sections.submit.progressbar.describe.respondentDetails": "Respondent Details",
+  "submission.sections.submit.progressbar.describe.advocateDetails": "Advocate Details",
+  "submission.sections.submit.progressbar.describe.judgeDetails": "Judge Details",
+  "submission.sections.submit.progressbar.describe.steptwo": "More Details",
 }

@@ -7,14 +7,15 @@ import {
   Inject,
   Output,
 } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormsModule } from '@angular/forms';
 import { NotificationsService } from 'src/app/shared/notifications/notifications.service';
 import { APP_CONFIG, AppConfig } from 'src/config/app-config.interface';
 import { DataUploadService } from '../data-upload-report.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'ds-total-page-count',
-  imports: [],
+  imports: [CommonModule, FormsModule],
   templateUrl: './total-page-count.component.html',
   styleUrl: './total-page-count.component.scss',
 })

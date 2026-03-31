@@ -105,7 +105,7 @@
     "@nicky-lenaers/ngx-scroll-to": "^14.0.0",
     "@primeng/themes": "^21.0.4",
     "@terraformer/wkt": "^2.2.1",
-    "altcha": "^2.2.4",
+    "altcha": "^2.3.0",
     "angulartics2": "^12.2.0",
     "body-parser": "^1.20.3",
     "bootstrap": "^5.3",

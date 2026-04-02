@@ -1,0 +1,31 @@
+:host {
+  display: block;
+}
+
+/* The page section that owns the chart */
+.report-block {
+  inline-size: 100%;
+  max-inline-size: 1200px; /* keep the chart within a readable block */
+  margin-inline: auto; /* center the block under the breadcrumb */
+  padding-inline: 1rem;
+}
+
+/* The frame the chart is allowed to fill */
+.chart-frame {
+  inline-size: 100%;
+  /* Height is relative to viewport BUT capped by available page space.
+     Tweak the subtraction (~ header + breadcrumb + footer). */
+  block-size: min(70vh, calc(100vh - 260px));
+  aspect-ratio: 16 / 9; /* keeps the chart from getting too tall/wide */
+  overflow: hidden; /* prevents any bleed */
+  display: flex; /* lets child stretch */
+}
+
+/* Make PrimeNG’s inner wrappers & canvas fill the frame */
+:host ::ng-deep p-chart,
+:host ::ng-deep p-chart > div,
+:host ::ng-deep p-chart canvas {
+  inline-size: 100% !important;
+  block-size: 100% !important;
+  display: block;
+}

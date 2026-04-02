@@ -14,7 +14,7 @@
     >
       <a
         class="d-block my-2 my-md-0"
-        routerLink="/home"
+        routerLink="/dashboard"
         [attr.aria-label]="'home.title' | translate"
         role="button"
         tabindex="0"
@@ -40,7 +40,16 @@
       id="header-right"
       class="h-100 d-flex flex-row flex-nowrap flex-shrink-0 justify-content-end align-items-center gapx-1 ms-auto"
     >
-      <ds-search-navbar></ds-search-navbar>
+      @if (
+        !router.isActive("/home", true) &&
+        !router.isActive("/login", true) &&
+        !router.isActive("/forgot", true) &&
+        !router.isActive("/register", true)
+      ) {
+        <div>
+          <ds-search-navbar></ds-search-navbar>
+        </div>
+      }
       <div
         role="toolbar"
         class="h-100 d-flex flex-row flex-nowrap align-items-center gapx-1"

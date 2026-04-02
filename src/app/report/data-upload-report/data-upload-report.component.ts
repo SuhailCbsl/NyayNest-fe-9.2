@@ -4,6 +4,7 @@ import {
   NgbDateParserFormatter,
   NgbDatepickerModule,
   NgbDateStruct,
+  NgbDropdownModule,
   NgbPaginationModule,
 } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
@@ -27,6 +28,7 @@ import { ButtonModule } from 'primeng/button';
     NgbPaginationModule,
     NgbDatepickerModule,
     ButtonModule,
+    NgbDropdownModule,
   ],
   templateUrl: './data-upload-report.component.html',
   styleUrl: './data-upload-report.component.scss',

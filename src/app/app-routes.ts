@@ -61,7 +61,7 @@ export const APP_ROUTES: Route[] = [
         canActivate: [authBlockingGuard],
         canActivateChild: [ServerCheckGuard],
         children: [
-          { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+          { path: '', redirectTo: 'home', pathMatch: 'full' },
           {
             path: 'dashboard',
             loadChildren: () =>
@@ -69,11 +69,6 @@ export const APP_ROUTES: Route[] = [
             canActivate: [endUserAgreementCurrentUserGuard, authenticatedGuard],
           },
         ],
-      },
-      {
-        path: 'home',
-        redirectTo: 'dashboard',
-        pathMatch: 'full',
       },
       {
         path: 'report',

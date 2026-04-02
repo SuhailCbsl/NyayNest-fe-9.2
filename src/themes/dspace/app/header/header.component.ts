@@ -3,7 +3,7 @@ import {
   Component,
   OnInit,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
@@ -15,6 +15,8 @@ import { ThemedNavbarComponent } from '../../../../app/navbar/themed-navbar.comp
 import { ThemedSearchNavbarComponent } from '../../../../app/search-navbar/themed-search-navbar.component';
 import { ThemedAuthNavMenuComponent } from '../../../../app/shared/auth-nav-menu/themed-auth-nav-menu.component';
 import { ImpersonateNavbarComponent } from '../../../../app/shared/impersonate-navbar/impersonate-navbar.component';
+import { MenuService } from '../../../../app/shared/menu/menu.service';
+import { HostWindowService } from '../../../../app/shared/host-window.service';
 
 /**
  * Represents the header with the logo and simple navigation
@@ -38,6 +40,13 @@ import { ImpersonateNavbarComponent } from '../../../../app/shared/impersonate-n
 })
 export class HeaderComponent extends BaseComponent implements OnInit {
   public isNavBarCollapsed$: Observable<boolean>;
+  constructor(
+    public router: Router,
+    protected menuService: MenuService,
+    protected windowService: HostWindowService,
+  ) {
+    super(menuService, windowService);
+  }
 
   ngOnInit() {
     super.ngOnInit();

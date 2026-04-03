@@ -1,17 +1,10 @@
 import { NgTemplateOutlet } from '@angular/common';
-import {
-  Component,
-  Inject,
-  OnInit,
-} from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import {
-  APP_CONFIG,
-  AppConfig,
-} from 'src/config/app-config.interface';
+import { APP_CONFIG, AppConfig } from 'src/config/app-config.interface';
 
 import { Site } from '../core/shared/site.model';
 import { SuggestionsPopupComponent } from '../notifications/suggestions/popup/suggestions-popup.component';
@@ -39,7 +32,6 @@ import { ThemedTopLevelCommunityListComponent } from './top-level-community-list
   ],
 })
 export class HomePageComponent implements OnInit {
-
   site$: Observable<Site>;
   recentSubmissionspageSize: number;
   showDiscoverFilters: boolean;
@@ -48,14 +40,13 @@ export class HomePageComponent implements OnInit {
     @Inject(APP_CONFIG) protected appConfig: AppConfig,
     protected route: ActivatedRoute,
   ) {
-    this.recentSubmissionspageSize = this.appConfig.homePage.recentSubmissions.pageSize;
+    this.recentSubmissionspageSize =
+      this.appConfig.homePage.recentSubmissions.pageSize;
     this.showDiscoverFilters = this.appConfig.homePage.showDiscoverFilters;
   }
 
   ngOnInit(): void {
-    this.site$ = this.route.data.pipe(
-      map((data) => data.site as Site),
-    );
+    this.showDiscoverFilters = false;
+    this.site$ = this.route.data.pipe(map((data) => data.site as Site));
   }
-
 }

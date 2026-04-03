@@ -10,10 +10,7 @@ import {
   Output,
   Renderer2,
 } from '@angular/core';
-import {
-  FormsModule,
-  UntypedFormGroup,
-} from '@angular/forms';
+import { FormsModule, UntypedFormGroup } from '@angular/forms';
 import {
   DynamicFormControlComponent,
   DynamicFormLayoutService,
@@ -25,6 +22,11 @@ import isEqual from 'lodash/isEqual';
 import { hasValue } from '../../../../../empty.util';
 import { NumberPickerComponent } from '../../../../number-picker/number-picker.component';
 import { DynamicDsDatePickerModel } from './date-picker.model';
+import {
+  NgbDatepickerConfig,
+  NgbDatepickerModule,
+  NgbDateStruct,
+} from '@ng-bootstrap/ng-bootstrap';
 
 export type DatePickerFieldType = '_year' | '_month' | '_day';
 
@@ -39,10 +41,13 @@ export const DS_DATE_PICKER_SEPARATOR = '-';
     NgClass,
     NumberPickerComponent,
     TranslateModule,
+    NgbDatepickerModule,
   ],
 })
-
-export class DsDatePickerComponent extends DynamicFormControlComponent implements OnInit {
+export class DsDatePickerComponent
+  extends DynamicFormControlComponent
+  implements OnInit
+{
   @Input() bindId = true;
   @Input() group: UntypedFormGroup;
   @Input() model: DynamicDsDatePickerModel;
@@ -74,10 +79,15 @@ export class DsDatePickerComponent extends DynamicFormControlComponent implement
 
   private readonly fields: DatePickerFieldType[] = ['_year', '_month', '_day'];
 
-  constructor(protected layoutService: DynamicFormLayoutService,
-              protected validationService: DynamicFormValidationService,
-              private renderer: Renderer2,
-              @Inject(DOCUMENT) private _document: Document,
+  public dateModel: NgbDateStruct | null = null;
+  public placeholder = 'DD/MM/YYYY';
+
+  constructor(
+    protected layoutService: DynamicFormLayoutService,
+    protected validationService: DynamicFormValidationService,
+    private renderer: Renderer2,
+    @Inject(DOCUMENT) private _document: Document,
+    private datePickerConfig: NgbDatepickerConfig,
   ) {
     super(layoutService, validationService);
   }
@@ -88,10 +98,23 @@ export class DsDatePickerComponent extends DynamicFormControlComponent implement
     this.initialMonth = now.getUTCMonth() + 1;
     this.initialDay = now.getUTCDate();
 
+    this.datePickerConfig.minDate = {
+      year: this.initialYear - 100 > 1900 ? this.initialYear - 100 : 1900,
+      month: 1,
+      day: 1,
+    };
+    this.datePickerConfig.maxDate = {
+      year: this.initialYear + 100,
+      month: 12,
+      day: 31,
+    };
+
     if (this.model && this.model.value !== null) {
       // todo: model value could object or Date according to its type annotation
       // eslint-disable-next-line @typescript-eslint/no-base-to-string
-      const values = this.model.value.toString().split(DS_DATE_PICKER_SEPARATOR);
+      const values = this.model.value
+        .toString()
+        .split(DS_DATE_PICKER_SEPARATOR);
       if (values.length > 0) {
         this.initialYear = parseInt(values[0], 10);
         this.year = this.initialYear;
@@ -177,15 +200,17 @@ export class DsDatePickerComponent extends DynamicFormControlComponent implement
       value = yyyy;
     }
     if (hasValue(this.month)) {
-      const mm = this.month.toString().length === 1
-        ? '0' + this.month.toString()
-        : this.month.toString();
+      const mm =
+        this.month.toString().length === 1
+          ? '0' + this.month.toString()
+          : this.month.toString();
       value += DS_DATE_PICKER_SEPARATOR + mm;
     }
     if (hasValue(this.day)) {
-      const dd = this.day.toString().length === 1
-        ? '0' + this.day.toString()
-        : this.day.toString();
+      const dd =
+        this.day.toString().length === 1
+          ? '0' + this.day.toString()
+          : this.day.toString();
       value += DS_DATE_PICKER_SEPARATOR + dd;
     }
 
@@ -225,7 +250,9 @@ export class DsDatePickerComponent extends DynamicFormControlComponent implement
   }
 
   private selectedFieldIndex(activeElement: Element): number {
-    return this.fields.findIndex(field => isEqual(activeElement.id, this.model.id.concat(field)));
+    return this.fields.findIndex((field) =>
+      isEqual(activeElement.id, this.model.id.concat(field)),
+    );
   }
 
   /**
@@ -238,7 +265,6 @@ export class DsDatePickerComponent extends DynamicFormControlComponent implement
   focusInput(type: DatePickerFieldType) {
     const field = this._document.getElementById(this.model.id.concat(type));
     if (field) {
-
       if (hasValue(this.year) && isEqual(type, '_year')) {
         this.disabledMonth = true;
         this.disabledDay = true;
@@ -264,4 +290,17 @@ export class DsDatePickerComponent extends DynamicFormControlComponent implement
     return date.getDate();
   }
 
+  public onDateSelect(date: NgbDateStruct) {
+    if (!date) return;
+
+    const yyyy = date.year;
+    const mm = String(date.month).padStart(2, '0');
+    const dd = String(date.day).padStart(2, '0');
+
+    const formatted = `${yyyy}-${mm}-${dd}`;
+
+    this.dateModel = date;
+    this.model.value = formatted;
+    this.change.emit(formatted);
+  }
 }

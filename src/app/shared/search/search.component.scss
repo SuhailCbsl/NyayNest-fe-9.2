@@ -6,9 +6,14 @@
 }
 
 :host {
-    --bs-gutter-x: .75rem;
+  --bs-gutter-x: 0.75rem;
 }
 
 ::ng-deep .search-controls {
-    margin-bottom: var(--bs-spacer);
+  margin-bottom: var(--bs-spacer);
+}
+.cover-it {
+  display: flex;
+  justify-content: center;
+  margin-top: 2%;
 }

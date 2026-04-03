@@ -1,8 +1,4 @@
-import {
-  AsyncPipe,
-  isPlatformServer,
-  NgTemplateOutlet,
-} from '@angular/common';
+import { AsyncPipe, isPlatformServer, NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -14,18 +10,10 @@ import {
   Output,
   PLATFORM_ID,
 } from '@angular/core';
-import {
-  NavigationStart,
-  Router,
-} from '@angular/router';
+import { NavigationStart, Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import uniqueId from 'lodash/uniqueId';
-import {
-  BehaviorSubject,
-  combineLatest,
-  Observable,
-  Subscription,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -34,10 +22,7 @@ import {
   switchMap,
 } from 'rxjs/operators';
 
-import {
-  APP_CONFIG,
-  AppConfig,
-} from '../../../config/app-config.interface';
+import { APP_CONFIG, AppConfig } from '../../../config/app-config.interface';
 import { environment } from '../../../environments/environment';
 import { COLLECTION_MODULE_PATH } from '../../collection-page/collection-page-routing-paths';
 import { COMMUNITY_MODULE_PATH } from '../../community-page/community-page-routing-paths';
@@ -58,12 +43,7 @@ import { WorkspaceItem } from '../../core/submission/models/workspaceitem.model'
 import { ITEM_MODULE_PATH } from '../../item-page/item-page-routing-paths';
 import { SEARCH_CONFIG_SERVICE } from '../../my-dspace-page/my-dspace-configuration.service';
 import { pushInOut } from '../animations/push';
-import {
-  hasValue,
-  hasValueOperator,
-  isEmpty,
-  isNotEmpty,
-} from '../empty.util';
+import { hasValue, hasValueOperator, isEmpty, isNotEmpty } from '../empty.util';
 import { HostWindowService } from '../host-window.service';
 import { CollectionElementLinkType } from '../object-collection/collection-element-link.type';
 import { ListableObject } from '../object-collection/shared/listable-object.model';
@@ -106,7 +86,6 @@ import { SearchConfigurationOption } from './search-switch-configuration/search-
  * This component renders a sidebar, a search input bar and the search results.
  */
 export class SearchComponent implements OnDestroy, OnInit {
-
   /**
    * The list of available configuration options
    */
@@ -244,28 +223,33 @@ export class SearchComponent implements OnDestroy, OnInit {
   /**
    * The current configuration used during the search
    */
-  currentConfiguration$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  currentConfiguration$: BehaviorSubject<string> = new BehaviorSubject<string>(
+    '',
+  );
 
   /**
    * The current context used during the search
    */
-  currentContext$: BehaviorSubject<Context> = new BehaviorSubject<Context>(null);
+  currentContext$: BehaviorSubject<Context> = new BehaviorSubject<Context>(
+    null,
+  );
 
   /**
    * The current sort options used
    */
   currentScope$: Observable<string>;
 
-
   /**
    * The current sort options used
    */
-  currentSortOptions$: BehaviorSubject<SortOptions> = new BehaviorSubject<SortOptions>(null);
+  currentSortOptions$: BehaviorSubject<SortOptions> =
+    new BehaviorSubject<SortOptions>(null);
 
   /**
    * An observable containing configuration about which filters are shown and how they are shown
    */
-  filtersRD$: BehaviorSubject<RemoteData<SearchFilterConfig[]>> = new BehaviorSubject<RemoteData<SearchFilterConfig[]>>(null);
+  filtersRD$: BehaviorSubject<RemoteData<SearchFilterConfig[]>> =
+    new BehaviorSubject<RemoteData<SearchFilterConfig[]>>(null);
 
   /**
    * Maintains the last search options, so it can be used in refresh
@@ -275,17 +259,22 @@ export class SearchComponent implements OnDestroy, OnInit {
   /**
    * The current search results
    */
-  resultsRD$: BehaviorSubject<RemoteData<PaginatedList<SearchResult<DSpaceObject>>>> = new BehaviorSubject(null);
+  resultsRD$: BehaviorSubject<
+    RemoteData<PaginatedList<SearchResult<DSpaceObject>>>
+  > = new BehaviorSubject(null);
 
   /**
    * The current paginated search options
    */
-  searchOptions$: BehaviorSubject<PaginatedSearchOptions> = new BehaviorSubject<PaginatedSearchOptions>(null);
+  searchOptions$: BehaviorSubject<PaginatedSearchOptions> =
+    new BehaviorSubject<PaginatedSearchOptions>(null);
 
   /**
    * The available sort options list
    */
-  sortOptionsList$: BehaviorSubject<SortOptions[]> = new BehaviorSubject<SortOptions[]>([]);
+  sortOptionsList$: BehaviorSubject<SortOptions[]> = new BehaviorSubject<
+    SortOptions[]
+  >([]);
 
   /**
    * TRUE if the search option are initialized
@@ -305,7 +294,9 @@ export class SearchComponent implements OnDestroy, OnInit {
   /**
    * Emits when the search filters values may be stale, and so they must be refreshed.
    */
-  refreshFilters: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  refreshFilters: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
+    false,
+  );
 
   /**
    * Link to the search page
@@ -315,14 +306,20 @@ export class SearchComponent implements OnDestroy, OnInit {
   /**
    * Regex to match UUIDs
    */
-  uuidRegex = /\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b/g;
+  uuidRegex =
+    /\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b/g;
 
   /**
    * List of paths that are considered to be the start of a route to an object page (excluding "/", e.g. "items")
    * These are expected to end on an object UUID
    * If they match the route we're navigating to, an object property will be added to the search event sent
    */
-  allowedObjectPaths: string[] = ['entities', ITEM_MODULE_PATH, COLLECTION_MODULE_PATH, COMMUNITY_MODULE_PATH];
+  allowedObjectPaths: string[] = [
+    'entities',
+    ITEM_MODULE_PATH,
+    COLLECTION_MODULE_PATH,
+    COMMUNITY_MODULE_PATH,
+  ];
 
   /**
    * Subscriptions to unsubscribe from
@@ -332,26 +329,31 @@ export class SearchComponent implements OnDestroy, OnInit {
   /**
    * Emits an event with the current search result entries
    */
-  @Output() resultFound: EventEmitter<SearchObjects<DSpaceObject>> = new EventEmitter<SearchObjects<DSpaceObject>>();
+  @Output() resultFound: EventEmitter<SearchObjects<DSpaceObject>> =
+    new EventEmitter<SearchObjects<DSpaceObject>>();
 
   /**
    * Emits event when the user deselect result entry
    */
-  @Output() deselectObject: EventEmitter<ListableObject> = new EventEmitter<ListableObject>();
+  @Output() deselectObject: EventEmitter<ListableObject> =
+    new EventEmitter<ListableObject>();
 
   /**
    * Emits event when the user select result entry
    */
-  @Output() selectObject: EventEmitter<ListableObject> = new EventEmitter<ListableObject>();
+  @Output() selectObject: EventEmitter<ListableObject> =
+    new EventEmitter<ListableObject>();
 
-  constructor(protected service: SearchService,
-              protected sidebarService: SidebarService,
-              protected windowService: HostWindowService,
-              @Inject(SEARCH_CONFIG_SERVICE) public searchConfigService: SearchConfigurationService,
-              protected routeService: RouteService,
-              protected router: Router,
-              @Inject(APP_CONFIG) protected appConfig: AppConfig,
-              @Inject(PLATFORM_ID) public platformId: any,
+  constructor(
+    protected service: SearchService,
+    protected sidebarService: SidebarService,
+    protected windowService: HostWindowService,
+    @Inject(SEARCH_CONFIG_SERVICE)
+    public searchConfigService: SearchConfigurationService,
+    protected routeService: RouteService,
+    protected router: Router,
+    @Inject(APP_CONFIG) protected appConfig: AppConfig,
+    @Inject(PLATFORM_ID) public platformId: any,
   ) {
     this.isXsOrSm$ = this.windowService.isXsOrSm();
   }
@@ -364,10 +366,19 @@ export class SearchComponent implements OnDestroy, OnInit {
    * If something changes, update the list of scopes for the dropdown
    */
   ngOnInit(): void {
-    if (!this.renderOnServerSide && !environment.ssr.enableSearchComponent && isPlatformServer(this.platformId)) {
-      this.subs.push(this.getSearchOptions().pipe(distinctUntilChanged()).subscribe((options) => {
-        this.searchOptions$.next(options);
-      }));
+    this.showSidebar = false;
+    if (
+      !this.renderOnServerSide &&
+      !environment.ssr.enableSearchComponent &&
+      isPlatformServer(this.platformId)
+    ) {
+      this.subs.push(
+        this.getSearchOptions()
+          .pipe(distinctUntilChanged())
+          .subscribe((options) => {
+            this.searchOptions$.next(options);
+          }),
+      );
       this.initialized$.next(true);
       return;
     }
@@ -386,9 +397,13 @@ export class SearchComponent implements OnDestroy, OnInit {
       this.routeService.setParameter('fixedFilterQuery', this.fixedFilterQuery);
     }
 
-    this.currentScope$ = this.routeService.getQueryParameterValue('scope').pipe(
-      map((routeValue: string) => hasValue(routeValue) ? routeValue : this.scope ?? ''),
-    );
+    this.currentScope$ = this.routeService
+      .getQueryParameterValue('scope')
+      .pipe(
+        map((routeValue: string) =>
+          hasValue(routeValue) ? routeValue : (this.scope ?? ''),
+        ),
+      );
 
     this.isSidebarCollapsed$ = this.isSidebarCollapsed();
     this.searchLink = this.getSearchLink();
@@ -396,55 +411,112 @@ export class SearchComponent implements OnDestroy, OnInit {
 
     // Determinate PaginatedSearchOptions and listen to any update on it
     const configuration$: Observable<string> = this.searchConfigService
-      .getCurrentConfiguration(this.configuration).pipe(distinctUntilChanged());
-    const searchSortOptions$: Observable<SortOptions[]> = combineLatest([configuration$, this.currentScope$]).pipe(
-      switchMap(([configuration, scope]: [string, string]) => this.searchConfigService.getConfigurationSearchConfig(configuration, scope)),
-      map((searchConfig: SearchConfig) => this.searchConfigService.getConfigurationSortOptions(searchConfig)),
+      .getCurrentConfiguration(this.configuration)
+      .pipe(distinctUntilChanged());
+    const searchSortOptions$: Observable<SortOptions[]> = combineLatest([
+      configuration$,
+      this.currentScope$,
+    ]).pipe(
+      switchMap(([configuration, scope]: [string, string]) =>
+        this.searchConfigService.getConfigurationSearchConfig(
+          configuration,
+          scope,
+        ),
+      ),
+      map((searchConfig: SearchConfig) =>
+        this.searchConfigService.getConfigurationSortOptions(searchConfig),
+      ),
       distinctUntilChanged(),
     );
     const sortOption$: Observable<SortOptions> = searchSortOptions$.pipe(
       switchMap((searchSortOptions: SortOptions[]) => {
         const defaultSort: SortOptions = searchSortOptions[0];
-        return this.searchConfigService.getCurrentSort(this.paginationId, defaultSort);
+        return this.searchConfigService.getCurrentSort(
+          this.paginationId,
+          defaultSort,
+        );
       }),
       distinctUntilChanged(),
     );
-    const searchOptions$: Observable<PaginatedSearchOptions> = this.getSearchOptions().pipe(distinctUntilChanged());
+    const searchOptions$: Observable<PaginatedSearchOptions> =
+      this.getSearchOptions().pipe(distinctUntilChanged());
 
-    this.subs.push(combineLatest([configuration$, searchSortOptions$, searchOptions$, sortOption$, this.currentScope$]).pipe(
-      filter(([configuration, searchSortOptions, searchOptions, sortOption, scope]: [string, SortOptions[], PaginatedSearchOptions, SortOptions, string]) => {
-        // filter for search options related to instanced paginated id
-        return searchOptions.pagination.id === this.paginationId;
-      }),
-      debounceTime(100),
-    ).subscribe(([configuration, searchSortOptions, searchOptions, sortOption, scope]: [string, SortOptions[], PaginatedSearchOptions, SortOptions, string]) => {
-      // Build the PaginatedSearchOptions object
-      const combinedOptions = Object.assign({}, searchOptions,
-        {
-          configuration: searchOptions.configuration || configuration,
-          sort: sortOption || searchOptions.sort,
-        });
-      if (combinedOptions.query === '') {
-        combinedOptions.query = this.query;
-      }
-      if (isEmpty(combinedOptions.scope)) {
-        combinedOptions.scope = scope;
-      }
-      const newSearchOptions = new PaginatedSearchOptions(combinedOptions);
-      // check if search options are changed
-      // if so retrieve new related results otherwise skip it
-      if (JSON.stringify(newSearchOptions) !== JSON.stringify(this.searchOptions$.value)) {
-        // Initialize variables
-        this.currentConfiguration$.next(configuration);
-        this.currentSortOptions$.next(newSearchOptions.sort);
-        this.sortOptionsList$.next(searchSortOptions);
-        this.searchOptions$.next(newSearchOptions);
-        this.initialized$.next(true);
-        // retrieve results
-        this.retrieveSearchResults(newSearchOptions);
-        this.retrieveFilters(newSearchOptions);
-      }
-    }));
+    this.subs.push(
+      combineLatest([
+        configuration$,
+        searchSortOptions$,
+        searchOptions$,
+        sortOption$,
+        this.currentScope$,
+      ])
+        .pipe(
+          filter(
+            ([
+              configuration,
+              searchSortOptions,
+              searchOptions,
+              sortOption,
+              scope,
+            ]: [
+              string,
+              SortOptions[],
+              PaginatedSearchOptions,
+              SortOptions,
+              string,
+            ]) => {
+              // filter for search options related to instanced paginated id
+              return searchOptions.pagination.id === this.paginationId;
+            },
+          ),
+          debounceTime(100),
+        )
+        .subscribe(
+          ([
+            configuration,
+            searchSortOptions,
+            searchOptions,
+            sortOption,
+            scope,
+          ]: [
+            string,
+            SortOptions[],
+            PaginatedSearchOptions,
+            SortOptions,
+            string,
+          ]) => {
+            // Build the PaginatedSearchOptions object
+            const combinedOptions = Object.assign({}, searchOptions, {
+              configuration: searchOptions.configuration || configuration,
+              sort: sortOption || searchOptions.sort,
+            });
+            if (combinedOptions.query === '') {
+              combinedOptions.query = this.query;
+            }
+            if (isEmpty(combinedOptions.scope)) {
+              combinedOptions.scope = scope;
+            }
+            const newSearchOptions = new PaginatedSearchOptions(
+              combinedOptions,
+            );
+            // check if search options are changed
+            // if so retrieve new related results otherwise skip it
+            if (
+              JSON.stringify(newSearchOptions) !==
+              JSON.stringify(this.searchOptions$.value)
+            ) {
+              // Initialize variables
+              this.currentConfiguration$.next(configuration);
+              this.currentSortOptions$.next(newSearchOptions.sort);
+              this.sortOptionsList$.next(searchSortOptions);
+              this.searchOptions$.next(newSearchOptions);
+              this.initialized$.next(true);
+              // retrieve results
+              this.retrieveSearchResults(newSearchOptions);
+              this.retrieveFilters(newSearchOptions);
+            }
+          },
+        ),
+    );
 
     this.subscribeToRoutingEvents();
   }
@@ -491,7 +563,9 @@ export class SearchComponent implements OnDestroy, OnInit {
    * Unsubscribe from the subscriptions
    */
   ngOnDestroy(): void {
-    this.subs.filter((sub) => hasValue(sub)).forEach((sub) => sub.unsubscribe());
+    this.subs
+      .filter((sub) => hasValue(sub))
+      .forEach((sub) => sub.unsubscribe());
   }
 
   /**
@@ -508,11 +582,12 @@ export class SearchComponent implements OnDestroy, OnInit {
    * @private
    */
   private retrieveFilters(searchOptions: PaginatedSearchOptions) {
-    this.searchConfigService.getConfig(searchOptions.scope, searchOptions.configuration).pipe(
-      getFirstCompletedRemoteData(),
-    ).subscribe((filtersRD: RemoteData<SearchFilterConfig[]>) => {
-      this.filtersRD$.next(filtersRD);
-    });
+    this.searchConfigService
+      .getConfig(searchOptions.scope, searchOptions.configuration)
+      .pipe(getFirstCompletedRemoteData())
+      .subscribe((filtersRD: RemoteData<SearchFilterConfig[]>) => {
+        this.filtersRD$.next(filtersRD);
+      });
   }
 
   /**
@@ -525,31 +600,45 @@ export class SearchComponent implements OnDestroy, OnInit {
     this.lastSearchOptions = searchOptions;
     const followLinks = [
       followLink<Item>('thumbnail', { isOptional: true }),
-      followLink<SubmissionObject>('item', { isOptional: true }, followLink<Item>('thumbnail', { isOptional: true })) as any,
+      followLink<SubmissionObject>(
+        'item',
+        { isOptional: true },
+        followLink<Item>('thumbnail', { isOptional: true }),
+      ) as any,
     ];
     if (this.appConfig.item.showAccessStatuses) {
       followLinks.push(followLink<Item>('accessStatus', { isOptional: true }));
     }
     if (this.configuration === 'supervision') {
-      followLinks.push(followLink<WorkspaceItem>('supervisionOrders', { isOptional: true }) as any);
+      followLinks.push(
+        followLink<WorkspaceItem>('supervisionOrders', {
+          isOptional: true,
+        }) as any,
+      );
     }
 
-    const searchOptionsWithHidden = Object.assign (new PaginatedSearchOptions({}), searchOptions);
+    const searchOptionsWithHidden = Object.assign(
+      new PaginatedSearchOptions({}),
+      searchOptions,
+    );
     if (isNotEmpty(this.hiddenQuery)) {
       if (isNotEmpty(searchOptionsWithHidden.query)) {
-        searchOptionsWithHidden.query = searchOptionsWithHidden.query + ' AND ' + this.hiddenQuery;
+        searchOptionsWithHidden.query =
+          searchOptionsWithHidden.query + ' AND ' + this.hiddenQuery;
       } else {
         searchOptionsWithHidden.query = this.hiddenQuery;
       }
     }
 
-    this.service.search(
-      searchOptionsWithHidden,
-      undefined,
-      this.useCachedVersionIfAvailable,
-      true,
-      ...followLinks,
-    ).pipe(getFirstCompletedRemoteData())
+    this.service
+      .search(
+        searchOptionsWithHidden,
+        undefined,
+        this.useCachedVersionIfAvailable,
+        true,
+        ...followLinks,
+      )
+      .pipe(getFirstCompletedRemoteData())
       .subscribe((results: RemoteData<SearchObjects<DSpaceObject>>) => {
         if (results.hasSucceeded) {
           if (this.trackStatistics) {
@@ -572,15 +661,21 @@ export class SearchComponent implements OnDestroy, OnInit {
   private subscribeToRoutingEvents(): void {
     if (this.trackStatistics) {
       this.subs.push(
-        this.router.events.pipe(
-          filter((event) => event instanceof NavigationStart),
-          map((event: NavigationStart) => this.getDsoUUIDFromUrl(event.url)),
-          hasValueOperator(),
-        ).subscribe((uuid) => {
-          if (this.resultsRD$.value.hasSucceeded) {
-            this.service.trackSearch(this.searchOptions$.value, this.resultsRD$.value.payload as SearchObjects<DSpaceObject>, uuid);
-          }
-        }),
+        this.router.events
+          .pipe(
+            filter((event) => event instanceof NavigationStart),
+            map((event: NavigationStart) => this.getDsoUUIDFromUrl(event.url)),
+            hasValueOperator(),
+          )
+          .subscribe((uuid) => {
+            if (this.resultsRD$.value.hasSucceeded) {
+              this.service.trackSearch(
+                this.searchOptions$.value,
+                this.resultsRD$.value.payload as SearchObjects<DSpaceObject>,
+                uuid,
+              );
+            }
+          }),
       );
     }
   }
@@ -619,5 +714,4 @@ export class SearchComponent implements OnDestroy, OnInit {
     }
     return this.service.getSearchLink();
   }
-
 }

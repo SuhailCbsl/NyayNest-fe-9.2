@@ -1,9 +1,11 @@
 // Add any global css for the theme here
 
 // imports the base global style
-@import '../../../styles/_global-styles.scss';
+@import "../../../styles/_global-styles.scss";
 
-.facet-filter, .setting-option, .advanced-search {
+.facet-filter,
+.setting-option,
+.advanced-search {
   background-color: var(--bs-light);
   border-radius: var(--bs-border-radius);
 
@@ -17,7 +19,13 @@
     background-color: var(--bs-primary);
   }
 
-  h4, .h4 {
-    font-size: 1.1rem
+  h4,
+  .h4 {
+    font-size: 1.1rem;
   }
+}
+// hiding statistics
+/* Hide Statistics menu item */
+a[href*="/statistics"] {
+  display: none !important;
 }

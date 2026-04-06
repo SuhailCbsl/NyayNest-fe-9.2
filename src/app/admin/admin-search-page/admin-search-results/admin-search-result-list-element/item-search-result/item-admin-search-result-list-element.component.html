@@ -1,6 +1,63 @@
-<ds-listable-object-component-loader [object]="object"
-                                     [viewMode]="viewModes.ListElement"
-                                     [index]="index"
-                                     [linkType]="linkType"
-                                     [listID]="listID"></ds-listable-object-component-loader>
-<ds-item-admin-search-result-actions-element [item]="dso" [small]="false"></ds-item-admin-search-result-actions-element>
+<div class="custom-admin-card d-flex">
+  <!-- Thumbnail -->
+  <div class="me-3 thumbnail-width-height" *ngIf="showThumbnails">
+    <ds-thumbnail [thumbnail]="dso?.thumbnail | async"></ds-thumbnail>
+  </div>
+
+  <!-- Metadata -->
+  <div class="flex-grow-1">
+    <!-- Case ID Badge -->
+    <div class="mb-2">
+      <span class="badge bg-warning text-dark">
+        {{ dso.firstMetadataValue("dc.CaseTypeName") }}/
+        {{ dso.firstMetadataValue("dc.title") }}/
+        {{ dso.firstMetadataValue("dc.CaseYear") }}
+      </span>
+    </div>
+
+    <!-- Your full metadata layout -->
+    <div class="case-metadata">
+      <div class="row-item">
+        <div class="label">Case Nature</div>
+        <div class="colon">:</div>
+        <div class="value">{{ dso.firstMetadataValue("dc.CaseNature") }}</div>
+      </div>
+
+      <div class="row-item">
+        <div class="label">Case Status</div>
+        <div class="colon">:</div>
+        <div class="value">{{ dso.firstMetadataValue("dc.CaseStatus") }}</div>
+      </div>
+
+      <div class="row-item">
+        <div class="label">Petitioner</div>
+        <div class="colon">:</div>
+        <div class="value">{{ dso.firstMetadataValue("dc.Petitioner") }}</div>
+      </div>
+
+      <div class="row-item">
+        <div class="label">Respondent</div>
+        <div class="colon">:</div>
+        <div class="value">{{ dso.firstMetadataValue("dc.Respondent") }}</div>
+      </div>
+
+      <div class="row-item">
+        <div class="label">Judge</div>
+        <div class="colon">:</div>
+        <div class="value">{{ dso.firstMetadataValue("dc.JudgeName") }}</div>
+      </div>
+
+      <div class="row-item">
+        <div class="label">Judgement</div>
+        <div class="colon">:</div>
+        <div class="value">{{ dso.firstMetadataValue("dc.Judgement") }}</div>
+      </div>
+    </div>
+
+    <!-- Admin Actions -->
+    <div class="mt-2">
+      <ds-item-admin-search-result-actions-element [item]="dso" [small]="false">
+      </ds-item-admin-search-result-actions-element>
+    </div>
+  </div>
+</div>

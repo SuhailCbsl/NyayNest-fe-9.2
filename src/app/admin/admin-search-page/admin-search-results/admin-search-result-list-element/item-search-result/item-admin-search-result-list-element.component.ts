@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 import { Context } from '../../../../../core/shared/context.model';
 import { Item } from '../../../../../core/shared/item.model';
@@ -8,20 +8,53 @@ import { listableObjectComponent } from '../../../../../shared/object-collection
 import { ListableObjectComponentLoaderComponent } from '../../../../../shared/object-collection/shared/listable-object/listable-object-component-loader.component';
 import { SearchResultListElementComponent } from '../../../../../shared/object-list/search-result-list-element/search-result-list-element.component';
 import { ItemAdminSearchResultActionsComponent } from '../../item-admin-search-result-actions.component';
+import { ThemedThumbnailComponent } from 'src/app/thumbnail/themed-thumbnail.component';
+import { CommonModule } from '@angular/common';
+import { getItemPageRoute } from 'src/app/item-page/item-page-routing-paths';
 
-@listableObjectComponent(ItemSearchResult, ViewMode.ListElement, Context.AdminSearch)
+@listableObjectComponent(
+  ItemSearchResult,
+  ViewMode.ListElement,
+  Context.AdminSearch,
+)
 @Component({
   selector: 'ds-item-admin-search-result-list-element',
   styleUrls: ['./item-admin-search-result-list-element.component.scss'],
   templateUrl: './item-admin-search-result-list-element.component.html',
   imports: [
+    CommonModule,
     ItemAdminSearchResultActionsComponent,
     ListableObjectComponentLoaderComponent,
+    ThemedThumbnailComponent,
   ],
 })
 /**
  * The component for displaying a list element for an item search result on the admin search page
  */
-export class ItemAdminSearchResultListElementComponent extends SearchResultListElementComponent<ItemSearchResult, Item> {
+export class ItemAdminSearchResultListElementComponent
+  extends SearchResultListElementComponent<ItemSearchResult, Item>
+  implements OnInit
+{
+  itemPageRoute: string;
 
+  ngOnInit(): void {
+    super.ngOnInit();
+
+    // thumbnail setting (same as public)
+    this.showThumbnails =
+      this.showThumbnails ?? this.appConfig.browseBy.showThumbnails;
+
+    // route for item click
+    this.itemPageRoute = getItemPageRoute(this.dso);
+  }
+
+  highlight(field: string): string {
+    const highlight = (this.object?.indexableObject as any)?.highlight;
+
+    if (highlight && highlight[field] && highlight[field].length > 0) {
+      return highlight[field][0]; // already contains <em>
+    }
+
+    return this.dso.firstMetadataValue(field);
+  }
 }

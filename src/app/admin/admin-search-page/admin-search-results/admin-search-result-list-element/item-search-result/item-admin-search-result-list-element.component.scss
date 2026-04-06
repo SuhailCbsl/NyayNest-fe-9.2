@@ -1,0 +1,25 @@
+.case-metadata {
+  margin-top: 8px;
+}
+
+.row-item {
+  display: grid;
+  grid-template-columns: 180px 20px 1fr; // controls alignment
+  margin-bottom: 4px;
+}
+
+.label {
+  font-weight: 600;
+}
+
+.colon {
+  text-align: center;
+}
+
+.value {
+  color: #444;
+}
+
+.thumbnail-width-height {
+  margin: auto;
+}

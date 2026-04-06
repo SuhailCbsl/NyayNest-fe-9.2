@@ -1,19 +1,9 @@
 import { HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import {
-  createSelector,
-  MemoizedSelector,
-  select,
-  Store,
-} from '@ngrx/store';
+import { createSelector, MemoizedSelector, select, Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import {
-  Observable,
-  of,
-  Subscription,
-  timer as observableTimer,
-} from 'rxjs';
+import { Observable, of, Subscription, timer as observableTimer } from 'rxjs';
 import {
   catchError,
   concatMap,
@@ -40,11 +30,7 @@ import { WorkspaceitemSectionsObject } from '../core/submission/models/workspace
 import { SubmissionJsonPatchOperationsService } from '../core/submission/submission-json-patch-operations.service';
 import { SubmissionRestService } from '../core/submission/submission-rest.service';
 import { SubmissionScopeType } from '../core/submission/submission-scope-type';
-import {
-  hasValue,
-  isEmpty,
-  isNotUndefined,
-} from '../shared/empty.util';
+import { hasValue, isEmpty, isNotUndefined } from '../shared/empty.util';
 import { NotificationsService } from '../shared/notifications/notifications.service';
 import {
   createFailedRemoteDataObject$,
@@ -72,19 +58,20 @@ import { SubmissionSectionObject } from './objects/submission-section-object.mod
 import { SectionDataObject } from './sections/models/section-data.model';
 import { SectionsType } from './sections/sections-type';
 import { submissionObjectFromIdSelector } from './selectors';
-import {
-  submissionSelector,
-  SubmissionState,
-} from './submission.reducers';
+import { submissionSelector, SubmissionState } from './submission.reducers';
 
-function getSubmissionSelector(submissionId: string):  MemoizedSelector<SubmissionState, SubmissionObjectEntry> {
+function getSubmissionSelector(
+  submissionId: string,
+): MemoizedSelector<SubmissionState, SubmissionObjectEntry> {
   return createSelector(
     submissionSelector,
     (state: SubmissionState) => state.objects[submissionId],
   );
 }
 
-function getSubmissionCollectionIdSelector(submissionId: string): MemoizedSelector<SubmissionState, string> {
+function getSubmissionCollectionIdSelector(
+  submissionId: string,
+): MemoizedSelector<SubmissionState, string> {
   return createSelector(
     getSubmissionSelector(submissionId),
     (submission: SubmissionObjectEntry) => submission?.collection,
@@ -96,7 +83,6 @@ function getSubmissionCollectionIdSelector(submissionId: string): MemoizedSelect
  */
 @Injectable()
 export class SubmissionService {
-
   /**
    * Subscription
    */
@@ -121,16 +107,17 @@ export class SubmissionService {
    * @param {RequestService} requestService
    * @param {SubmissionJsonPatchOperationsService} jsonPatchOperationService
    */
-  constructor(protected notificationsService: NotificationsService,
-              protected restService: SubmissionRestService,
-              protected router: Router,
-              protected routeService: RouteService,
-              protected store: Store<SubmissionState>,
-              protected translate: TranslateService,
-              protected searchService: SearchService,
-              protected requestService: RequestService,
-              protected jsonPatchOperationService: SubmissionJsonPatchOperationsService) {
-  }
+  constructor(
+    protected notificationsService: NotificationsService,
+    protected restService: SubmissionRestService,
+    protected router: Router,
+    protected routeService: RouteService,
+    protected store: Store<SubmissionState>,
+    protected translate: TranslateService,
+    protected searchService: SearchService,
+    protected requestService: RequestService,
+    protected jsonPatchOperationService: SubmissionJsonPatchOperationsService,
+  ) {}
 
   /**
    * Dispatch a new [ChangeSubmissionCollectionAction]
@@ -141,7 +128,9 @@ export class SubmissionService {
    *    The collection id
    */
   changeSubmissionCollection(submissionId: string, collectionId: string): void {
-    this.store.dispatch(new ChangeSubmissionCollectionAction(submissionId, collectionId));
+    this.store.dispatch(
+      new ChangeSubmissionCollectionAction(submissionId, collectionId),
+    );
   }
 
   /**
@@ -150,7 +139,9 @@ export class SubmissionService {
    * @param submissionId The submission id
    */
   getSubmissionCollectionId(submissionId: string): Observable<string> {
-    return this.store.pipe(select(getSubmissionCollectionIdSelector(submissionId)));
+    return this.store.pipe(
+      select(getSubmissionCollectionIdSelector(submissionId)),
+    );
   }
 
   /**
@@ -162,9 +153,15 @@ export class SubmissionService {
    *    observable of SubmissionObject
    */
   createSubmission(collectionId?: string): Observable<SubmissionObject> {
-    return this.restService.postToEndpoint(this.workspaceLinkPath, {}, null, null, collectionId).pipe(
-      map((workspaceitem: SubmissionObject[]) => workspaceitem[0] as SubmissionObject),
-      catchError(() => of({} as SubmissionObject)));
+    return this.restService
+      .postToEndpoint(this.workspaceLinkPath, {}, null, null, collectionId)
+      .pipe(
+        map(
+          (workspaceitem: SubmissionObject[]) =>
+            workspaceitem[0] as SubmissionObject,
+        ),
+        catchError(() => of({} as SubmissionObject)),
+      );
   }
 
   /**
@@ -177,12 +174,21 @@ export class SubmissionService {
    * @return Observable<SubmissionObject>
    *    observable of SubmissionObject
    */
-  createSubmissionFromExternalSource(selfUrl: string, collectionId?: string): Observable<SubmissionObject[]> {
+  createSubmissionFromExternalSource(
+    selfUrl: string,
+    collectionId?: string,
+  ): Observable<SubmissionObject[]> {
     const options: HttpOptions = Object.create({});
     let headers = new HttpHeaders();
     headers = headers.append('Content-Type', 'text/uri-list');
     options.headers = headers;
-    return this.restService.postToEndpoint(this.workspaceLinkPath, selfUrl, null, options, collectionId) as Observable<SubmissionObject[]>;
+    return this.restService.postToEndpoint(
+      this.workspaceLinkPath,
+      selfUrl,
+      null,
+      options,
+      collectionId,
+    ) as Observable<SubmissionObject[]>;
   }
 
   /**
@@ -198,7 +204,12 @@ export class SubmissionService {
     let headers = new HttpHeaders();
     headers = headers.append('Content-Type', 'text/uri-list');
     options.headers = headers;
-    return this.restService.postToEndpoint(this.workflowLinkPath, selfUrl, null, options) as Observable<SubmissionObject[]>;
+    return this.restService.postToEndpoint(
+      this.workflowLinkPath,
+      selfUrl,
+      null,
+      options,
+    ) as Observable<SubmissionObject[]>;
   }
 
   /**
@@ -210,7 +221,9 @@ export class SubmissionService {
    *    observable of SubmissionObject
    */
   discardSubmission(submissionId: string): Observable<SubmissionObject[]> {
-    return this.restService.deleteById(submissionId) as Observable<SubmissionObject[]>;
+    return this.restService.deleteById(submissionId) as Observable<
+      SubmissionObject[]
+    >;
   }
 
   /**
@@ -236,8 +249,19 @@ export class SubmissionService {
     submissionDefinition: SubmissionDefinitionsModel,
     sections: WorkspaceitemSectionsObject,
     item: Item,
-    errors: SubmissionError) {
-    this.store.dispatch(new InitSubmissionFormAction(collectionId, submissionId, selfUrl, submissionDefinition, sections, item, errors));
+    errors: SubmissionError,
+  ) {
+    this.store.dispatch(
+      new InitSubmissionFormAction(
+        collectionId,
+        submissionId,
+        selfUrl,
+        submissionDefinition,
+        sections,
+        item,
+        errors,
+      ),
+    );
   }
 
   /**
@@ -269,11 +293,11 @@ export class SubmissionService {
    *    whether is a manual save, default false
    */
   dispatchSave(submissionId, manual?: boolean) {
-    this.getSubmissionSaveProcessingStatus(submissionId).pipe(
-      find((isPending: boolean) => !isPending),
-    ).subscribe(() => {
-      this.store.dispatch(new SaveSubmissionFormAction(submissionId, manual));
-    });
+    this.getSubmissionSaveProcessingStatus(submissionId)
+      .pipe(find((isPending: boolean) => !isPending))
+      .subscribe(() => {
+        this.store.dispatch(new SaveSubmissionFormAction(submissionId, manual));
+      });
   }
 
   /**
@@ -295,7 +319,9 @@ export class SubmissionService {
    *    The section id
    */
   dispatchSaveSection(submissionId, sectionId) {
-    this.store.dispatch(new SaveSubmissionSectionFormAction(submissionId, sectionId));
+    this.store.dispatch(
+      new SaveSubmissionSectionFormAction(submissionId, sectionId),
+    );
   }
 
   /**
@@ -308,7 +334,8 @@ export class SubmissionService {
    */
   getActiveSectionId(submissionId: string): Observable<string> {
     return this.getSubmissionObject(submissionId).pipe(
-      map((submission: SubmissionObjectEntry) => submission.activeSection));
+      map((submission: SubmissionObjectEntry) => submission.activeSection),
+    );
   }
 
   /**
@@ -320,8 +347,13 @@ export class SubmissionService {
    *    observable of SubmissionObjectEntry
    */
   getSubmissionObject(submissionId: string): Observable<SubmissionObjectEntry> {
-    return this.store.select(submissionObjectFromIdSelector(submissionId)).pipe(
-      filter((submission: SubmissionObjectEntry) => isNotUndefined(submission)));
+    return this.store
+      .select(submissionObjectFromIdSelector(submissionId))
+      .pipe(
+        filter((submission: SubmissionObjectEntry) =>
+          isNotUndefined(submission),
+        ),
+      );
   }
 
   /**
@@ -334,19 +366,28 @@ export class SubmissionService {
    */
   getSubmissionSections(submissionId: string): Observable<SectionDataObject[]> {
     return this.getSubmissionObject(submissionId).pipe(
-      find((submission: SubmissionObjectEntry) => isNotUndefined(submission.sections) && !submission.isLoading),
+      find(
+        (submission: SubmissionObjectEntry) =>
+          isNotUndefined(submission.sections) && !submission.isLoading,
+      ),
       map((submission: SubmissionObjectEntry) => submission.sections),
       map((sections: SubmissionSectionEntry) => {
         const availableSections: SectionDataObject[] = [];
         Object.keys(sections)
-          .filter((sectionId) => !this.isSectionHidden(sections[sectionId] as SubmissionSectionObject))
+          .filter(
+            (sectionId) =>
+              !this.isSectionHidden(
+                sections[sectionId] as SubmissionSectionObject,
+              ),
+          )
           .forEach((sectionId) => {
             const sectionObject: SectionDataObject = Object.create({});
             sectionObject.config = sections[sectionId].config;
             sectionObject.mandatory = sections[sectionId].mandatory;
             sectionObject.data = sections[sectionId].data;
             sectionObject.errorsToShow = sections[sectionId].errorsToShow;
-            sectionObject.serverValidationErrors = sections[sectionId].serverValidationErrors;
+            sectionObject.serverValidationErrors =
+              sections[sectionId].serverValidationErrors;
             sectionObject.header = sections[sectionId].header;
             sectionObject.id = sectionId;
             sectionObject.sectionType = sections[sectionId].sectionType;
@@ -355,7 +396,8 @@ export class SubmissionService {
         return availableSections;
       }),
       startWith([]),
-      distinctUntilChanged());
+      distinctUntilChanged(),
+    );
   }
 
   /**
@@ -366,14 +408,24 @@ export class SubmissionService {
    * @return Observable<SubmissionObjectEntry>
    *    observable with the list of disabled submission's sections
    */
-  getDisabledSectionsList(submissionId: string): Observable<SectionDataObject[]> {
+  getDisabledSectionsList(
+    submissionId: string,
+  ): Observable<SectionDataObject[]> {
     return this.getSubmissionObject(submissionId).pipe(
-      filter((submission: SubmissionObjectEntry) => isNotUndefined(submission.sections) && !submission.isLoading),
+      filter(
+        (submission: SubmissionObjectEntry) =>
+          isNotUndefined(submission.sections) && !submission.isLoading,
+      ),
       map((submission: SubmissionObjectEntry) => submission.sections),
       map((sections: SubmissionSectionEntry) => {
         const disabledSections: SectionDataObject[] = [];
         Object.keys(sections)
-          .filter((sectionId) => !this.isSectionHidden(sections[sectionId] as SubmissionSectionObject))
+          .filter(
+            (sectionId) =>
+              !this.isSectionHidden(
+                sections[sectionId] as SubmissionSectionObject,
+              ),
+          )
           .filter((sectionId) => !sections[sectionId].enabled)
           .forEach((sectionId) => {
             const sectionObject: SectionDataObject = Object.create({});
@@ -384,7 +436,8 @@ export class SubmissionService {
         return disabledSections;
       }),
       startWith([]),
-      distinctUntilChanged());
+      distinctUntilChanged(),
+    );
   }
 
   /**
@@ -442,7 +495,12 @@ export class SubmissionService {
         if (isNotUndefined(sections)) {
           Object.keys(sections)
             .filter((sectionId) => sections.hasOwnProperty(sectionId))
-            .filter((sectionId) => !this.isSectionHidden(sections[sectionId] as SubmissionSectionObject))
+            .filter(
+              (sectionId) =>
+                !this.isSectionHidden(
+                  sections[sectionId] as SubmissionSectionObject,
+                ),
+            )
             .filter((sectionId) => sections[sectionId].enabled)
             .filter((sectionId) => sections[sectionId].isValid === false)
             .forEach((sectionId) => {
@@ -453,7 +511,8 @@ export class SubmissionService {
         return !isEmpty(sections) && isEmpty(states);
       }),
       distinctUntilChanged(),
-      startWith(false));
+      startWith(false),
+    );
   }
 
   /**
@@ -468,7 +527,8 @@ export class SubmissionService {
     return this.getSubmissionObject(submissionId).pipe(
       map((state: SubmissionObjectEntry) => state.savePending),
       distinctUntilChanged(),
-      startWith(false));
+      startWith(false),
+    );
   }
 
   /**
@@ -479,11 +539,14 @@ export class SubmissionService {
    * @return Observable<boolean>
    *    observable with submission deposit processing status
    */
-  getSubmissionDepositProcessingStatus(submissionId: string): Observable<boolean> {
+  getSubmissionDepositProcessingStatus(
+    submissionId: string,
+  ): Observable<boolean> {
     return this.getSubmissionObject(submissionId).pipe(
       map((state: SubmissionObjectEntry) => state.depositPending),
       distinctUntilChanged(),
-      startWith(false));
+      startWith(false),
+    );
   }
 
   /**
@@ -506,14 +569,22 @@ export class SubmissionService {
    */
   isSectionHidden(sectionData: SubmissionSectionObject): boolean {
     const submissionScope: SubmissionScopeType = this.getSubmissionScope();
-    if (isEmpty(submissionScope) || isEmpty(sectionData.visibility) || isEmpty(sectionData.scope)) {
+    if (
+      isEmpty(submissionScope) ||
+      isEmpty(sectionData.visibility) ||
+      isEmpty(sectionData.scope)
+    ) {
       return false;
     }
-    const convertedSubmissionScope: SectionScope = submissionScope.valueOf() === SubmissionScopeType.WorkspaceItem.valueOf() ?
-      SectionScope.Submission : SectionScope.Workflow;
-    const visibility = convertedSubmissionScope.valueOf() === sectionData.scope.valueOf() ?
-      sectionData.visibility.main : sectionData.visibility.other;
-    return visibility ===  'HIDDEN';
+    const convertedSubmissionScope: SectionScope =
+      submissionScope.valueOf() === SubmissionScopeType.WorkspaceItem.valueOf()
+        ? SectionScope.Submission
+        : SectionScope.Workflow;
+    const visibility =
+      convertedSubmissionScope.valueOf() === sectionData.scope.valueOf()
+        ? sectionData.visibility.main
+        : sectionData.visibility.other;
+    return visibility === 'HIDDEN';
   }
 
   /**
@@ -527,7 +598,8 @@ export class SubmissionService {
   isSubmissionLoading(submissionId: string): Observable<boolean> {
     return this.getSubmissionObject(submissionId).pipe(
       map((submission: SubmissionObjectEntry) => submission.isLoading),
-      distinctUntilChanged());
+      distinctUntilChanged(),
+    );
   }
 
   /**
@@ -540,8 +612,15 @@ export class SubmissionService {
    * @param sectionType
    *    The section type
    */
-  notifyNewSection(submissionId: string, sectionId: string, sectionType?: SectionsType) {
-    const m = this.translate.instant('submission.sections.general.metadata-extracted-new-section', { sectionId });
+  notifyNewSection(
+    submissionId: string,
+    sectionId: string,
+    sectionType?: SectionsType,
+  ) {
+    const m = this.translate.instant(
+      'submission.sections.general.metadata-extracted-new-section',
+      { sectionId },
+    );
     this.notificationsService.info(null, m, null, true);
   }
 
@@ -551,21 +630,27 @@ export class SubmissionService {
   redirectToMyDSpace() {
     // This assures that the cache is empty before redirecting to mydspace.
     // See https://github.com/DSpace/dspace-angular/pull/468
-    this.searchService.getEndpoint().pipe(
-      take(1),
-      tap((url) => this.requestService.removeByHrefSubstring(url)),
-      // Now, do redirect.
-      concatMap(
-        () => this.routeService.getPreviousUrl().pipe(
-          take(1),
-          tap((previousUrl) => {
-            if (isEmpty(previousUrl) || !previousUrl.startsWith('/mydspace')) {
-              this.router.navigate(['/mydspace']);
-            } else {
-              this.router.navigateByUrl(previousUrl);
-            }
-          }))),
-    ).subscribe();
+    this.searchService
+      .getEndpoint()
+      .pipe(
+        take(1),
+        tap((url) => this.requestService.removeByHrefSubstring(url)),
+        // Now, do redirect.
+        concatMap(() =>
+          this.routeService.getPreviousUrl().pipe(
+            take(1),
+            tap((previousUrl) => {
+              this.router.navigate(['/admin/search'], { replaceUrl: true });
+              // if (isEmpty(previousUrl) || !previousUrl.startsWith('/mydspace')) {
+              //   this.router.navigate(['/mydspace']);
+              // } else {
+              //   this.router.navigateByUrl(previousUrl);
+              // }
+            }),
+          ),
+        ),
+      )
+      .subscribe();
   }
 
   /**
@@ -597,7 +682,16 @@ export class SubmissionService {
     sections: WorkspaceitemSectionsObject,
     item: Item,
   ) {
-    this.store.dispatch(new ResetSubmissionFormAction(collectionId, submissionId, selfUrl, sections, submissionDefinition, item));
+    this.store.dispatch(
+      new ResetSubmissionFormAction(
+        collectionId,
+        submissionId,
+        selfUrl,
+        sections,
+        submissionDefinition,
+        item,
+      ),
+    );
   }
 
   /**
@@ -607,16 +701,24 @@ export class SubmissionService {
    *    observable of RemoteData<SubmissionObject>
    */
   retrieveSubmission(submissionId): Observable<RemoteData<SubmissionObject>> {
-    return this.restService.getDataById(this.getSubmissionObjectLinkName(), submissionId).pipe(
-      find((submissionObjects: SubmissionObject[]) => isNotUndefined(submissionObjects)),
-      map((submissionObjects: SubmissionObject[]) => createSuccessfulRemoteDataObject(
-        submissionObjects[0])),
-      catchError((errorResponse: unknown) => {
-        if (errorResponse instanceof ErrorResponse) {
-          return createFailedRemoteDataObject$<SubmissionObject>(errorResponse.errorMessage, errorResponse.statusCode);
-        }
-      }),
-    );
+    return this.restService
+      .getDataById(this.getSubmissionObjectLinkName(), submissionId)
+      .pipe(
+        find((submissionObjects: SubmissionObject[]) =>
+          isNotUndefined(submissionObjects),
+        ),
+        map((submissionObjects: SubmissionObject[]) =>
+          createSuccessfulRemoteDataObject(submissionObjects[0]),
+        ),
+        catchError((errorResponse: unknown) => {
+          if (errorResponse instanceof ErrorResponse) {
+            return createFailedRemoteDataObject$<SubmissionObject>(
+              errorResponse.errorMessage,
+              errorResponse.statusCode,
+            );
+          }
+        }),
+      );
   }
 
   /**
@@ -647,8 +749,9 @@ export class SubmissionService {
     const duration = environment.submission.autosave.timer;
     // Dispatch save action after given duration
     this.timer$ = observableTimer(duration, duration);
-    this.autoSaveSub = this.timer$
-      .subscribe(() => this.store.dispatch(new SaveSubmissionFormAction(submissionId)));
+    this.autoSaveSub = this.timer$.subscribe(() =>
+      this.store.dispatch(new SaveSubmissionFormAction(submissionId)),
+    );
   }
 
   /**

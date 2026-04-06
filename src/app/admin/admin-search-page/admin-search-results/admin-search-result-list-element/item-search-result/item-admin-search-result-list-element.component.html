@@ -1,7 +1,13 @@
-<div class="custom-admin-card d-flex">
+<div class="custom-admin-card d-flex align-items-center">
   <!-- Thumbnail -->
-  <div class="me-3 thumbnail-width-height" *ngIf="showThumbnails">
-    <ds-thumbnail [thumbnail]="dso?.thumbnail | async"></ds-thumbnail>
+  <div class="thumbnail-wrapper" *ngIf="showThumbnails">
+    <ng-container *ngIf="dso?.thumbnail | async as thumb; else noThumb">
+      <ds-thumbnail [thumbnail]="thumb"></ds-thumbnail>
+    </ng-container>
+
+    <ng-template #noThumb>
+      <div class="thumbnail-placeholder"></div>
+    </ng-template>
   </div>
 
   <!-- Metadata -->
@@ -36,13 +42,29 @@
       </div>
 
       <div class="row-item">
+        <div class="label">Petitioner's Advocate</div>
+        <div class="colon">:</div>
+        <div class="value">
+          {{ dso.firstMetadataValue("dc.AdvocateNameofPetitioner") }}
+        </div>
+      </div>
+
+      <div class="row-item">
         <div class="label">Respondent</div>
         <div class="colon">:</div>
         <div class="value">{{ dso.firstMetadataValue("dc.Respondent") }}</div>
       </div>
 
       <div class="row-item">
-        <div class="label">Judge</div>
+        <div class="label">Respondent's Advocate</div>
+        <div class="colon">:</div>
+        <div class="value">
+          {{ dso.firstMetadataValue("dc.AdvocateNameofRespondent") }}
+        </div>
+      </div>
+
+      <div class="row-item">
+        <div class="label">Honourable Judge</div>
         <div class="colon">:</div>
         <div class="value">{{ dso.firstMetadataValue("dc.JudgeName") }}</div>
       </div>

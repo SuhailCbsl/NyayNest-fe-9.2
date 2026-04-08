@@ -1,17 +1,226 @@
-<form #form="ngForm" (ngSubmit)="onSubmit(form.value)" action="/search">
-  <div>
-    <div class="mb-3 input-group">
-      @if (showScopeSelector) {
-        <button class="scope-button btn btn-outline-secondary text-truncate"
-          [ngbTooltip]="dsoNameService.getName(selectedScope | async)" type="button"
-          (click)="openScopeModal()" role="button" tabindex="0">
-          {{dsoNameService.getName(selectedScope | async) || ('search.form.scope.all' | translate)}}
+<form #form="ngForm" (ngSubmit)="onSubmit(form.value)">
+  <div class="search-controls d-flex flex-column gap-2">
+    <!-- ROW 1: Search -->
+    <div class="row1 d-flex align-items-center gap-2 flex-wrap">
+      <!-- Scope -->
+      <button
+        class="browse-filter"
+        [ngbTooltip]="
+          isReset
+            ? 'Filter NyayNest'
+            : dsoNameService.getName(selectedScope | async)
+        "
+        type="button"
+        (click)="openScopeModal()"
+      >
+        {{
+          isReset
+            ? ("search.form.scope.all" | translate)
+            : dsoNameService.getName(selectedScope | async) ||
+              ("search.form.scope.all" | translate)
+        }}
+      </button>
+
+      <!-- Search Input (FIXED) -->
+      <div class="search-container flex-grow-1">
+        <input
+          type="text"
+          class="search-input form-control"
+          [(ngModel)]="query"
+          placeholder="Search Items"
+          (keyup.enter)="onSubmit(form.value)"
+        />
+        <i class="search-icon fas fa-search"></i>
+      </div>
+
+      <!-- Search Type -->
+      <div class="search-type-wrapper">
+        <button
+          type="button"
+          class="white-search-btn search-type-btn"
+          (click)="op.toggle($event)"
+        >
+          <i class="pi pi-filter"></i>
+          <span>Search Type</span>
         </button>
-      }
-      <input type="text" [(ngModel)]="query" name="query" class="form-control"
-        [attr.aria-label]="searchPlaceholder" [attr.data-test]="'search-box' | dsBrowserOnly"
-        [placeholder]="searchPlaceholder" tabindex="0">
-      <button type="submit" class="search-button btn btn-{{brandColor}}" [attr.data-test]="'search-button' | dsBrowserOnly" role="button" tabindex="0"><i class="fas fa-search"></i> {{ ('search.form.search' | translate) }}</button>
+
+        <p-popover #op [dismissable]="true" [appendTo]="'body'">
+          <ng-template pTemplate="content">
+            <div class="d-flex flex-column">
+              <div
+                class="search-option"
+                [class.active]="searchType === 'normal'"
+                (click)="selectSearchType('normal'); op.hide()"
+              >
+                Normal
+              </div>
+
+              <div
+                class="search-option"
+                [class.active]="searchType === 'fuzzy'"
+                (click)="selectSearchType('fuzzy'); op.hide()"
+              >
+                Fuzzy Search
+              </div>
+
+              <div
+                class="search-option"
+                [class.active]="searchType === 'phonetic'"
+                (click)="selectSearchType('phonetic'); op.hide()"
+              >
+                Phonetic Search
+              </div>
+            </div>
+          </ng-template>
+        </p-popover>
+      </div>
+
+      <!-- Date Range -->
+      <div
+        class="date-display-wrapper d-flex align-items-center gap-2 flex-wrap"
+      >
+        <!-- From -->
+        <div class="date-wrap">
+          <input
+            id="fromDate"
+            #fromNativeInput
+            type="text"
+            placeholder="From Date"
+            ngbDatepicker
+            #dFrom="ngbDatepicker"
+            [(ngModel)]="fromDateModel"
+            (ngModelChange)="onFromDateModelChange($event, 'from')"
+            (dateSelect)="onFromDateSelect($event)"
+            (click)="dFrom.toggle()"
+            class="form-control date-input-ngb"
+            readonly
+          />
+          <button
+            type="button"
+            class="calendar-icon"
+            (click)="dFrom.toggle()"
+            aria-label="Open from calendar"
+          >
+            <i class="pi pi-calendar"></i>
+          </button>
+        </div>
+
+        <!-- To -->
+        <div class="date-wrap">
+          <input
+            #toNativeInput
+            id="toDate"
+            type="text"
+            placeholder="To Date"
+            ngbDatepicker
+            #dTo="ngbDatepicker"
+            [(ngModel)]="toDateModel"
+            (ngModelChange)="onFromDateModelChange($event, 'to')"
+            (dateSelect)="onToDateSelect($event)"
+            (click)="dTo.toggle()"
+            class="form-control date-input-ngb"
+            readonly
+          />
+          <button
+            type="button"
+            class="calendar-icon"
+            (click)="dTo.toggle()"
+            aria-label="Open to calendar"
+          >
+            <i class="pi pi-calendar"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Reset -->
+      <button
+        class="icon-btn"
+        type="button"
+        (click)="resetAllFilters()"
+        title="Reset All Filters"
+      >
+        <i class="fas fa-sync-alt"></i>
+      </button>
+    </div>
+
+    <!-- ROW 2: Filters + Settings -->
+    <div
+      class="filters-row d-flex flex-wrap align-items-center gap-2 justify-content-between"
+    >
+      <div class="metadata-field-wrapper d-flex align-items-center">
+        <select
+          class="filter-dropdown filter-select"
+          [(ngModel)]="searchCaseBy"
+          name="searchCaseBy"
+          (change)="onSearchCaseByChange($event)"
+        >
+          <option value="">Search Case By</option>
+          <option *ngFor="let filter of availableFilters" [value]="filter.name">
+            {{ "search.filters.filter." + filter.name + ".head" | translate }}
+          </option>
+        </select>
+
+        <input
+          type="text"
+          class="filter-dropdown filter-input"
+          [(ngModel)]="searchMetadata"
+          name="searchMetadata"
+          placeholder="Search Metadata"
+          (keyup.enter)="addMetadataFilter()"
+        />
+
+        <button
+          type="button"
+          class="add-btn metadata-add-btn"
+          (click)="addMetadataFilter()"
+        >
+          <i class="fas fa-plus"></i>
+        </button>
+      </div>
+
+      <div class="row2-controls d-flex align-items-center gap-2 flex-wrap">
+        <button
+          class="icon-btn"
+          type="button"
+          (click)="resetAllFilters()"
+          title="Reset All Filters"
+        >
+          <i class="fas fa-sync-alt"></i>
+        </button>
+
+        <select
+          class="filter-dropdown"
+          [(ngModel)]="sortBy"
+          name="sortBy"
+          (change)="onSortChange()"
+        >
+          <option value="dc.identifier">Sort By</option>
+          <option value="dc.identifier">Case Number</option>
+          <option value="CaseYear">Case Year</option>
+          <option value="dc.status">Case Status</option>
+        </select>
+
+        <select
+          class="filter-dropdown"
+          [(ngModel)]="sortOrder"
+          name="sortOrder"
+          (change)="onSortOrderChange()"
+        >
+          <option value="asc">Ascending</option>
+          <option value="desc">Descending</option>
+        </select>
+
+        <select
+          class="filter-dropdown"
+          [(ngModel)]="resultPerPage"
+          name="resultPerPage"
+          (change)="onResultPerPageChange()"
+        >
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+        </select>
+      </div>
     </div>
   </div>
 </form>

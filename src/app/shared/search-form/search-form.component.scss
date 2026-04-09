@@ -125,6 +125,7 @@
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+  width: 100%;
 }
 
 /* 🔹 Inputs + dropdowns */
@@ -185,6 +186,10 @@
   min-width: 170px;
 }
 
+.ml-10 {
+  margin-left: 10px;
+}
+
 /* 🔹 Add button */
 .add-btn {
   height: 38px;
@@ -223,6 +228,11 @@
 
 :host ::ng-deep .p-popover-content {
   padding: 0 !important;
+}
+
+.metadata-field-wrapper {
+  flex: 1;
+  min-width: 250px;
 }
 
 /* 🔹 Popover content */

@@ -1,4 +1,4 @@
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
@@ -7,6 +7,7 @@ import {
   Inject,
   Input,
   OnChanges,
+  OnInit,
   Output,
   PLATFORM_ID,
   ViewChild,
@@ -23,7 +24,7 @@ import {
   NgbTooltipModule,
 } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import { DSONameService } from '../../core/breadcrumbs/dso-name.service';
@@ -63,6 +64,7 @@ interface FilterTag {
   styleUrls: ['./search-form.component.scss'],
   templateUrl: './search-form.component.html',
   imports: [
+    CommonModule,
     AsyncPipe,
     FormsModule,
     NgbTooltipModule,
@@ -81,7 +83,7 @@ interface FilterTag {
 /**
  * Component that represents the search form
  */
-export class SearchFormComponent implements OnChanges {
+export class SearchFormComponent implements OnChanges, OnInit {
   /**
    * The search query
    */
@@ -172,7 +174,7 @@ export class SearchFormComponent implements OnChanges {
   showThumbnails: any;
 
   @Input() filters: Observable<RemoteData<SearchFilterConfig[]>>;
-  @Input() filter: SearchFilterConfig;
+  // @Input() filter: SearchFilterConfig;
   @Input() currentScope: string;
   @Input() refreshFilters: BehaviorSubject<boolean>;
   @ViewChild('fromCal') fromCal: DatePicker | undefined;
@@ -483,6 +485,218 @@ export class SearchFormComponent implements OnChanges {
       this.currentPage = 1;
       this.updateSearch({});
     }, 0);
+  }
+
+  ngOnInit() {
+    // Ensure phonetic checkbox state matches URL on initial load
+    this.getState();
+    console.log('Dynamic State Value on Init:', this.state);
+
+    console.log('Search Type on Init:', this.searchType);
+
+    this.searchConfigService.getConfig(null);
+
+    // Load available filters (from @Input() or fallback to service)
+    if (this.filters) {
+      this.filters.subscribe((rd) => {
+        if (rd?.hasSucceeded && rd.payload) {
+          // this.availableFilters = rd.payload;
+          const all = rd.payload || [];
+          // const hindiFilters = all.filter(f => String(f.name).includes('Hindi'));
+          // const otherFilters = all.filter(f => !String(f.name).includes('Hindi'));
+          // this.availableFilters = [...otherFilters, ...hindiFilters];
+
+          const hindiFilters = all
+            .filter((f) => String(f.name).includes('Hindi'))
+            .sort((a, b) =>
+              a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
+            );
+
+          const otherFilters = all
+            .filter((f) => !String(f.name).includes('Hindi'))
+            .sort((a, b) =>
+              a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
+            );
+
+          this.availableFilters = [...otherFilters, ...hindiFilters];
+        }
+      });
+    } else {
+      this.searchConfigService.getConfig(this.scope).subscribe({
+        next: (rd) => {
+          console.log('CONFIG RESPONSE:', rd);
+        },
+        error: (err) => {
+          console.log('ERROR:', err);
+        },
+        complete: () => {
+          console.log('COMPLETED');
+        },
+      });
+      this.searchConfigService.getConfig(this.scope).subscribe((rd) => {
+        if (rd?.hasSucceeded && rd.payload) {
+          // this.availableFilters = rd.payload;
+          const all = rd.payload || [];
+          // const hindiFilters = all.filter(f => String(f.name).includes('Hindi'));
+          // const otherFilters = all.filter(f => !String(f.name).includes('Hindi'));
+          // this.availableFilters = [...otherFilters, ...hindiFilters];
+          // console.log('Available filters:', this.availableFilters);
+
+          const hindiFilters = all
+            .filter((f) => String(f.name).includes('Hindi'))
+            .sort((a, b) =>
+              a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
+            );
+
+          const otherFilters = all
+            .filter((f) => !String(f.name).includes('Hindi'))
+            .sort((a, b) =>
+              a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
+            );
+
+          this.availableFilters = [...otherFilters, ...hindiFilters];
+        }
+      });
+    }
+
+    // Single subscription for query params (handles dates, scope, dashboard flow)
+    this.route.queryParams.subscribe((params) => {
+      // -------------- scope / dashboard handling --------------
+      if (params['scope']) {
+        this.dsoService
+          .findById(params['scope'])
+          .pipe(getFirstSucceededRemoteDataPayload())
+          .subscribe((scope: DSpaceObject) => {
+            this.selectedScope.next(scope);
+            this.updateSearch({});
+          });
+        return;
+      }
+
+      // Only initialize dashboard on first load
+      if (
+        this.dashboardFlag === 'dashboard' &&
+        this.uuidFromDashBoard &&
+        !this.dashboardInitialized
+      ) {
+        this.dsoService
+          .findById(this.uuidFromDashBoard)
+          .pipe(getFirstSucceededRemoteDataPayload())
+          .subscribe((scope: DSpaceObject) => {
+            this.selectedScope.next(scope);
+            // Only add filters if they have a value
+            if (this.caseNatureFilter) {
+              this._addFilter('CaseNature', this.caseNatureFilter);
+            }
+            if (this.caseTypeNameFilter) {
+              this._addFilter('CaseTypeName', this.caseTypeNameFilter);
+            }
+            this.searchMetadata = '';
+            this.searchCaseBy = '';
+            this.currentPage = 1;
+            this.dashboardInitialized = true;
+            this.updateSearch({});
+          });
+        return;
+      }
+      if (this.searchBarFlag === 'searchBar' && this.searchBarValue) {
+        this.query = this.searchBarValue;
+      }
+
+      // If no explicit scope param — clear scope (but leave default handling elsewhere)
+      this.selectedScope.next(undefined);
+
+      // -------------- date params handling --------------
+      const dateFromParam = params['dateFrom'];
+      const dateToParam = params['dateTo'];
+
+      if (dateFromParam || dateToParam) {
+        const parsedFrom = dateFromParam ? new Date(dateFromParam) : null;
+        const parsedTo = dateToParam ? new Date(dateToParam) : null;
+
+        const fromValid = parsedFrom && !isNaN(parsedFrom.getTime());
+        const toValid = parsedTo && !isNaN(parsedTo.getTime());
+
+        if (fromValid || toValid) {
+          // normalize to midnight-local Dates
+          this.selectedFromDate = fromValid
+            ? this.normalizeToDate(parsedFrom)
+            : null;
+          this.selectedToDate = toValid ? this.normalizeToDate(parsedTo) : null;
+
+          // if both sides valid, create internalQuery (inclusive day range)
+          if (fromValid && toValid) {
+            const fromIso = new Date(
+              this.selectedFromDate!.getFullYear(),
+              this.selectedFromDate!.getMonth(),
+              this.selectedFromDate!.getDate(),
+              0,
+              0,
+              0,
+              0,
+            ).toISOString();
+            const toIso = new Date(
+              this.selectedToDate!.getFullYear(),
+              this.selectedToDate!.getMonth(),
+              this.selectedToDate!.getDate(),
+              23,
+              59,
+              59,
+              999,
+            ).toISOString();
+            this.internalQuery = `lastModified:[${fromIso} TO ${toIso}]`;
+            this.dateScopeActive = true;
+            this.appliedFilterTypes.add(this.DATE_FILTER_TYPE);
+          } else {
+            // partial date present -> don't build a range
+            this.internalQuery = null;
+          }
+
+          // sync NgbDateStruct models so inputs show values
+          this.syncDateModelsFromSelectedDates?.();
+
+          // push change detection so inputs render on refresh/navigation
+          try {
+            this.cdf.detectChanges();
+          } catch (e) {
+            /* ignore */
+          }
+
+          // update results to reflect URL date immediately
+          this.currentPage = 1;
+          this.updateSearch({});
+          return;
+        }
+      }
+
+      // If here: no valid date params found. Only clear stored dates if params explicitly absent.
+      this.selectedFromDate =
+        this.selectedFromDate && !params['dateFrom']
+          ? null
+          : this.selectedFromDate;
+      this.selectedToDate =
+        this.selectedToDate && !params['dateTo'] ? null : this.selectedToDate;
+
+      // Only call updateResults if NOT in dashboard mode after initialization
+      // In dashboard mode, let onPageChange() handle pagination updates
+      if (!this.dashboardInitialized || this.dashboardFlag !== 'dashboard') {
+        this.updateSearch({});
+      }
+    });
+
+    // Navigation / reload specific handling (browser-only)
+    if (isPlatformBrowser(this.platformId)) {
+      const [navEntry] = performance.getEntriesByType(
+        'navigation',
+      ) as PerformanceNavigationTiming[];
+      if (navEntry?.type === 'reload' && this.dashboardFlag === 'false') {
+        this.isReset = true;
+        this.selectedScope.next(this.defaultScope);
+        this.updateSearch({});
+      } else {
+        console.log('Page was loaded normally or navigated via app');
+      }
+    }
   }
 
   private clearDateInputs(): void {
@@ -889,6 +1103,13 @@ export class SearchFormComponent implements OnChanges {
       return false;
     }
     return this.YEAR_FIELDS.includes(fieldName);
+  }
+
+  async getState(): Promise<void> {
+    const stateData = await firstValueFrom(
+      this.http.get<{ state: string }>('assets/dynamicStateValue.json'),
+    );
+    this.state = stateData.state;
   }
 
   // Year range picker variables

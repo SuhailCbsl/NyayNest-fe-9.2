@@ -27,6 +27,7 @@
           type="text"
           class="search-input form-control"
           [(ngModel)]="query"
+          name="query"
           placeholder="Search Items"
           (keyup.enter)="onSubmit(form.value)"
         />
@@ -144,9 +145,7 @@
     </div>
 
     <!-- ROW 2: Filters + Settings -->
-    <div
-      class="filters-row d-flex flex-wrap align-items-center gap-2 justify-content-between"
-    >
+    <div class="filters-row d-flex flex-wrap align-items-center gap-2">
       <div class="metadata-field-wrapper d-flex align-items-center">
         <select
           class="filter-dropdown filter-select"
@@ -162,7 +161,7 @@
 
         <input
           type="text"
-          class="filter-dropdown filter-input"
+          class="filter-dropdown filter-input ml-10"
           [(ngModel)]="searchMetadata"
           name="searchMetadata"
           placeholder="Search Metadata"
@@ -178,7 +177,9 @@
         </button>
       </div>
 
-      <div class="row2-controls d-flex align-items-center gap-2 flex-wrap">
+      <div
+        class="row2-controls d-flex align-items-center gap-2 flex-wrap ms-auto"
+      >
         <button
           class="icon-btn"
           type="button"

@@ -46,7 +46,7 @@ import { SearchResult } from '../search/models/search-result.model';
 import { RemoteData } from 'src/app/core/data/remote-data';
 import { PaginatedList } from 'src/app/core/data/paginated-list.model';
 import { Item } from 'src/app/core/shared/item.model';
-import { DatePicker } from 'primeng/datepicker';
+import { DatePicker, DatePickerModule } from 'primeng/datepicker';
 import { SEARCH_CONFIG_SERVICE } from 'src/app/my-dspace-page/my-dspace-configuration.service';
 import { HttpClient } from '@angular/common/http';
 import { NotificationsService } from '../notifications/notifications.service';
@@ -72,6 +72,7 @@ interface FilterTag {
     ButtonModule,
     PopoverModule,
     NgbDatepickerModule,
+    DatePickerModule,
   ],
   providers: [
     {
@@ -249,6 +250,9 @@ export class SearchFormComponent implements OnChanges, OnInit {
   // store date range as a SearchFilter (used internally)
   private dateRangeFilter: SearchFilter | null = null;
 
+  //navigate up and down
+  activeSuggestionIndex: number = -1;
+
   constructor(
     protected router: Router,
     protected searchService: SearchService,
@@ -363,6 +367,99 @@ export class SearchFormComponent implements OnChanges, OnInit {
 
     this.overlayPanel.hide();
     this.updateSearch({});
+  }
+
+  /**
+   * Fetches metadata suggestions based on the current input and selected filter type, and updates the metadataSuggestions array with the results.
+   */
+  metadataSuggestions: any[] = [];
+  onMetadataInputChange(): void {
+    const prefix = this.searchMetadata;
+    const selectedFilterType = this.searchCaseBy;
+
+    if (!prefix || !selectedFilterType) {
+      this.metadataSuggestions = [];
+      return;
+    }
+    const apiUrl = `${this.appConfig.rest.baseUrl}/api/discover/facets/${selectedFilterType}?prefix=${prefix}&configuration=administrativeView&size=5`;
+
+    this.http.get<any>(apiUrl).subscribe({
+      next: (response) => {
+        console.log('API RESPONSE:', response);
+
+        this.metadataSuggestions = response?._embedded?.values || [];
+        this.cdf.detectChanges(); // Ensure UI updates with new suggestions
+
+        console.log('Suggestions:', this.metadataSuggestions);
+      },
+      error: (err) => console.error(err),
+    });
+    this.checkReset = 'false';
+    this.isFilterDisabled('true');
+  }
+
+  highlightMatch(label: string): string {
+    if (!this.searchMetadata) return label;
+
+    const escaped = this.searchMetadata.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // escape regex
+    const regex = new RegExp(`(${escaped})`, 'gi');
+
+    return label.replace(regex, '<strong>$1</strong>');
+  }
+
+  selectSuggestion(suggestion: any): void {
+    this.searchMetadata = suggestion.label;
+    this.metadataSuggestions = [];
+    this.activeSuggestionIndex = -1;
+    this.addMetadataFilter(); // Optional: auto-add on click
+  }
+
+  handleKeyDown(event: KeyboardEvent) {
+    if (!this.searchCaseBy) {
+      const allowedKeys = ['ArrowUp', 'ArrowDown', 'Enter', 'Tab'];
+
+      if (!allowedKeys.includes(event.key)) {
+        event.preventDefault();
+      }
+
+      return;
+    }
+
+    // ✅ Case 2: Normal behavior (existing navigation logic)
+    if (!this.metadataSuggestions.length) return;
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        this.activeSuggestionIndex =
+          (this.activeSuggestionIndex + 1) % this.metadataSuggestions.length;
+        break;
+
+      case 'ArrowUp':
+        event.preventDefault();
+        this.activeSuggestionIndex =
+          (this.activeSuggestionIndex - 1 + this.metadataSuggestions.length) %
+          this.metadataSuggestions.length;
+        break;
+
+      case 'Enter':
+        event.preventDefault();
+
+        if (this.activeSuggestionIndex >= 0) {
+          this.selectSuggestion(
+            this.metadataSuggestions[this.activeSuggestionIndex],
+          );
+        } else {
+          this.addMetadataFilter(); // manual entry case
+        }
+        break;
+    }
+  }
+
+  onMetadataFocus() {
+    if (!this.searchCaseBy) {
+      this.notificationService.warning('Please select "Search Case By" first.');
+    }
   }
 
   resetAllFilters() {
@@ -696,6 +793,17 @@ export class SearchFormComponent implements OnChanges, OnInit {
       } else {
         console.log('Page was loaded normally or navigated via app');
       }
+    }
+  }
+
+  get searchButtonLabel(): string {
+    switch (this.searchType) {
+      case 'fuzzy':
+        return 'Fuzzy';
+      case 'phonetic':
+        return 'Phonetic';
+      default:
+        return 'Search Type';
     }
   }
 
@@ -1115,4 +1223,47 @@ export class SearchFormComponent implements OnChanges, OnInit {
   // Year range picker variables
   yearFrom: string | null = null;
   yearTo: string | null = null;
+
+  removeFilterTag(index: number) {
+    const removed = this.filterTags.splice(index, 1)[0];
+    if (removed) {
+      this.appliedFilterTypes.delete(removed.type);
+      this.currentPage = 1;
+
+      // If the removed tag is a date-range, clear internal date filter and visible pickers
+      if (
+        this.isDateField(removed.type) ||
+        removed.type === this.DATE_FILTER_TYPE
+      ) {
+        this.dateRangeFilter = null;
+        this.selectedFromDate = null;
+        this.selectedToDate = null;
+        this.dateFrom = null;
+        this.dateTo = null;
+      }
+
+      // If the removed tag is a year-range, clear year range picker variables
+      if (this.isYearField(removed.type)) {
+        this.yearFrom = null;
+        this.yearTo = null;
+      }
+
+      // existing URL cleanups for dashboard tags...
+      const queryParamsToRemove: any = {};
+      if (removed.type === 'CaseNature') {
+        queryParamsToRemove.casenature = null;
+      }
+      if (removed.type === 'CaseTypeName') {
+        queryParamsToRemove.name = null;
+      }
+      if (Object.keys(queryParamsToRemove).length > 0) {
+        this.router.navigate([], {
+          queryParams: queryParamsToRemove,
+          queryParamsHandling: 'merge',
+        });
+      }
+
+      this.updateSearch({});
+    }
+  }
 }

@@ -37,17 +37,19 @@
       <!-- Search Type -->
       <div class="search-type-wrapper">
         <button
+          pButton
           type="button"
           class="white-search-btn search-type-btn"
+          [label]="searchButtonLabel"
           (click)="op.toggle($event)"
         >
           <i class="pi pi-filter"></i>
-          <span>Search Type</span>
+          <!-- <span>Search Type</span> -->
         </button>
 
         <p-popover #op [dismissable]="true" [appendTo]="'body'">
           <ng-template pTemplate="content">
-            <div class="d-flex flex-column">
+            <div class="d-flex flex-column popver-coverage">
               <div
                 class="search-option"
                 [class.active]="searchType === 'normal'"
@@ -93,6 +95,7 @@
             (ngModelChange)="onFromDateModelChange($event, 'from')"
             (dateSelect)="onFromDateSelect($event)"
             (click)="dFrom.toggle()"
+            name="fromDate"
             class="form-control date-input-ngb"
             readonly
           />
@@ -119,6 +122,7 @@
             (ngModelChange)="onFromDateModelChange($event, 'to')"
             (dateSelect)="onToDateSelect($event)"
             (click)="dTo.toggle()"
+            name="toDate"
             class="form-control date-input-ngb"
             readonly
           />
@@ -144,84 +148,199 @@
       </button>
     </div>
 
-    <!-- ROW 2: Filters + Settings -->
-    <div class="filters-row d-flex flex-wrap align-items-center gap-2">
-      <div class="metadata-field-wrapper d-flex align-items-center">
-        <select
-          class="filter-dropdown filter-select"
-          [(ngModel)]="searchCaseBy"
-          name="searchCaseBy"
-          (change)="onSearchCaseByChange($event)"
+    <!-- ROW 2: Filters + Settings (All in one row with equal widths) -->
+    <div class="filters-row d-flex align-items-center gap-2">
+      <!-- Search Case By -->
+      <select
+        class="filter-control"
+        [(ngModel)]="searchCaseBy"
+        name="searchCaseBy"
+        (change)="onSearchCaseByChange($event)"
+      >
+        <option value="">Search Case By</option>
+        <option *ngFor="let filter of availableFilters" [value]="filter.name">
+          {{ "search.filters.filter." + filter.name + ".head" | translate }}
+        </option>
+      </select>
+
+      <!-- Search Metadata Input with Add Button -->
+      <div class="metadata-input-group">
+        <!-- Text Input -->
+        <ng-container
+          *ngIf="!isDateField(searchCaseBy) && !isYearField(searchCaseBy)"
         >
-          <option value="">Search Case By</option>
-          <option *ngFor="let filter of availableFilters" [value]="filter.name">
-            {{ "search.filters.filter." + filter.name + ".head" | translate }}
-          </option>
-        </select>
+          <div class="metadata-input-wrapper">
+            <input
+              type="text"
+              class="metadata-input"
+              placeholder="Search Metadata"
+              name="searchMetadata"
+              [(ngModel)]="searchMetadata"
+              (input)="onMetadataInputChange()"
+              (keydown)="handleKeyDown($event)"
+              (focus)="onMetadataFocus()"
+              [attr.autocomplete]="'off'"
+              [readonly]="!searchCaseBy"
+            />
+            <ul *ngIf="metadataSuggestions.length" class="suggestion-list">
+              <li
+                *ngFor="let suggestion of metadataSuggestions; let i = index"
+                [class.active]="i === activeSuggestionIndex"
+                (mousedown)="selectSuggestion(suggestion)"
+              >
+                <span [innerHTML]="highlightMatch(suggestion.label)"></span>
+                ({{ suggestion.count }})
+              </li>
+            </ul>
+          </div>
+        </ng-container>
 
-        <input
-          type="text"
-          class="filter-dropdown filter-input ml-10"
-          [(ngModel)]="searchMetadata"
-          name="searchMetadata"
-          placeholder="Search Metadata"
-          (keyup.enter)="addMetadataFilter()"
-        />
+        <!-- Date Range -->
+        <ng-container *ngIf="isDateField(searchCaseBy)">
+          <div class="date-range-filter">
+            <div class="date-wrap-inline">
+              <input
+                id="dateFrom"
+                type="text"
+                placeholder="From Date"
+                ngbDatepicker
+                #dDateFrom="ngbDatepicker"
+                [(ngModel)]="dateFrom"
+                name="fromDate"
+                (click)="dDateFrom.toggle()"
+                class="form-control date-input-ngb"
+                readonly
+              />
+              <button
+                type="button"
+                class="calendar-icon"
+                (click)="dDateFrom.toggle()"
+              >
+                <i class="pi pi-calendar"></i>
+              </button>
+            </div>
 
+            <div class="date-wrap-inline">
+              <input
+                id="dateTo"
+                type="text"
+                placeholder="To Date"
+                ngbDatepicker
+                #dDateTo="ngbDatepicker"
+                [(ngModel)]="dateTo"
+                (click)="dDateTo.toggle()"
+                name="toDate"
+                class="form-control date-input-ngb"
+                readonly
+              />
+              <button
+                type="button"
+                class="calendar-icon"
+                (click)="dDateTo.toggle()"
+              >
+                <i class="pi pi-calendar"></i>
+              </button>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- Year Range -->
+        <ng-container *ngIf="isYearField(searchCaseBy)">
+          <div class="year-range-filter">
+            <p-datepicker
+              [(ngModel)]="yearFrom"
+              view="year"
+              dateFormat="yy"
+              [showIcon]="true"
+              placeholder="From Year"
+              name="fromYear"
+            ></p-datepicker>
+            <span>to</span>
+            <p-datepicker
+              [(ngModel)]="yearTo"
+              name="toYear"
+              view="year"
+              dateFormat="yy"
+              [showIcon]="true"
+              placeholder="To Year"
+            ></p-datepicker>
+          </div>
+        </ng-container>
+
+        <!-- Add Button -->
         <button
+          class="metadata-add-btn"
           type="button"
-          class="add-btn metadata-add-btn"
           (click)="addMetadataFilter()"
         >
           <i class="fas fa-plus"></i>
         </button>
       </div>
 
-      <div
-        class="row2-controls d-flex align-items-center gap-2 flex-wrap ms-auto"
+      <!-- Reset Button -->
+      <button
+        class="icon-btn"
+        type="button"
+        (click)="resetAllFilters()"
+        title="Reset All Filters"
       >
-        <button
-          class="icon-btn"
-          type="button"
-          (click)="resetAllFilters()"
-          title="Reset All Filters"
-        >
-          <i class="fas fa-sync-alt"></i>
-        </button>
+        <i class="fas fa-sync-alt"></i>
+      </button>
 
-        <select
-          class="filter-dropdown"
-          [(ngModel)]="sortBy"
-          name="sortBy"
-          (change)="onSortChange()"
-        >
-          <option value="dc.identifier">Sort By</option>
-          <option value="dc.identifier">Case Number</option>
-          <option value="CaseYear">Case Year</option>
-          <option value="dc.status">Case Status</option>
-        </select>
+      <!-- Sort By -->
+      <select
+        class="filter-control"
+        [(ngModel)]="sortBy"
+        name="sortBy"
+        (change)="onSortChange()"
+      >
+        <option value="dc.date.accessioned" disabled selected hidden>
+          Sort By
+        </option>
+        <option value="dc.title">Case Number</option>
+        <option value="dc.CaseYear">Case Year</option>
+        <option value="dc.CaseStatus">Case Status</option>
+        <option value="dc.Petitioner">Petitioner Name</option>
+      </select>
 
-        <select
-          class="filter-dropdown"
-          [(ngModel)]="sortOrder"
-          name="sortOrder"
-          (change)="onSortOrderChange()"
-        >
-          <option value="asc">Ascending</option>
-          <option value="desc">Descending</option>
-        </select>
+      <!-- Sort Order -->
+      <select
+        class="filter-control"
+        [(ngModel)]="sortOrder"
+        name="sortOrder"
+        (change)="onSortOrderChange()"
+      >
+        <option value="asc" disabled selected hidden>Sort Order</option>
 
-        <select
-          class="filter-dropdown"
-          [(ngModel)]="resultPerPage"
-          name="resultPerPage"
-          (change)="onResultPerPageChange()"
-        >
-          <option value="10">10</option>
-          <option value="20">20</option>
-          <option value="50">50</option>
-        </select>
-      </div>
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
+      </select>
+
+      <!-- Results Per Page -->
+      <select
+        class="filter-control"
+        [(ngModel)]="resultPerPage"
+        name="resultPerPage"
+        (change)="onResultPerPageChange()"
+      >
+        <option value="">Result Per Pages</option>
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select>
+    </div>
+    <!-- Filter Tags -->
+    <div class="filter-tags" *ngIf="filterTags.length > 0">
+      <span *ngFor="let tag of filterTags; let i = index" class="filter-tag">
+        <span style="color: #174377">{{
+          tag.label === "title" ? "CaseNo" : tag.label
+        }}</span>
+        :
+        <span style="color: #f94f00">{{ tag.value }}</span>
+        <span class="close" (click)="removeFilterTag(i)">×</span>
+      </span>
     </div>
   </div>
 </form>

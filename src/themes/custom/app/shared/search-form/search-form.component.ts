@@ -12,6 +12,7 @@ import { PopoverModule } from 'primeng/popover';
 
 import { SearchFormComponent as BaseComponent } from '../../../../../app/shared/search-form/search-form.component';
 import { BrowserOnlyPipe } from '../../../../../app/shared/utils/browser-only.pipe';
+import { DatePickerModule } from 'primeng/datepicker';
 
 @Component({
   selector: 'ds-themed-search-form',
@@ -31,6 +32,7 @@ import { BrowserOnlyPipe } from '../../../../../app/shared/utils/browser-only.pi
     ButtonModule,
     PopoverModule,
     NgbDatepickerModule,
+    DatePickerModule,
   ],
 })
 export class SearchFormComponent extends BaseComponent {}

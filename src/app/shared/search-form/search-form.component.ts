@@ -52,6 +52,7 @@ import { HttpClient } from '@angular/common/http';
 import { NotificationsService } from '../notifications/notifications.service';
 import { APP_CONFIG, AppConfig } from 'src/config/app-config.interface';
 import { SearchFilter } from '../search/models/search-filter.model';
+import { PaginatedSearchOptions } from '../search/models/paginated-search-options.model';
 
 interface FilterTag {
   label: string;
@@ -253,6 +254,9 @@ export class SearchFormComponent implements OnChanges, OnInit {
   //navigate up and down
   activeSuggestionIndex: number = -1;
 
+  // search data
+  searchFilters: Map<string, string> = new Map<string, string>();
+
   constructor(
     protected router: Router,
     protected searchService: SearchService,
@@ -408,10 +412,7 @@ export class SearchFormComponent implements OnChanges, OnInit {
   }
 
   selectSuggestion(suggestion: any): void {
-    this.searchMetadata = suggestion.label;
-    this.metadataSuggestions = [];
-    this.activeSuggestionIndex = -1;
-    this.addMetadataFilter(); // Optional: auto-add on click
+    this.applyFilter(this.searchCaseBy, suggestion.label);
   }
 
   handleKeyDown(event: KeyboardEvent) {
@@ -460,6 +461,28 @@ export class SearchFormComponent implements OnChanges, OnInit {
     if (!this.searchCaseBy) {
       this.notificationService.warning('Please select "Search Case By" first.');
     }
+  }
+
+  applyFilter(type: string, value: string) {
+    if (!type || !value) return;
+
+    if (this.appliedFilterTypes.has(type)) return;
+
+    this.filterTags.push({
+      label: type,
+      value: value,
+      type: type,
+    });
+
+    this.appliedFilterTypes.add(type);
+
+    this.searchFilters.set(type, value);
+
+    this.searchMetadata = '';
+    this.metadataSuggestions = [];
+    this.activeSuggestionIndex = -1;
+
+    this.applyFilterToSearch(type, value);
   }
 
   resetAllFilters() {
@@ -582,6 +605,22 @@ export class SearchFormComponent implements OnChanges, OnInit {
       this.currentPage = 1;
       this.updateSearch({});
     }, 0);
+  }
+
+  clearAllMetadataFilters() {
+    this.searchCaseBy = '';
+
+    this.filterTags = [];
+    this.appliedFilterTypes.clear();
+    this.searchFilters.clear();
+
+    this.searchMetadata = '';
+    this.metadataSuggestions = [];
+    this.activeSuggestionIndex = -1;
+
+    this.router.navigate([], {
+      queryParams: {},
+    });
   }
 
   ngOnInit() {
@@ -954,29 +993,34 @@ export class SearchFormComponent implements OnChanges, OnInit {
   }
 
   private _addFilter(type: string, value: string) {
-    // If this is the date-range filter, keep it internal only:
-    if (type === this.DATE_FILTER_TYPE) {
-      // Ensure we mark it as applied so other UI can disable/enable appropriately
-      this.appliedFilterTypes.add(type);
-
-      // Optionally store the raw value somewhere if you need to reference it later
-      // (you already set this.dateRangeFilter elsewhere when user picks dates).
-      return;
-    }
-
-    // For all non-date filters, keep the old behaviour (create visible tag once)
     if (!this.appliedFilterTypes.has(type)) {
       const filterConfig = this.availableFilters.find((f) => f.name === type);
-      if (value !== null && value !== undefined && value !== '') {
-        value = value.toLowerCase();
-      }
+
       this.filterTags.push({
         label: filterConfig ? filterConfig.name : type,
         value,
         type,
       });
+
       this.appliedFilterTypes.add(type);
+      this.searchFilters.set(type, value);
+
+      this.applyFilterToSearch(type, value);
     }
+  }
+
+  applyFilterToSearch(type: string, value: string) {
+    const filterParam = `f.${type}`;
+
+    const queryParams: any = {};
+    queryParams[filterParam] = `${value},equals`;
+
+    this.currentPage = 1;
+
+    this.router.navigate(this.getSearchLinkParts(), {
+      queryParams,
+      queryParamsHandling: 'merge',
+    });
   }
 
   /**
@@ -1226,44 +1270,22 @@ export class SearchFormComponent implements OnChanges, OnInit {
 
   removeFilterTag(index: number) {
     const removed = this.filterTags.splice(index, 1)[0];
-    if (removed) {
-      this.appliedFilterTypes.delete(removed.type);
-      this.currentPage = 1;
 
-      // If the removed tag is a date-range, clear internal date filter and visible pickers
-      if (
-        this.isDateField(removed.type) ||
-        removed.type === this.DATE_FILTER_TYPE
-      ) {
-        this.dateRangeFilter = null;
-        this.selectedFromDate = null;
-        this.selectedToDate = null;
-        this.dateFrom = null;
-        this.dateTo = null;
-      }
+    if (!removed) return;
 
-      // If the removed tag is a year-range, clear year range picker variables
-      if (this.isYearField(removed.type)) {
-        this.yearFrom = null;
-        this.yearTo = null;
-      }
+    // ✅ remove from applied filters (THIS WAS MISSING)
+    this.appliedFilterTypes.delete(removed.type);
 
-      // existing URL cleanups for dashboard tags...
-      const queryParamsToRemove: any = {};
-      if (removed.type === 'CaseNature') {
-        queryParamsToRemove.casenature = null;
-      }
-      if (removed.type === 'CaseTypeName') {
-        queryParamsToRemove.name = null;
-      }
-      if (Object.keys(queryParamsToRemove).length > 0) {
-        this.router.navigate([], {
-          queryParams: queryParamsToRemove,
-          queryParamsHandling: 'merge',
-        });
-      }
+    // remove from map
+    this.searchFilters.delete(removed.type);
 
-      this.updateSearch({});
-    }
+    // remove from URL
+    const queryParams: any = {};
+    queryParams[`f.${removed.type}`] = null;
+
+    this.router.navigate([], {
+      queryParams,
+      queryParamsHandling: 'merge',
+    });
   }
 }

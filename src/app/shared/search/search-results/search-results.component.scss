@@ -7,11 +7,15 @@
       height: var(--ds-search-skeleton-badge-height);
       margin-bottom: 0;
       margin-right: calc(var(--bs-spacer) / 4);
+      display: none;
     }
   }
 
-  .filters-badge-skeleton-container {
-    display: flex;
-    max-height: var(--ds-search-skeleton-badge-height);
+  // .filters-badge-skeleton-container {
+  //   display: flex;
+  //   max-height: var(--ds-search-skeleton-badge-height);
+  // }
+  .filters-badge-skeleton-container:empty {
+    display: none !important;
   }
 }

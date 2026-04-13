@@ -158,7 +158,11 @@
         (change)="onSearchCaseByChange($event)"
       >
         <option value="">Search Case By</option>
-        <option *ngFor="let filter of availableFilters" [value]="filter.name">
+        <option
+          *ngFor="let filter of availableFilters"
+          [value]="filter.name"
+          [disabled]="appliedFilterTypes.has(filter.name)"
+        >
           {{ "search.filters.filter." + filter.name + ".head" | translate }}
         </option>
       </select>
@@ -281,8 +285,8 @@
       <button
         class="icon-btn"
         type="button"
-        (click)="resetAllFilters()"
-        title="Reset All Filters"
+        (click)="clearAllMetadataFilters()"
+        title="Reset Metadata Filters"
       >
         <i class="fas fa-sync-alt"></i>
       </button>

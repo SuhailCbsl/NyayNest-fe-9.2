@@ -1,4 +1,9 @@
-import { AsyncPipe, CommonModule, isPlatformBrowser } from '@angular/common';
+import {
+  AsyncPipe,
+  CommonModule,
+  isPlatformBrowser,
+  JsonPipe,
+} from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
@@ -10,13 +15,13 @@ import {
   OnInit,
   Output,
   PLATFORM_ID,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   NgbDateParserFormatter,
-  NgbDatepicker,
   NgbDatepickerModule,
   NgbDateStruct,
   NgbInputDatepicker,
@@ -25,7 +30,7 @@ import {
 } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, take } from 'rxjs/operators';
 
 import { DSONameService } from '../../core/breadcrumbs/dso-name.service';
 import { DSpaceObjectDataService } from '../../core/data/dspace-object-data.service';
@@ -35,16 +40,14 @@ import { getFirstSucceededRemoteDataPayload } from '../../core/shared/operators'
 import { SearchService } from '../../core/shared/search/search.service';
 import { SearchConfigurationService } from '../../core/shared/search/search-configuration.service';
 import { SearchFilterService } from '../../core/shared/search/search-filter.service';
-import { hasValue, isNotEmpty } from '../empty.util';
+import { isNotEmpty } from '../empty.util';
 import { currentPath } from '../utils/route.utils';
 import { ScopeSelectorModalComponent } from './scope-selector-modal/scope-selector-modal.component';
 import { ButtonModule } from 'primeng/button';
 import { Popover, PopoverModule } from 'primeng/popover';
 import { NgbDateDdMmYyyyParserFormatter } from 'src/app/report/audit-trail-report/ngb-date-formatter';
 import { SearchFilterConfig } from '../search/models/search-filter-config.model';
-import { SearchResult } from '../search/models/search-result.model';
 import { RemoteData } from 'src/app/core/data/remote-data';
-import { PaginatedList } from 'src/app/core/data/paginated-list.model';
 import { Item } from 'src/app/core/shared/item.model';
 import { DatePicker, DatePickerModule } from 'primeng/datepicker';
 import { SEARCH_CONFIG_SERVICE } from 'src/app/my-dspace-page/my-dspace-configuration.service';
@@ -52,7 +55,7 @@ import { HttpClient } from '@angular/common/http';
 import { NotificationsService } from '../notifications/notifications.service';
 import { APP_CONFIG, AppConfig } from 'src/config/app-config.interface';
 import { SearchFilter } from '../search/models/search-filter.model';
-import { PaginatedSearchOptions } from '../search/models/paginated-search-options.model';
+import { SearchObjects } from '../search/models/search-objects.model';
 
 interface FilterTag {
   label: string;
@@ -74,6 +77,7 @@ interface FilterTag {
     PopoverModule,
     NgbDatepickerModule,
     DatePickerModule,
+    JsonPipe,
   ],
   providers: [
     {
@@ -166,9 +170,8 @@ export class SearchFormComponent implements OnChanges, OnInit {
   /**
    * The current search results
    */
-  resultsRD$: BehaviorSubject<
-    RemoteData<PaginatedList<SearchResult<DSpaceObject>>>
-  > = new BehaviorSubject(null);
+  resultsRD$: BehaviorSubject<RemoteData<SearchObjects<DSpaceObject>>> =
+    new BehaviorSubject(null);
   resultItem: Item;
 
   suggestions: string[] = [];
@@ -189,6 +192,8 @@ export class SearchFormComponent implements OnChanges, OnInit {
   @Output() isVisibilityComputed = new EventEmitter<boolean>();
   @Output() deselectObject: EventEmitter<any> = new EventEmitter<any>();
   @Output() selectObject: EventEmitter<any> = new EventEmitter<any>();
+  @Output() resultFound: EventEmitter<SearchObjects<DSpaceObject>> =
+    new EventEmitter<SearchObjects<DSpaceObject>>();
 
   filtersWithComputedVisibility = 0;
   caseTypeNameFilter: string;
@@ -257,6 +262,8 @@ export class SearchFormComponent implements OnChanges, OnInit {
   // search data
   searchFilters: Map<string, string> = new Map<string, string>();
 
+  userQuery: string = '';
+
   constructor(
     protected router: Router,
     protected searchService: SearchService,
@@ -279,7 +286,11 @@ export class SearchFormComponent implements OnChanges, OnInit {
   /**
    * Retrieve the scope object from the URL so we can show its name
    */
-  ngOnChanges(): void {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['query']) {
+      return;
+    }
+
     if (isNotEmpty(this.scope)) {
       this.dsoService
         .findById(this.scope)
@@ -292,12 +303,12 @@ export class SearchFormComponent implements OnChanges, OnInit {
    * Updates the search when the form is submitted
    * @param data Values submitted using the form
    */
-  onSubmit(data: any) {
+  onSubmit() {
     if (isNotEmpty(this.scope)) {
-      data = Object.assign(data, { scope: this.scope });
+      this.updateSearch({ scope: this.scope });
+    } else {
+      this.updateSearch({});
     }
-    this.updateSearch(data);
-    this.submitSearch.emit(data);
   }
 
   /**
@@ -316,21 +327,244 @@ export class SearchFormComponent implements OnChanges, OnInit {
   updateSearch(data: any) {
     const goToFirstPage = { 'spc.page': 1 };
 
-    const queryParams = Object.assign(
-      {
-        ...goToFirstPage,
-      },
-      data,
-    );
-    if (hasValue(data.scope) && this.hideScopeInUrl) {
-      delete queryParams.scope;
+    let userQuery = this?.userQuery?.trim();
+
+    let backendQuery = userQuery;
+
+    if (userQuery && this.searchType === 'phonetic') {
+      backendQuery = `search_text:${userQuery} OR search_text_phonetic:${userQuery}`;
     }
 
-    void this.router.navigate(this.getSearchLinkParts(), {
-      queryParams: queryParams,
+    const queryParams = {
+      ...goToFirstPage,
+
+      // ❗ DO NOT spread full data
+      scope: data.scope,
+      sortBy: data.sortBy,
+      sortOrder: data.sortOrder,
+      resultPerPage: data.resultPerPage,
+      searchCaseBy: data.searchCaseBy,
+      searchMetadata: data.searchMetadata,
+
+      // ✅ only backend query goes to URL
+      query: backendQuery,
+      userQuery: userQuery && userQuery.length > 0 ? userQuery : null, // optional: include original user query for reference (not used by backend)
+      searchType: this.searchType,
+    };
+
+    this.router.navigate(this.getSearchLinkParts(), {
+      queryParams,
       queryParamsHandling: 'merge',
     });
   }
+
+  // updateResults(): void {
+  //   console.log('updateResults() called with currentPage:', this.currentPage);
+
+  //   // Reset UI loading state
+  //   this.resultsRD$.next(null);
+
+  //   // Build filters: non-date fields as before, date fields as Solr range
+  //   // Year fields are handled separately further in the code below
+  //   const filters = this.filterTags
+  //     .filter((t) => t.type !== this.DATE_FILTER_TYPE)
+  //     .map((tag) => {
+  //       if (this.isDateField(tag.type)) {
+  //         const [fromStr, toStr] = tag.value.split(' to ');
+  //         if (fromStr && toStr) {
+  //           return new SearchFilter(
+  //             'f.' + tag.type,
+  //             [`[${fromStr} TO ${toStr}]`],
+  //             'equals',
+  //           );
+  //         }
+  //       } else if (this.isYearField(tag.type)) {
+  //         const [fromYear, toYear] = tag.value.split(' to ');
+  //         if (fromYear && toYear) {
+  //           return new SearchFilter(
+  //             'f.' + tag.type,
+  //             [`[${fromYear} TO ${toYear}]`],
+  //             'equals',
+  //           );
+  //         }
+  //       }
+  //       // For non-date fields, use the single value with 'contains' operator
+  //       return new SearchFilter('f.' + tag.type, [tag.value], 'contains');
+  //     })
+  //     .filter((f) => f !== undefined) as SearchFilter[];
+
+  //   // --- Setup pagination and sorting ---
+  //   const pagination = new PaginationComponentOptions();
+  //   pagination.currentPage = this.currentPage;
+  //   pagination.pageSize = this.resultsPerPage;
+
+  //   let sort: SortOptions = undefined;
+  //   if (this.sortBy && this.sortOrder) {
+  //     const order = (this.sortOrder || '').toString().toLowerCase();
+  //     const mapToSortDirection = (): SortDirection => {
+  //       const sdAny = SortDirection as any;
+  //       if (sdAny && typeof sdAny === 'object') {
+  //         if (sdAny.ASC !== undefined && sdAny.DESC !== undefined) {
+  //           return order === 'asc' ? sdAny.ASC : sdAny.DESC;
+  //         }
+  //         if (sdAny.asc !== undefined && sdAny.desc !== undefined) {
+  //           return order === 'asc' ? sdAny.asc : sdAny.desc;
+  //         }
+  //       }
+  //       return (order === 'asc' ? 'asc' : 'desc') as unknown as SortDirection;
+  //     };
+  //     const dir: SortDirection = mapToSortDirection();
+  //     sort = { field: this.sortBy, direction: dir } as SortOptions;
+  //   }
+
+  //   // --- followLinks ---
+  //   const followLinks = [
+  //     followLink<Item>('thumbnail', { isOptional: true }),
+  //     followLink<SubmissionObject>(
+  //       'item',
+  //       { isOptional: true },
+  //       followLink<Item>('thumbnail', { isOptional: true }),
+  //     ) as any,
+  //   ];
+
+  //   // --- scope ---
+  //   const scopeUuid = this.selectedScope.value?.uuid;
+
+  //   // --- Build backendQuery from ROUTE PARAMS (single source of truth) ---
+  //   let backendQuery = '*:*';
+
+  //   const term = this.route.snapshot.queryParams['query']?.trim();
+
+  //   if (term && term.length > 0) {
+  //     // const normalized = term.toLowerCase();
+  //     const normalized = term
+  //       .toLowerCase()
+  //       .normalize('NFD') // unicode normalize
+  //       .replace(/[\u0300-\u036f]/g, '') // remove accents
+  //       .replace(/[@;,#%_]/g, '') // replace special chars
+  //       .replace(/[^a-z0-9\s]/g, '') // remove non-alphanumeric
+  //       .replace(/\s+/g, ' ') // collapse multiple spaces
+  //       .trim();
+
+  //     console.log('Normalized term:', normalized);
+
+  //     switch (this.searchType) {
+  //       case 'phonetic':
+  //         const terms = normalized.split(/\s+/);
+
+  //         backendQuery = terms
+  //           .map((term) => {
+  //             return `(search_text_phonetic:${term})`;
+  //           })
+  //           .join(' AND ');
+
+  //         break;
+
+  //       case 'fuzzy': {
+  //         const terms = normalized.split(/\s+/);
+
+  //         const fuzzyQuery = terms
+  //           .map((term) => {
+  //             // Only for initials / very short terms
+  //             if (term.length <= 2) {
+  //               return `
+  //         (
+  //           search_text:${term}^20
+  //           OR search_text:${term}*^10
+  //         )
+  //       `;
+  //             }
+
+  //             return `
+  //       (
+  //         (search_text:${term})
+  //         OR (search_text:${term}~3^20)
+  //         OR (search_text_phonetic:${term}^10)
+  //       )
+  //     `;
+  //           })
+  //           .join(' AND ');
+
+  //         if (terms.length > 1) {
+  //           backendQuery = `
+  //     (
+  //       search_text:"${normalized}"^80
+  //     )
+  //     OR
+  //     (
+  //       ${fuzzyQuery}
+  //     )
+  //   `;
+  //         } else {
+  //           backendQuery = fuzzyQuery;
+  //         }
+
+  //         break;
+  //       }
+
+  //       default:
+  //         backendQuery = `search_text:${normalized}`;
+  //         break;
+  //     }
+  //   }
+
+  //   // Merge with internalQuery (date range, etc.)
+  //   if (this.internalQuery) {
+  //     backendQuery =
+  //       backendQuery === '*:*'
+  //         ? this.internalQuery
+  //         : `(${backendQuery}) AND ${this.internalQuery}`;
+  //   }
+
+  //   // --- Build Search Options ---
+  //   const searchOptions = new PaginatedSearchOptions({
+  //     query: backendQuery,
+  //     filters: filters,
+  //     pagination: pagination,
+  //     sort: sort,
+  //     configuration: 'administrativeView',
+  //     dsoTypes: [DSpaceObjectType.ITEM],
+  //     scope: scopeUuid,
+  //   });
+
+  //   // Debug
+  //   console.debug('updateResults() — pagination:', pagination);
+  //   console.debug('updateResults() — filters:', filters);
+  //   console.debug('updateResults() — searchOptions:', searchOptions);
+
+  //   // execute search
+  //   // this.searchService
+  //   //   .search(searchOptions, undefined, true, true, ...followLinks)
+  //   //   .pipe(getFirstSucceededRemoteDataPayload())
+  //   //   .subscribe({
+  //   //     next: (results: SearchObjects<DSpaceObject>) => {
+  //   //       console.log('Results page length:', results?.page?.length);
+  //   //       console.log('Results pageInfo:', results?.pageInfo);
+
+  //   //       this.totalResults =
+  //   //         results.pageInfo?.totalElements || results.page.length || 0;
+
+  //   //       if (results.page?.length > 0) {
+  //   //         this.resultFound.emit(results);
+  //   //       }
+
+  //   //       // ❗ Wrap back into RemoteData ONLY if UI expects it
+  //   //       this.resultsRD$.next({
+  //   //         payload: results,
+  //   //         hasSucceeded: true,
+  //   //       } as RemoteData<SearchObjects<DSpaceObject>>);
+
+  //   //       this.cdf.detectChanges(); // ensure UI updates with new results
+  //   //     },
+  //   //     error: (err) => {
+  //   //       console.error('Search error:', err);
+  //   //       this.resultsRD$.next(null as any);
+  //   //     },
+  //   //   });
+
+  //   // Clear suggestion box
+  //   this.metadataSuggestions = [];
+  // }
 
   /**
    * @returns {string} The base path to the search page, or the current page when inPlaceSearch is true
@@ -370,7 +604,6 @@ export class SearchFormComponent implements OnChanges, OnInit {
     this.currentPage = 1;
 
     this.overlayPanel.hide();
-    this.updateSearch({});
   }
 
   /**
@@ -413,45 +646,53 @@ export class SearchFormComponent implements OnChanges, OnInit {
 
   selectSuggestion(suggestion: any): void {
     this.applyFilter(this.searchCaseBy, suggestion.label);
+    this.searchMetadata = '';
+    this.metadataSuggestions = [];
+    this.activeSuggestionIndex = -1;
   }
 
   handleKeyDown(event: KeyboardEvent) {
     if (!this.searchCaseBy) {
       const allowedKeys = ['ArrowUp', 'ArrowDown', 'Enter', 'Tab'];
-
       if (!allowedKeys.includes(event.key)) {
         event.preventDefault();
       }
-
       return;
     }
 
-    // ✅ Case 2: Normal behavior (existing navigation logic)
-    if (!this.metadataSuggestions.length) return;
-
     switch (event.key) {
       case 'ArrowDown':
-        event.preventDefault();
-        this.activeSuggestionIndex =
-          (this.activeSuggestionIndex + 1) % this.metadataSuggestions.length;
+        if (this.metadataSuggestions.length > 0) {
+          event.preventDefault();
+          this.activeSuggestionIndex =
+            (this.activeSuggestionIndex + 1) % this.metadataSuggestions.length;
+        }
         break;
 
       case 'ArrowUp':
-        event.preventDefault();
-        this.activeSuggestionIndex =
-          (this.activeSuggestionIndex - 1 + this.metadataSuggestions.length) %
-          this.metadataSuggestions.length;
+        if (this.metadataSuggestions.length > 0) {
+          event.preventDefault();
+          this.activeSuggestionIndex =
+            (this.activeSuggestionIndex - 1 + this.metadataSuggestions.length) %
+            this.metadataSuggestions.length;
+        }
         break;
 
       case 'Enter':
         event.preventDefault();
 
-        if (this.activeSuggestionIndex >= 0) {
+        if (
+          this.metadataSuggestions.length > 0 &&
+          this.activeSuggestionIndex >= 0
+        ) {
+          // ✅ suggestion selected
           this.selectSuggestion(
             this.metadataSuggestions[this.activeSuggestionIndex],
           );
-        } else {
-          this.addMetadataFilter(); // manual entry case
+        } else if (this.searchMetadata && this.searchCaseBy) {
+          // ✅ manual search (THIS is your requirement)
+          this.applyFilter(this.searchCaseBy, this.searchMetadata);
+          this.searchMetadata = '';
         }
         break;
     }
@@ -529,7 +770,7 @@ export class SearchFormComponent implements OnChanges, OnInit {
 
     // sync helper (if used elsewhere)
     this.syncDateModelsFromSelectedDates?.();
-
+    this.clearAllMetadataFilters();
     // Remove any date from applied types (UI disabling)
     this.appliedFilterTypes.delete(this.DATE_FILTER_TYPE);
 
@@ -563,7 +804,7 @@ export class SearchFormComponent implements OnChanges, OnInit {
     setTimeout(() => {
       // restore default scope if you have one
       this.selectedScope.next(this.defaultScope);
-      this.onScopeChange(this.defaultScope);
+      // this.onScopeChange(this.defaultScope);
 
       // make sure Ngb models are null (defensive re-assign)
       this.fromDateModel = null;
@@ -603,7 +844,6 @@ export class SearchFormComponent implements OnChanges, OnInit {
 
       // now run a fresh search
       this.currentPage = 1;
-      this.updateSearch({});
     }, 0);
   }
 
@@ -696,129 +936,148 @@ export class SearchFormComponent implements OnChanges, OnInit {
     }
 
     // Single subscription for query params (handles dates, scope, dashboard flow)
-    this.route.queryParams.subscribe((params) => {
-      // -------------- scope / dashboard handling --------------
-      if (params['scope']) {
-        this.dsoService
-          .findById(params['scope'])
-          .pipe(getFirstSucceededRemoteDataPayload())
-          .subscribe((scope: DSpaceObject) => {
-            this.selectedScope.next(scope);
-            this.updateSearch({});
-          });
-        return;
-      }
+    this.route.queryParams
+      .pipe(
+        debounceTime(50),
+        distinctUntilChanged(
+          (prev, curr) => JSON.stringify(prev) === JSON.stringify(curr),
+        ),
+      )
+      .subscribe((params) => {
+        const userQueryParam = params['userQuery'];
 
-      // Only initialize dashboard on first load
-      if (
-        this.dashboardFlag === 'dashboard' &&
-        this.uuidFromDashBoard &&
-        !this.dashboardInitialized
-      ) {
-        this.dsoService
-          .findById(this.uuidFromDashBoard)
-          .pipe(getFirstSucceededRemoteDataPayload())
-          .subscribe((scope: DSpaceObject) => {
-            this.selectedScope.next(scope);
-            // Only add filters if they have a value
-            if (this.caseNatureFilter) {
-              this._addFilter('CaseNature', this.caseNatureFilter);
-            }
-            if (this.caseTypeNameFilter) {
-              this._addFilter('CaseTypeName', this.caseTypeNameFilter);
-            }
-            this.searchMetadata = '';
-            this.searchCaseBy = '';
-            this.currentPage = 1;
-            this.dashboardInitialized = true;
-            this.updateSearch({});
-          });
-        return;
-      }
-      if (this.searchBarFlag === 'searchBar' && this.searchBarValue) {
-        this.query = this.searchBarValue;
-      }
+        if (userQueryParam && userQueryParam.trim().length > 0) {
+          this.userQuery = userQueryParam;
+        }
 
-      // If no explicit scope param — clear scope (but leave default handling elsewhere)
-      this.selectedScope.next(undefined);
-
-      // -------------- date params handling --------------
-      const dateFromParam = params['dateFrom'];
-      const dateToParam = params['dateTo'];
-
-      if (dateFromParam || dateToParam) {
-        const parsedFrom = dateFromParam ? new Date(dateFromParam) : null;
-        const parsedTo = dateToParam ? new Date(dateToParam) : null;
-
-        const fromValid = parsedFrom && !isNaN(parsedFrom.getTime());
-        const toValid = parsedTo && !isNaN(parsedTo.getTime());
-
-        if (fromValid || toValid) {
-          // normalize to midnight-local Dates
-          this.selectedFromDate = fromValid
-            ? this.normalizeToDate(parsedFrom)
-            : null;
-          this.selectedToDate = toValid ? this.normalizeToDate(parsedTo) : null;
-
-          // if both sides valid, create internalQuery (inclusive day range)
-          if (fromValid && toValid) {
-            const fromIso = new Date(
-              this.selectedFromDate!.getFullYear(),
-              this.selectedFromDate!.getMonth(),
-              this.selectedFromDate!.getDate(),
-              0,
-              0,
-              0,
-              0,
-            ).toISOString();
-            const toIso = new Date(
-              this.selectedToDate!.getFullYear(),
-              this.selectedToDate!.getMonth(),
-              this.selectedToDate!.getDate(),
-              23,
-              59,
-              59,
-              999,
-            ).toISOString();
-            this.internalQuery = `lastModified:[${fromIso} TO ${toIso}]`;
-            this.dateScopeActive = true;
-            this.appliedFilterTypes.add(this.DATE_FILTER_TYPE);
-          } else {
-            // partial date present -> don't build a range
-            this.internalQuery = null;
-          }
-
-          // sync NgbDateStruct models so inputs show values
-          this.syncDateModelsFromSelectedDates?.();
-
-          // push change detection so inputs render on refresh/navigation
-          try {
-            this.cdf.detectChanges();
-          } catch (e) {
-            /* ignore */
-          }
-
-          // update results to reflect URL date immediately
-          this.currentPage = 1;
-          this.updateSearch({});
+        // NEVER fallback to backend query
+        this.searchType = params['searchType'] || 'normal';
+        this.currentPage = +params['spc.page'] || 1;
+        // -------------- scope / dashboard handling --------------
+        if (params['scope']) {
+          this.dsoService
+            .findById(params['scope'])
+            .pipe(getFirstSucceededRemoteDataPayload())
+            .subscribe((scope: DSpaceObject) => {
+              this.selectedScope.next(scope);
+            });
           return;
         }
-      }
 
-      // If here: no valid date params found. Only clear stored dates if params explicitly absent.
-      this.selectedFromDate =
-        this.selectedFromDate && !params['dateFrom']
-          ? null
-          : this.selectedFromDate;
-      this.selectedToDate =
-        this.selectedToDate && !params['dateTo'] ? null : this.selectedToDate;
+        // Only initialize dashboard on first load
+        if (
+          this.dashboardFlag === 'dashboard' &&
+          this.uuidFromDashBoard &&
+          !this.dashboardInitialized
+        ) {
+          this.dsoService
+            .findById(this.uuidFromDashBoard)
+            .pipe(getFirstSucceededRemoteDataPayload())
+            .subscribe((scope: DSpaceObject) => {
+              this.selectedScope.next(scope);
+              // Only add filters if they have a value
+              if (this.caseNatureFilter) {
+                this._addFilter('CaseNature', this.caseNatureFilter);
+              }
+              if (this.caseTypeNameFilter) {
+                this._addFilter('CaseTypeName', this.caseTypeNameFilter);
+              }
+              this.searchMetadata = '';
+              this.searchCaseBy = '';
+              this.currentPage = 1;
+              this.dashboardInitialized = true;
+            });
+          return;
+        }
+        if (this.searchBarFlag === 'searchBar' && this.searchBarValue) {
+          // ONLY assign if it's a clean user query (no backend syntax)
+          if (!this.searchBarValue.includes('search_text:')) {
+            this.query = this.searchBarValue;
+          }
+        }
 
-      // Only call updateResults if NOT in dashboard mode after initialization
-      // In dashboard mode, let onPageChange() handle pagination updates
-      if (!this.dashboardInitialized || this.dashboardFlag !== 'dashboard') {
-        this.updateSearch({});
-      }
-    });
+        // If no explicit scope param — clear scope (but leave default handling elsewhere)
+        this.selectedScope.next(undefined);
+
+        // -------------- date params handling --------------
+        const dateFromParam = params['dateFrom'];
+        const dateToParam = params['dateTo'];
+
+        if (dateFromParam || dateToParam) {
+          const parsedFrom = dateFromParam ? new Date(dateFromParam) : null;
+          const parsedTo = dateToParam ? new Date(dateToParam) : null;
+
+          const fromValid = parsedFrom && !isNaN(parsedFrom.getTime());
+          const toValid = parsedTo && !isNaN(parsedTo.getTime());
+
+          if (fromValid || toValid) {
+            // normalize to midnight-local Dates
+            this.selectedFromDate = fromValid
+              ? this.normalizeToDate(parsedFrom)
+              : null;
+            this.selectedToDate = toValid
+              ? this.normalizeToDate(parsedTo)
+              : null;
+
+            // if both sides valid, create internalQuery (inclusive day range)
+            if (fromValid && toValid) {
+              const fromIso = new Date(
+                this.selectedFromDate!.getFullYear(),
+                this.selectedFromDate!.getMonth(),
+                this.selectedFromDate!.getDate(),
+                0,
+                0,
+                0,
+                0,
+              ).toISOString();
+              const toIso = new Date(
+                this.selectedToDate!.getFullYear(),
+                this.selectedToDate!.getMonth(),
+                this.selectedToDate!.getDate(),
+                23,
+                59,
+                59,
+                999,
+              ).toISOString();
+              this.internalQuery = `lastModified:[${fromIso} TO ${toIso}]`;
+              this.dateScopeActive = true;
+              this.appliedFilterTypes.add(this.DATE_FILTER_TYPE);
+            } else {
+              // partial date present -> don't build a range
+              this.internalQuery = null;
+            }
+
+            // sync NgbDateStruct models so inputs show values
+            this.syncDateModelsFromSelectedDates?.();
+
+            // push change detection so inputs render on refresh/navigation
+            try {
+              this.cdf.detectChanges();
+            } catch (e) {
+              /* ignore */
+            }
+
+            // update results to reflect URL date immediately
+            this.currentPage = 1;
+            // this.updateSearch({});
+            return;
+          }
+        }
+
+        // If here: no valid date params found. Only clear stored dates if params explicitly absent.
+        this.selectedFromDate =
+          this.selectedFromDate && !params['dateFrom']
+            ? null
+            : this.selectedFromDate;
+        this.selectedToDate =
+          this.selectedToDate && !params['dateTo'] ? null : this.selectedToDate;
+
+        // Only call updateResults if NOT in dashboard mode after initialization
+        // In dashboard mode, let onPageChange() handle pagination updates
+        if (!this.dashboardInitialized || this.dashboardFlag !== 'dashboard') {
+          // this.updateResults();
+        }
+      });
 
     // Navigation / reload specific handling (browser-only)
     if (isPlatformBrowser(this.platformId)) {
@@ -828,7 +1087,7 @@ export class SearchFormComponent implements OnChanges, OnInit {
       if (navEntry?.type === 'reload' && this.dashboardFlag === 'false') {
         this.isReset = true;
         this.selectedScope.next(this.defaultScope);
-        this.updateSearch({});
+        // this.updateSearch({});
       } else {
         console.log('Page was loaded normally or navigated via app');
       }
@@ -880,20 +1139,15 @@ export class SearchFormComponent implements OnChanges, OnInit {
     }
   }
 
-  onSearchCaseByChange(value) {
+  onSearchCaseByChange(value: string) {
     this.byDefaultSearchCaseByselectOnReset = value;
     if (value) {
       this.searchMetadata = '';
     }
-    this.temp = this.searchCaseBy;
   }
 
   addMetadataFilter() {
-    if (
-      this.byDefaultSearchCaseByselectOnReset === undefined ||
-      this.byDefaultSearchCaseByselectOnReset === null ||
-      this.byDefaultSearchCaseByselectOnReset === ''
-    ) {
+    if (!this.searchCaseBy) {
       this.notificationService.info(
         'Please fill/select all required fields before adding.',
       );
@@ -961,7 +1215,6 @@ export class SearchFormComponent implements OnChanges, OnInit {
     this.currentPage = 1;
     this.checkReset = 'false';
     this.isFilterDisabled('true');
-    this.updateSearch({});
   }
 
   onSortChange() {
@@ -1163,8 +1416,6 @@ export class SearchFormComponent implements OnChanges, OnInit {
 
     // Next, ensure typed searches take precedence across calls — we already do that in updateResults()
     this.currentPage = 1;
-    this.updateSearch({});
-
     // Hide calendar overlays if possible
     try {
       this.fromCal?.hideOverlay?.();

@@ -1,4 +1,4 @@
-<form #form="ngForm" (ngSubmit)="onSubmit(form.value)">
+<form (ngSubmit)="onSubmit()">
   <div class="search-controls d-flex flex-column gap-2">
     <!-- ROW 1: Search -->
     <div class="row1 d-flex align-items-center gap-2 flex-wrap">
@@ -26,10 +26,10 @@
         <input
           type="text"
           class="search-input form-control"
-          [(ngModel)]="query"
-          name="query"
+          [(ngModel)]="userQuery"
+          name="userQuery"
           placeholder="Search Items"
-          (keyup.enter)="onSubmit(form.value)"
+          (keyup.enter)="onSubmit()"
         />
         <i class="search-icon fas fa-search"></i>
       </div>
@@ -155,7 +155,7 @@
         class="filter-control"
         [(ngModel)]="searchCaseBy"
         name="searchCaseBy"
-        (change)="onSearchCaseByChange($event)"
+        (change)="onSearchCaseByChange($event.target.value)"
       >
         <option value="">Search Case By</option>
         <option

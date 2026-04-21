@@ -1,4 +1,4 @@
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, JsonPipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
@@ -33,6 +33,7 @@ import { DatePickerModule } from 'primeng/datepicker';
     PopoverModule,
     NgbDatepickerModule,
     DatePickerModule,
+    JsonPipe,
   ],
 })
 export class SearchFormComponent extends BaseComponent {}

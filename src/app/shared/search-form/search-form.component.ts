@@ -331,10 +331,58 @@ export class SearchFormComponent implements OnChanges, OnInit {
 
     let backendQuery = userQuery;
 
-    if (userQuery && this.searchType === 'phonetic') {
-      backendQuery = `search_text:${userQuery} OR search_text_phonetic:${userQuery}`;
-    }
+    if (userQuery) {
+      const normalized = userQuery.toLowerCase().trim().replace(/\s+/g, ' ');
 
+      const terms = normalized.split(' ');
+
+      switch (this.searchType) {
+        case 'phonetic':
+          backendQuery = terms
+            .map((term) => {
+              // ❌ ignore short tokens like "ch"
+              if (term.length <= 2) {
+                return `+"${term}"`; // exact only
+              }
+
+              return `
+        (
+          search_text:${term}^5
+          OR search_text_phonetic:${term}^4
+        )
+      `;
+            })
+            .join(' AND ');
+          break;
+
+        case 'fuzzy':
+          backendQuery = terms
+            .map((term) => {
+              if (term.length <= 2) {
+                return `
+          (
+            search_text:${term}*^4
+            OR search_text:${term}^1
+          )
+        `;
+              }
+              return `
+        (
+          search_text:${term}^6
+          OR search_text:${term}~2^4
+          OR search_text:${term}*^3
+        )
+      `;
+            })
+            .join(' AND ');
+          break;
+
+        default: // normal
+          backendQuery = terms
+            .map((term) => `search_text:${term}`)
+            .join(' AND ');
+      }
+    }
     const queryParams = {
       ...goToFirstPage,
 
@@ -357,214 +405,6 @@ export class SearchFormComponent implements OnChanges, OnInit {
       queryParamsHandling: 'merge',
     });
   }
-
-  // updateResults(): void {
-  //   console.log('updateResults() called with currentPage:', this.currentPage);
-
-  //   // Reset UI loading state
-  //   this.resultsRD$.next(null);
-
-  //   // Build filters: non-date fields as before, date fields as Solr range
-  //   // Year fields are handled separately further in the code below
-  //   const filters = this.filterTags
-  //     .filter((t) => t.type !== this.DATE_FILTER_TYPE)
-  //     .map((tag) => {
-  //       if (this.isDateField(tag.type)) {
-  //         const [fromStr, toStr] = tag.value.split(' to ');
-  //         if (fromStr && toStr) {
-  //           return new SearchFilter(
-  //             'f.' + tag.type,
-  //             [`[${fromStr} TO ${toStr}]`],
-  //             'equals',
-  //           );
-  //         }
-  //       } else if (this.isYearField(tag.type)) {
-  //         const [fromYear, toYear] = tag.value.split(' to ');
-  //         if (fromYear && toYear) {
-  //           return new SearchFilter(
-  //             'f.' + tag.type,
-  //             [`[${fromYear} TO ${toYear}]`],
-  //             'equals',
-  //           );
-  //         }
-  //       }
-  //       // For non-date fields, use the single value with 'contains' operator
-  //       return new SearchFilter('f.' + tag.type, [tag.value], 'contains');
-  //     })
-  //     .filter((f) => f !== undefined) as SearchFilter[];
-
-  //   // --- Setup pagination and sorting ---
-  //   const pagination = new PaginationComponentOptions();
-  //   pagination.currentPage = this.currentPage;
-  //   pagination.pageSize = this.resultsPerPage;
-
-  //   let sort: SortOptions = undefined;
-  //   if (this.sortBy && this.sortOrder) {
-  //     const order = (this.sortOrder || '').toString().toLowerCase();
-  //     const mapToSortDirection = (): SortDirection => {
-  //       const sdAny = SortDirection as any;
-  //       if (sdAny && typeof sdAny === 'object') {
-  //         if (sdAny.ASC !== undefined && sdAny.DESC !== undefined) {
-  //           return order === 'asc' ? sdAny.ASC : sdAny.DESC;
-  //         }
-  //         if (sdAny.asc !== undefined && sdAny.desc !== undefined) {
-  //           return order === 'asc' ? sdAny.asc : sdAny.desc;
-  //         }
-  //       }
-  //       return (order === 'asc' ? 'asc' : 'desc') as unknown as SortDirection;
-  //     };
-  //     const dir: SortDirection = mapToSortDirection();
-  //     sort = { field: this.sortBy, direction: dir } as SortOptions;
-  //   }
-
-  //   // --- followLinks ---
-  //   const followLinks = [
-  //     followLink<Item>('thumbnail', { isOptional: true }),
-  //     followLink<SubmissionObject>(
-  //       'item',
-  //       { isOptional: true },
-  //       followLink<Item>('thumbnail', { isOptional: true }),
-  //     ) as any,
-  //   ];
-
-  //   // --- scope ---
-  //   const scopeUuid = this.selectedScope.value?.uuid;
-
-  //   // --- Build backendQuery from ROUTE PARAMS (single source of truth) ---
-  //   let backendQuery = '*:*';
-
-  //   const term = this.route.snapshot.queryParams['query']?.trim();
-
-  //   if (term && term.length > 0) {
-  //     // const normalized = term.toLowerCase();
-  //     const normalized = term
-  //       .toLowerCase()
-  //       .normalize('NFD') // unicode normalize
-  //       .replace(/[\u0300-\u036f]/g, '') // remove accents
-  //       .replace(/[@;,#%_]/g, '') // replace special chars
-  //       .replace(/[^a-z0-9\s]/g, '') // remove non-alphanumeric
-  //       .replace(/\s+/g, ' ') // collapse multiple spaces
-  //       .trim();
-
-  //     console.log('Normalized term:', normalized);
-
-  //     switch (this.searchType) {
-  //       case 'phonetic':
-  //         const terms = normalized.split(/\s+/);
-
-  //         backendQuery = terms
-  //           .map((term) => {
-  //             return `(search_text_phonetic:${term})`;
-  //           })
-  //           .join(' AND ');
-
-  //         break;
-
-  //       case 'fuzzy': {
-  //         const terms = normalized.split(/\s+/);
-
-  //         const fuzzyQuery = terms
-  //           .map((term) => {
-  //             // Only for initials / very short terms
-  //             if (term.length <= 2) {
-  //               return `
-  //         (
-  //           search_text:${term}^20
-  //           OR search_text:${term}*^10
-  //         )
-  //       `;
-  //             }
-
-  //             return `
-  //       (
-  //         (search_text:${term})
-  //         OR (search_text:${term}~3^20)
-  //         OR (search_text_phonetic:${term}^10)
-  //       )
-  //     `;
-  //           })
-  //           .join(' AND ');
-
-  //         if (terms.length > 1) {
-  //           backendQuery = `
-  //     (
-  //       search_text:"${normalized}"^80
-  //     )
-  //     OR
-  //     (
-  //       ${fuzzyQuery}
-  //     )
-  //   `;
-  //         } else {
-  //           backendQuery = fuzzyQuery;
-  //         }
-
-  //         break;
-  //       }
-
-  //       default:
-  //         backendQuery = `search_text:${normalized}`;
-  //         break;
-  //     }
-  //   }
-
-  //   // Merge with internalQuery (date range, etc.)
-  //   if (this.internalQuery) {
-  //     backendQuery =
-  //       backendQuery === '*:*'
-  //         ? this.internalQuery
-  //         : `(${backendQuery}) AND ${this.internalQuery}`;
-  //   }
-
-  //   // --- Build Search Options ---
-  //   const searchOptions = new PaginatedSearchOptions({
-  //     query: backendQuery,
-  //     filters: filters,
-  //     pagination: pagination,
-  //     sort: sort,
-  //     configuration: 'administrativeView',
-  //     dsoTypes: [DSpaceObjectType.ITEM],
-  //     scope: scopeUuid,
-  //   });
-
-  //   // Debug
-  //   console.debug('updateResults() — pagination:', pagination);
-  //   console.debug('updateResults() — filters:', filters);
-  //   console.debug('updateResults() — searchOptions:', searchOptions);
-
-  //   // execute search
-  //   // this.searchService
-  //   //   .search(searchOptions, undefined, true, true, ...followLinks)
-  //   //   .pipe(getFirstSucceededRemoteDataPayload())
-  //   //   .subscribe({
-  //   //     next: (results: SearchObjects<DSpaceObject>) => {
-  //   //       console.log('Results page length:', results?.page?.length);
-  //   //       console.log('Results pageInfo:', results?.pageInfo);
-
-  //   //       this.totalResults =
-  //   //         results.pageInfo?.totalElements || results.page.length || 0;
-
-  //   //       if (results.page?.length > 0) {
-  //   //         this.resultFound.emit(results);
-  //   //       }
-
-  //   //       // ❗ Wrap back into RemoteData ONLY if UI expects it
-  //   //       this.resultsRD$.next({
-  //   //         payload: results,
-  //   //         hasSucceeded: true,
-  //   //       } as RemoteData<SearchObjects<DSpaceObject>>);
-
-  //   //       this.cdf.detectChanges(); // ensure UI updates with new results
-  //   //     },
-  //   //     error: (err) => {
-  //   //       console.error('Search error:', err);
-  //   //       this.resultsRD$.next(null as any);
-  //   //     },
-  //   //   });
-
-  //   // Clear suggestion box
-  //   this.metadataSuggestions = [];
-  // }
 
   /**
    * @returns {string} The base path to the search page, or the current page when inPlaceSearch is true
@@ -744,6 +584,7 @@ export class SearchFormComponent implements OnChanges, OnInit {
         'spc.page': null,
         dateFrom: null,
         dateTo: null,
+        userQuery: null,
       },
       queryParamsHandling: 'merge',
     });
@@ -759,7 +600,7 @@ export class SearchFormComponent implements OnChanges, OnInit {
     // clear the Ngb models so ngModel becomes null
     this.fromDateModel = null;
     this.toDateModel = null;
-
+    this.userQuery = '';
     // close ngb pickers if open
     try {
       this.dFromPicker?.close();

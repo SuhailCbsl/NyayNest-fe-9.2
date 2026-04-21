@@ -31,7 +31,7 @@
 
   "error-page.description.404": "Page not found",
 
-  "error-page.orcid.generic-error": "An error occurred during login via ORCID. Make sure you have shared your ORCID account email address with DSpace. If the error persists, contact the administrator",
+  "error-page.orcid.generic-error": "An error occurred during login via ORCID. Make sure you have shared your ORCID account email address with NyayNest. If the error persists, contact the administrator",
 
   "listelement.badge.access-status": "Access status:",
 
@@ -151,7 +151,7 @@
 
   "admin.registries.metadata.breadcrumbs": "Metadata registry",
 
-  "admin.registries.metadata.description": "The metadata registry maintains a list of all metadata fields available in the repository. These fields may be divided amongst multiple schemas. However, DSpace requires the qualified Dublin Core schema.",
+  "admin.registries.metadata.description": "The metadata registry maintains a list of all metadata fields available in the repository. These fields may be divided amongst multiple schemas. However, NyayNest requires the qualified Dublin Core schema.",
 
   "admin.registries.metadata.form.create": "Create metadata schema",
 
@@ -1965,7 +1965,7 @@
 
   "footer.link.accessibility": "Accessibility settings",
 
-  "footer.link.dspace": "DSpace software",
+  "footer.link.dspace": "NyayNest software",
 
   "footer.link.lyrasis": "LYRASIS",
 
@@ -2209,7 +2209,7 @@
 
   "home.title": "Home",
 
-  "home.top-level-communities.head": "Communities in DSpace",
+  "home.top-level-communities.head": "Communities in NyayNest",
 
   "home.top-level-communities.help": "Select a community to browse its collections.",
 
@@ -2297,7 +2297,7 @@
 
   "info.feedback.title": "Feedback",
 
-  "info.feedback.info": "Thanks for sharing your feedback about the DSpace system. Your comments are appreciated!",
+  "info.feedback.info": "Thanks for sharing your feedback about the NyayNest system. Your comments are appreciated!",
 
   "info.feedback.email_help": "This address will be used to follow up on your feedback.",
 
@@ -3411,7 +3411,7 @@
 
   "login.form.forgot-password": "Have you forgotten your password?",
 
-  "login.form.header": "Please log in to DSpace",
+  "login.form.header": "Please log in to NyayNest",
 
   "login.form.new-user": "New user? Click here to register.",
 
@@ -3431,7 +3431,7 @@
 
   "login.breadcrumbs": "Login",
 
-  "logout.form.header": "Log out from DSpace",
+  "logout.form.header": "Log out from NyayNest",
 
   "logout.form.submit": "Log out",
 
@@ -3471,7 +3471,7 @@
 
   "menu.section.browse_community_by_title": "By Title",
 
-  "menu.section.browse_global": "All of DSpace",
+  "menu.section.browse_global": "All of NyayNest",
 
   "menu.section.browse_global_by_author": "By Author",
 
@@ -3613,7 +3613,7 @@
 
   "metadata-export-search.submit.error": "Starting the export has failed",
 
-  "mydspace.breadcrumbs": "MyDSpace",
+  "mydspace.breadcrumbs": "NyayNest",
 
   "mydspace.description": "",
 
@@ -3667,7 +3667,7 @@
 
   "mydspace.results.no-uri": "No URI",
 
-  "mydspace.search-form.placeholder": "Search in MyDSpace...",
+  "mydspace.search-form.placeholder": "Search in NyayNest...",
 
   "mydspace.show.workflow": "Workflow tasks",
 
@@ -3675,7 +3675,7 @@
 
   "mydspace.show.supervisedWorkspace": "Supervised items",
 
-  "mydspace.status": "My DSpace status:",
+  "mydspace.status": "My NyayNest status:",
 
   "mydspace.status.mydspaceArchived": "Archived",
 
@@ -3687,7 +3687,7 @@
 
   "mydspace.status.mydspaceWorkspace": "Workspace",
 
-  "mydspace.title": "MyDSpace",
+  "mydspace.title": "NyayNest",
 
   "mydspace.upload.upload-failed": "Error creating new workspace. Please verify the content uploaded before retry.",
 
@@ -3707,7 +3707,7 @@
 
   "notification.suggestion.please": "Please",
 
-  "nav.browse.header": "All of DSpace",
+  "nav.browse.header": "All of NyayNest",
 
   "nav.community-browse.header": "By Community",
 
@@ -3723,7 +3723,7 @@
 
   "nav.main.description": "Main navigation bar",
 
-  "nav.mydspace": "MyDSpace",
+  "nav.mydspace": "NyayNest",
 
   "nav.profile": "Profile",
 
@@ -3851,7 +3851,7 @@
 
   "quality-assurance.event.reject.description": "This operation can't be undone. Reject this suggestion?",
 
-  "quality-assurance.event.accept.description": "No DSpace project selected. A new project will be created based on the suggestion data.",
+  "quality-assurance.event.accept.description": "No NyayNest project selected. A new project will be created based on the suggestion data.",
 
   "quality-assurance.event.action.cancel": "Cancel",
 
@@ -4347,7 +4347,7 @@
 
   "register-page.registration.header": "New user registration",
 
-  "register-page.registration.info": "Register an account to subscribe to collections for email updates, and submit new items to DSpace.",
+  "register-page.registration.info": "Register an account to subscribe to collections for email updates, and submit new items to NyayNest.",
 
   "register-page.registration.email": "Email Address *",
 
@@ -4445,9 +4445,9 @@
 
   "repository.image.logo": "Repository logo",
 
-  "repository.title": "DSpace Repository",
+  "repository.title": "NyayNest Repository",
 
-  "repository.title.prefix": "DSpace Repository :: ",
+  "repository.title.prefix": "NyayNest Repository :: ",
 
   "resource-policies.add.button": "Add",
 
@@ -5054,9 +5054,9 @@
 
   "submission.import-external.title.none": "Import metadata from an external source",
 
-  "submission.import-external.page.hint": "Enter a query above to find items from the web to import in to DSpace.",
+  "submission.import-external.page.hint": "Enter a query above to find items from the web to import in to NyayNest.",
 
-  "submission.import-external.back-to-my-dspace": "Back to MyDSpace",
+  "submission.import-external.back-to-my-dspace": "Back to NyayNest",
 
   "submission.import-external.search.placeholder": "Search the external source",
 
@@ -5930,7 +5930,7 @@
 
   "thumbnail.person.placeholder": "No Profile Picture Available",
 
-  title: "DSpace",
+  title: "NyayNest",
 
   "vocabulary-treeview.header": "Hierarchical tree view",
 

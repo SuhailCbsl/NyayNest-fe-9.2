@@ -14,9 +14,7 @@ export const notAuthenticatedGuard: CanActivateFn = () => {
   return authService.isAuthenticated().pipe(
     map((isLoggedIn) => {
       if (isLoggedIn) {
-        router.navigate(['/dashboard']);
-        // redirectService.redirect(PAGE_NOT_FOUND_PATH);
-        return false;
+        return router.createUrlTree(['/dashboard']);
       }
 
       return true;

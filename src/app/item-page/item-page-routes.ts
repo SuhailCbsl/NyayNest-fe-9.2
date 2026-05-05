@@ -21,8 +21,19 @@ import { orcidPageGuard } from './orcid-page/orcid-page.guard';
 import { ThemedItemPageComponent } from './simple/themed-item-page.component';
 import { versionResolver } from './version-page/version.resolver';
 import { VersionPageComponent } from './version-page/version-page/version-page.component';
+import { ItemPageDocViewComponent } from './doc-view/item-page-doc-view.component';
 
 export const ROUTES: Route[] = [
+  {
+    path: ':id/doc-view',
+    component: ItemPageDocViewComponent,
+    resolve: {
+      dso: itemPageResolver,
+    },
+    data: {
+      fullScreen: true,
+    },
+  },
   {
     path: ':id',
     resolve: {
@@ -55,8 +66,10 @@ export const ROUTES: Route[] = [
       },
       {
         path: ITEM_EDIT_PATH,
-        loadChildren: () => import('./edit-item-page/edit-item-page-routes')
-          .then((m) => m.ROUTES),
+        loadChildren: () =>
+          import('./edit-item-page/edit-item-page-routes').then(
+            (m) => m.ROUTES,
+          ),
       },
       {
         path: UPLOAD_BITSTREAM_PATH,

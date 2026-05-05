@@ -1,0 +1,7 @@
+<div *ngIf="fileUrl$ | async as fileUrl">
+  <div
+    id="docViewerContainer"
+    [attr.data-url]="fileUrl"
+    [attr.data-meta]="item.metadata | json"
+  ></div>
+</div>

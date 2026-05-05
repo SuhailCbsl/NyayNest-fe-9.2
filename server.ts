@@ -36,27 +36,20 @@ import { join } from 'path';
 
 import { enableProdMode } from '@angular/core';
 
-
 import { environment } from './src/environments/environment';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { hasValue } from './src/app/shared/empty.util';
 import { UIServerConfig } from './src/config/ui-server-config.interface';
 import bootstrap from './src/main.server';
 import { buildAppConfig } from './src/config/config.server';
-import {
-  APP_CONFIG,
-  AppConfig,
-} from './src/config/app-config.interface';
+import { APP_CONFIG, AppConfig } from './src/config/app-config.interface';
 import { extendEnvironmentWithAppConfig } from './src/config/config.util';
 import { logStartupMessage } from './startup-message';
 import { TOKENITEM } from './src/app/core/auth/models/auth-token-info.model';
 import { CommonEngine } from '@angular/ssr/node';
 import { APP_BASE_HREF } from '@angular/common';
-import {
-  REQUEST,
-  RESPONSE,
-} from './src/express.tokens';
-import { SsrExcludePatterns } from "./src/config/ssr-config.interface";
+import { REQUEST, RESPONSE } from './src/express.tokens';
+import { SsrExcludePatterns } from './src/config/ssr-config.interface';
 
 /*
  * Set path for the browser application's dist folder
@@ -69,7 +62,9 @@ const indexHtml = join(DIST_FOLDER, 'index.html');
 
 const cookieParser = require('cookie-parser');
 
-const appConfig: AppConfig = buildAppConfig(join(DIST_FOLDER, 'assets/config.json'));
+const appConfig: AppConfig = buildAppConfig(
+  join(DIST_FOLDER, 'assets/config.json'),
+);
 
 // cache of SSR pages for known bots, only enabled in production mode
 let botCache: LRUCache<string, any>;
@@ -85,7 +80,6 @@ const REST_BASE_URL = environment.rest.ssrBaseUrl || environment.rest.baseUrl;
 
 // The Express app is exported so that it can be used by serverless Functions.
 export function app() {
-
   const router = express.Router();
 
   /*
@@ -106,11 +100,13 @@ export function app() {
   if (environment.production) {
     enableProdMode();
     initCache();
-    server.use(compression({
-      // only compress responses we've marked as SSR
-      // otherwise, this middleware may compress files we've chosen not to compress via compression-webpack-plugin
-      filter: (_, res) => res.locals.ssr,
-    }));
+    server.use(
+      compression({
+        // only compress responses we've marked as SSR
+        // otherwise, this middleware may compress files we've chosen not to compress via compression-webpack-plugin
+        filter: (_, res) => res.locals.ssr,
+      }),
+    );
   }
 
   /*
@@ -145,7 +141,7 @@ export function app() {
   server.get('/robots.txt', (req, res) => {
     res.setHeader('content-type', 'text/plain');
     res.render('assets/robots.txt.ejs', {
-      'origin': req.protocol + '://' + req.headers.host,
+      origin: req.protocol + '://' + req.headers.host,
     });
   });
 
@@ -157,20 +153,26 @@ export function app() {
   /**
    * Proxy the sitemaps
    */
-  router.use('/sitemap**', createProxyMiddleware({
-    target: `${REST_BASE_URL}/sitemaps`,
-    pathRewrite: path => path.replace(environment.ui.nameSpace, '/'),
-    changeOrigin: true,
-  }));
+  router.use(
+    '/sitemap**',
+    createProxyMiddleware({
+      target: `${REST_BASE_URL}/sitemaps`,
+      pathRewrite: (path) => path.replace(environment.ui.nameSpace, '/'),
+      changeOrigin: true,
+    }),
+  );
 
   /**
    * Proxy the linksets
    */
-  router.use('/signposting**', createProxyMiddleware({
-    target: `${REST_BASE_URL}`,
-    pathRewrite: path => path.replace(environment.ui.nameSpace, '/'),
-    changeOrigin: true,
-  }));
+  router.use(
+    '/signposting**',
+    createProxyMiddleware({
+      target: `${REST_BASE_URL}`,
+      pathRewrite: (path) => path.replace(environment.ui.nameSpace, '/'),
+      changeOrigin: true,
+    }),
+  );
 
   /**
    * Checks if the rateLimiter property is present
@@ -189,15 +191,19 @@ export function app() {
    * Serve static resources (images, i18n messages, …)
    * Handle pre-compressed files with [express-static-gzip](https://github.com/tkoenig89/express-static-gzip)
    */
-  router.get('*.*', addCacheControl, expressStaticGzip(DIST_FOLDER, {
-    index: false,
-    enableBrotli: true,
-    orderPreference: ['br', 'gzip'],
-  }));
+  router.get(
+    '*.*',
+    addCacheControl,
+    expressStaticGzip(DIST_FOLDER, {
+      index: false,
+      enableBrotli: true,
+      orderPreference: ['br', 'gzip'],
+    }),
+  );
 
   /*
-  * Fallthrough to the IIIF viewer (must be included in the build).
-  */
+   * Fallthrough to the IIIF viewer (must be included in the build).
+   */
   router.use('/iiif', express.static(IIIF_VIEWER, { index: false }));
 
   /**
@@ -220,12 +226,19 @@ export function app() {
  * The callback function to serve server side angular
  */
 function ngApp(req, res, next) {
-  if (environment.ssr.enabled && req.method === 'GET' && (req.path === '/' || !isExcludedFromSsr(req.path, environment.ssr.excludePathPatterns))) {
+  if (
+    environment.ssr.enabled &&
+    req.method === 'GET' &&
+    (req.path === '/' ||
+      !isExcludedFromSsr(req.path, environment.ssr.excludePathPatterns))
+  ) {
     // Render the page to user via SSR (server side rendering)
     serverSideRender(req, res, next);
   } else {
     // If preboot is disabled, just serve the client
-    console.log('Universal off, serving for direct client-side rendering (CSR)');
+    console.log(
+      'Universal off, serving for direct client-side rendering (CSR)',
+    );
     clientSideRender(req, res);
   }
 }
@@ -241,7 +254,9 @@ function ngApp(req, res, next) {
  */
 function serverSideRender(req, res, next, sendToUser: boolean = true) {
   const { protocol, originalUrl, baseUrl, headers } = req;
-  const commonEngine = new CommonEngine({ enablePerformanceProfiler: environment.ssr.enablePerformanceProfiler });
+  const commonEngine = new CommonEngine({
+    enablePerformanceProfiler: environment.ssr.enablePerformanceProfiler,
+  });
   // Render the page via SSR (server side rendering)
   commonEngine
     .render({
@@ -275,14 +290,20 @@ function serverSideRender(req, res, next, sendToUser: boolean = true) {
 
       if (hasValue(html)) {
         // Replace REST URL with UI URL
-        if (environment.ssr.replaceRestUrl && REST_BASE_URL !== environment.rest.baseUrl) {
-          html = html.replace(new RegExp(REST_BASE_URL, 'g'), environment.rest.baseUrl);
+        if (
+          environment.ssr.replaceRestUrl &&
+          REST_BASE_URL !== environment.rest.baseUrl
+        ) {
+          html = html.replace(
+            new RegExp(REST_BASE_URL, 'g'),
+            environment.rest.baseUrl,
+          );
         }
 
         // save server side rendered page to cache (if any are enabled)
         saveToCache(req, html);
         if (sendToUser) {
-          res.locals.ssr = true;  // mark response as SSR (enables text compression)
+          res.locals.ssr = true; // mark response as SSR (enables text compression)
           // send rendered page to user
           res.send(html);
         }
@@ -293,14 +314,18 @@ function serverSideRender(req, res, next, sendToUser: boolean = true) {
         // When this error occurs we can't fall back to CSR because the response has already been
         // sent. These errors occur for various reasons in universal, not all of which are in our
         // control to solve.
-        console.warn('Warning [ERR_HTTP_HEADERS_SENT]: Tried to set headers after they were sent to the client');
+        console.warn(
+          'Warning [ERR_HTTP_HEADERS_SENT]: Tried to set headers after they were sent to the client',
+        );
       } else {
         console.warn('Error in server-side rendering (SSR)');
         if (hasValue(err)) {
           console.warn('Error details : ', err);
         }
         if (sendToUser) {
-          console.warn('Falling back to serving direct client-side rendering (CSR).');
+          console.warn(
+            'Falling back to serving direct client-side rendering (CSR).',
+          );
           clientSideRender(req, res);
         }
       }
@@ -317,17 +342,22 @@ function clientSideRender(req, res) {
   // Replace base href dynamically
   html = html.replace(
     /<base href="[^"]*">/,
-    `<base href="${namespace.endsWith('/') ? namespace : namespace + '/'}">`
+    `<base href="${namespace.endsWith('/') ? namespace : namespace + '/'}">`,
   );
 
   // Replace REST URL with UI URL
-  if (environment.ssr.replaceRestUrl && REST_BASE_URL !== environment.rest.baseUrl) {
-    html = html.replace(new RegExp(REST_BASE_URL, 'g'), environment.rest.baseUrl);
+  if (
+    environment.ssr.replaceRestUrl &&
+    REST_BASE_URL !== environment.rest.baseUrl
+  ) {
+    html = html.replace(
+      new RegExp(REST_BASE_URL, 'g'),
+      environment.rest.baseUrl,
+    );
   }
 
   res.send(html);
 }
-
 
 /*
  * Adds a Cache-Control HTTP header to the response.
@@ -348,7 +378,7 @@ function initCache() {
     // Initialize a new "least-recently-used" item cache (where least recently used pages are removed first)
     // See https://www.npmjs.com/package/lru-cache
     // When enabled, each page defaults to expiring after 1 day (defined in default-app-config.ts)
-    botCache = new LRUCache( {
+    botCache = new LRUCache({
       max: environment.cache.serverSide.botCache.max,
       ttl: environment.cache.serverSide.botCache.timeToLive,
       allowStale: environment.cache.serverSide.botCache.allowStale,
@@ -360,7 +390,7 @@ function initCache() {
     // may expire pages more frequently.
     // When enabled, each page defaults to expiring after 10 seconds (defined in default-app-config.ts)
     // to minimize anonymous users seeing out-of-date content
-    anonymousCache = new LRUCache( {
+    anonymousCache = new LRUCache({
       max: environment.cache.serverSide.anonymousCache.max,
       ttl: environment.cache.serverSide.anonymousCache.timeToLive,
       allowStale: environment.cache.serverSide.anonymousCache.allowStale,
@@ -374,7 +404,11 @@ function initCache() {
 function botCacheEnabled(): boolean {
   // Caching is only enabled if SSR is enabled AND
   // "max" pages to cache is greater than zero
-  return environment.ssr.enabled && environment.cache.serverSide.botCache.max && (environment.cache.serverSide.botCache.max > 0);
+  return (
+    environment.ssr.enabled &&
+    environment.cache.serverSide.botCache.max &&
+    environment.cache.serverSide.botCache.max > 0
+  );
 }
 
 /**
@@ -383,7 +417,11 @@ function botCacheEnabled(): boolean {
 function anonymousCacheEnabled(): boolean {
   // Caching is only enabled if SSR is enabled AND
   // "max" pages to cache is greater than zero
-  return environment.ssr.enabled && environment.cache.serverSide.anonymousCache.max && (environment.cache.serverSide.anonymousCache.max > 0);
+  return (
+    environment.ssr.enabled &&
+    environment.cache.serverSide.anonymousCache.max &&
+    environment.cache.serverSide.anonymousCache.max > 0
+  );
 }
 
 /**
@@ -398,7 +436,13 @@ function cacheCheck(req, res, next) {
   if (botCacheEnabled() && isbot(req.get('user-agent'))) {
     cachedCopy = checkCacheForRequest('bot', botCache, req, res, next);
   } else if (anonymousCacheEnabled() && !isUserAuthenticated(req)) {
-    cachedCopy = checkCacheForRequest('anonymous', anonymousCache, req, res, next);
+    cachedCopy = checkCacheForRequest(
+      'anonymous',
+      anonymousCache,
+      req,
+      res,
+      next,
+    );
   }
 
   // If cached copy exists, return it to the user.
@@ -413,7 +457,7 @@ function cacheCheck(req, res, next) {
         }
       });
     }
-    res.locals.ssr = true;  // mark response as SSR-generated (enables text compression)
+    res.locals.ssr = true; // mark response as SSR-generated (enables text compression)
     res.send(cachedCopy.page);
 
     // Tell Express to skip all other handlers for this path
@@ -437,26 +481,40 @@ function cacheCheck(req, res, next) {
  * @param next the next function
  * @returns cached copy (if found) or undefined (if not found)
  */
-function checkCacheForRequest(cacheName: string, cache: LRUCache<string, any>, req, res, next): any {
+function checkCacheForRequest(
+  cacheName: string,
+  cache: LRUCache<string, any>,
+  req,
+  res,
+  next,
+): any {
   // Get the cache key for this request
   const key = getCacheKey(req);
 
   // Check if this page is in our cache
   const cachedCopy = cache.get(key);
   if (cachedCopy) {
-    if (environment.cache.serverSide.debug) { console.log(`CACHE HIT FOR ${key} in ${cacheName} cache`); }
+    if (environment.cache.serverSide.debug) {
+      console.log(`CACHE HIT FOR ${key} in ${cacheName} cache`);
+    }
 
     // Check if cached copy is expired (If expired, the key will now be gone from cache)
     // NOTE: This will only occur when "allowStale=true", as it means the "get(key)" above returned a stale value.
     if (!cache.has(key)) {
-      if (environment.cache.serverSide.debug) { console.log(`CACHE EXPIRED FOR ${key} in ${cacheName} cache. Re-rendering...`); }
+      if (environment.cache.serverSide.debug) {
+        console.log(
+          `CACHE EXPIRED FOR ${key} in ${cacheName} cache. Re-rendering...`,
+        );
+      }
       // Update cached copy by rerendering server-side
       // NOTE: In this scenario the currently cached copy will be returned to the current user.
       // This re-render is performed behind the scenes to update cached copy for next user.
       serverSideRender(req, res, next, false);
     }
   } else {
-    if (environment.cache.serverSide.debug) { console.log(`CACHE MISS FOR ${key} in ${cacheName} cache.`); }
+    if (environment.cache.serverSide.debug) {
+      console.log(`CACHE MISS FOR ${key} in ${cacheName} cache.`);
+    }
   }
 
   // return page from cache
@@ -489,9 +547,13 @@ function saveToCache(req, page: any) {
   if (!isUserAuthenticated(req)) {
     const key = getCacheKey(req);
     // Avoid caching "/reload/[random]" paths (these are hard refreshes after logout)
-    if (key.startsWith('/reload')) { return; }
+    if (key.startsWith('/reload')) {
+      return;
+    }
     // Avoid caching not successful responses (status code different from 2XX status)
-    if (hasNotSucceeded(req.res.statusCode)) { return; }
+    if (hasNotSucceeded(req.res.statusCode)) {
+      return;
+    }
 
     // Retrieve response headers to save, if any
     const headers = retrieveHeaders(req.res);
@@ -499,13 +561,17 @@ function saveToCache(req, page: any) {
     // (NOTE: has() will return false if page is expired in cache)
     if (botCacheEnabled() && !botCache.has(key)) {
       botCache.set(key, { page, headers });
-      if (environment.cache.serverSide.debug) { console.log(`CACHE SAVE FOR ${key} in bot cache.`); }
+      if (environment.cache.serverSide.debug) {
+        console.log(`CACHE SAVE FOR ${key} in bot cache.`);
+      }
     }
 
     // If anonymous cache is enabled, save it to that cache if it doesn't exist or is expired
     if (anonymousCacheEnabled() && !anonymousCache.has(key)) {
       anonymousCache.set(key, { page, headers });
-      if (environment.cache.serverSide.debug) { console.log(`CACHE SAVE FOR ${key} in anonymous cache.`); }
+      if (environment.cache.serverSide.debug) {
+        console.log(`CACHE SAVE FOR ${key} in anonymous cache.`);
+      }
     }
   }
 }
@@ -521,7 +587,10 @@ function hasNotSucceeded(statusCode) {
 
 function retrieveHeaders(response) {
   const headers = Object.create({});
-  if (Array.isArray(environment.cache.serverSide.headers) && environment.cache.serverSide.headers.length > 0) {
+  if (
+    Array.isArray(environment.cache.serverSide.headers) &&
+    environment.cache.serverSide.headers.length > 0
+  ) {
     environment.cache.serverSide.headers.forEach((header) => {
       if (response.hasHeader(header)) {
         if (environment.cache.serverSide.debug) {
@@ -546,7 +615,9 @@ function isUserAuthenticated(req): boolean {
  * Callback function for when the server has started
  */
 function serverStarted() {
-  console.log(`[${new Date().toTimeString()}] Listening at ${environment.ui.baseUrl}`);
+  console.log(
+    `[${new Date().toTimeString()}] Listening at ${environment.ui.baseUrl}`,
+  );
 }
 
 /*
@@ -554,19 +625,24 @@ function serverStarted() {
  * @param keys SSL credentials
  */
 function createHttpsServer(keys) {
-  const listener = createServer({
-    key: keys.serviceKey,
-    cert: keys.certificate,
-  }, app()).listen(environment.ui.port, environment.ui.host, () => {
+  const listener = createServer(
+    {
+      key: keys.serviceKey,
+      cert: keys.certificate,
+    },
+    app(),
+  ).listen(environment.ui.port, environment.ui.host, () => {
     serverStarted();
   });
 
   // Graceful shutdown when signalled
   const terminator = createHttpTerminator({ server: listener });
   process.on('SIGINT', () => {
-    void (async ()=> {
+    void (async () => {
       console.debug('Closing HTTPS server on signal');
-      await terminator.terminate().catch(e => { console.error(e); });
+      await terminator.terminate().catch((e) => {
+        console.error(e);
+      });
       console.debug('HTTPS server closed');
     })();
   });
@@ -590,8 +666,11 @@ function run() {
   process.on('SIGINT', () => {
     void (async () => {
       console.debug('Closing HTTP server on signal');
-      await terminator.terminate().catch(e => { console.error(e); });
-      console.debug('HTTP server closed.');return undefined;
+      await terminator.terminate().catch((e) => {
+        console.error(e);
+      });
+      console.debug('HTTP server closed.');
+      return undefined;
     })();
   });
 }
@@ -600,12 +679,12 @@ function start() {
   logStartupMessage(environment);
 
   /*
-  * If SSL is enabled
-  * - Read credentials from configuration files
-  * - Call script to start an HTTPS server with these credentials
-  * When SSL is disabled
-  * - Start an HTTP server on the configured port and host
-  */
+   * If SSL is enabled
+   * - Read credentials from configuration files
+   * - Call script to start an HTTPS server with these credentials
+   * When SSL is disabled
+   * - Start an HTTP server on the configured port and host
+   */
   if (environment.ui.ssl) {
     let serviceKey;
     try {
@@ -627,16 +706,21 @@ function start() {
         certificate: certificate,
       });
     } else {
-      console.warn('Disabling certificate validation and proceeding with a self-signed certificate. If this is a production server, it is recommended that you configure a valid certificate instead.');
+      console.warn(
+        'Disabling certificate validation and proceeding with a self-signed certificate. If this is a production server, it is recommended that you configure a valid certificate instead.',
+      );
 
       process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; // lgtm[js/disabling-certificate-validation]
 
-      createCertificate({
-        days: 1,
-        selfSigned: true,
-      }, (error, keys) => {
-        createHttpsServer(keys);
-      });
+      createCertificate(
+        {
+          days: 1,
+          selfSigned: true,
+        },
+        (error, keys) => {
+          createHttpsServer(keys);
+        },
+      );
     }
   } else {
     run();
@@ -649,12 +733,15 @@ function start() {
  * @param path
  * @param excludePathPattern
  */
-function isExcludedFromSsr(path: string, excludePathPattern: SsrExcludePatterns[]): boolean {
-  const patterns = excludePathPattern.map(p =>
-    new RegExp(p.pattern, p.flag || '')
+function isExcludedFromSsr(
+  path: string,
+  excludePathPattern: SsrExcludePatterns[],
+): boolean {
+  const patterns = excludePathPattern.map(
+    (p) => new RegExp(p.pattern, p.flag || ''),
   );
   return patterns.some((regex) => {
-    return regex.test(path)
+    return regex.test(path);
   });
 }
 

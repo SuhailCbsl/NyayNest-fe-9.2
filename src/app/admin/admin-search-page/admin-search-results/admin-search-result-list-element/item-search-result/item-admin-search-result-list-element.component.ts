@@ -11,6 +11,7 @@ import { ItemAdminSearchResultActionsComponent } from '../../item-admin-search-r
 import { ThemedThumbnailComponent } from 'src/app/thumbnail/themed-thumbnail.component';
 import { CommonModule } from '@angular/common';
 import { getItemPageRoute } from 'src/app/item-page/item-page-routing-paths';
+import { RouterModule } from '@angular/router';
 
 @listableObjectComponent(
   ItemSearchResult,
@@ -26,6 +27,7 @@ import { getItemPageRoute } from 'src/app/item-page/item-page-routing-paths';
     ItemAdminSearchResultActionsComponent,
     ListableObjectComponentLoaderComponent,
     ThemedThumbnailComponent,
+    RouterModule,
   ],
 })
 /**
@@ -45,7 +47,7 @@ export class ItemAdminSearchResultListElementComponent
       this.showThumbnails ?? this.appConfig.browseBy.showThumbnails;
 
     // route for item click
-    this.itemPageRoute = getItemPageRoute(this.dso);
+    this.itemPageRoute = `/items/${this.dso.uuid}/doc-view`;
   }
 
   highlight(field: string): string {

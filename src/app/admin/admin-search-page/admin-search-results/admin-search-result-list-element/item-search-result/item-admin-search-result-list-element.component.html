@@ -2,7 +2,9 @@
   <!-- Thumbnail -->
   <div class="thumbnail-wrapper" *ngIf="showThumbnails">
     <ng-container *ngIf="dso?.thumbnail | async as thumb; else noThumb">
-      <ds-thumbnail [thumbnail]="thumb"></ds-thumbnail>
+      <a [routerLink]="[itemPageRoute]" target="_blank">
+        <ds-thumbnail [thumbnail]="thumb"></ds-thumbnail>
+      </a>
     </ng-container>
 
     <ng-template #noThumb>
@@ -14,11 +16,13 @@
   <div class="flex-grow-1">
     <!-- Case ID Badge -->
     <div class="mb-2">
-      <span class="badge bg-warning text-dark">
-        {{ dso.firstMetadataValue("dc.CaseTypeName") }}/
-        {{ dso.firstMetadataValue("dc.title") }}/
-        {{ dso.firstMetadataValue("dc.CaseYear") }}
-      </span>
+      <a [routerLink]="[itemPageRoute]" target="_blank">
+        <span class="badge bg-warning text-dark">
+          {{ dso.firstMetadataValue("dc.CaseTypeName") }}/{{
+            dso.firstMetadataValue("dc.title")
+          }}/{{ dso.firstMetadataValue("dc.CaseYear") }}
+        </span>
+      </a>
     </div>
 
     <!-- Your full metadata layout -->

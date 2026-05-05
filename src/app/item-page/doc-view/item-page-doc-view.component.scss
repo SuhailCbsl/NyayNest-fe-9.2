@@ -1,0 +1,30 @@
+:host {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #fff;
+    z-index: 9999;
+}
+
+/* remove any inherited spacing */
+body,
+html {
+    margin: 10% !important;
+    padding: 0;
+}
+
+/* viewer container */
+#docViewerContainer {
+    // width: 100vw !important;
+    height: 100vh !important;
+    margin-left: 3.5% !important;
+}
+
+/* PDF.js */
+#outerContainer,
+#viewerContainer,
+#viewer {
+    height: 100% !important;
+}

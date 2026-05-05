@@ -1,0 +1,23 @@
+<div class="files-view-container">
+  <!-- Left Panel: List of bitstreams -->
+  <div class="file-list">
+    {{ bitstreams | json }}
+    <!-- <h2>{{ item | json }}</h2> -->
+    <ul>
+      <li
+        *ngFor="let bitstream of bitstreams"
+        [ngStyle]="
+          bitstream === selectedBitstream
+            ? { 'background-color': 'lightblue', 'font-weight': 'bold' }
+            : {}
+        "
+        (click)="selectBitstream(bitstream)"
+      >
+        {{ bitstream.name }}
+      </li>
+    </ul>
+  </div>
+  <div class="doc-view-container">
+    <item-file-view [file]="selectedBitstream" [item]="item"></item-file-view>
+  </div>
+</div>

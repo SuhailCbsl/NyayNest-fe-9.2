@@ -25,14 +25,16 @@ import {
  */
 export function getItemPageLinksToFollow(): FollowLinkConfig<Item>[] {
   const followLinks: FollowLinkConfig<Item>[] = [
-    followLink('owningCollection', {},
-      followLink('parentCommunity', {},
-        followLink('parentCommunity')),
+    followLink(
+      'owningCollection',
+      {},
+      followLink('parentCommunity', {}, followLink('parentCommunity')),
     ),
     followLink('relationships'),
     followLink('version', {}, followLink('versionhistory')),
     followLink('thumbnail'),
   ];
+  followLink('bundles', {}, followLink('bitstreams'));
   if (environment.item.showAccessStatuses) {
     followLinks.push(followLink('accessStatus'));
   }
@@ -45,14 +47,9 @@ export const itemResolver: ResolveFn<RemoteData<Item>> = (
   itemService: ItemDataService = inject(ItemDataService),
   store: Store<AppState> = inject(Store<AppState>),
 ): Observable<RemoteData<Item>> => {
-  const itemRD$ = itemService.findById(
-    route.params.id,
-    true,
-    false,
-    ...getItemPageLinksToFollow(),
-  ).pipe(
-    getFirstCompletedRemoteData(),
-  );
+  const itemRD$ = itemService
+    .findById(route.params.id, true, false, ...getItemPageLinksToFollow())
+    .pipe(getFirstCompletedRemoteData());
 
   itemRD$.subscribe((itemRD: RemoteData<Item>) => {
     store.dispatch(new ResolvedAction(state.url, itemRD.payload));

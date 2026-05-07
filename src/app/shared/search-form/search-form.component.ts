@@ -281,7 +281,18 @@ export class SearchFormComponent implements OnChanges, OnInit {
     @Inject(PLATFORM_ID) private platformId: Object,
     private cdf: ChangeDetectorRef,
     @Inject(APP_CONFIG) protected appConfig?: AppConfig,
-  ) {}
+  ) {
+    this.showThumbnails =
+      this.showThumbnails ?? this.appConfig.browseBy.showThumbnails;
+    this.route.queryParams.subscribe((params) => {
+      this.caseTypeNameFilter = params['name'];
+      this.caseNatureFilter = params['casenature'];
+      this.dashboardFlag = params['flag'];
+      this.uuidFromDashBoard = params['uuid'];
+      this.searchBarFlag = params['flag'] || '';
+      this.searchBarValue = params['query'] || '';
+    });
+  }
 
   /**
    * Retrieve the scope object from the URL so we can show its name
@@ -430,11 +441,17 @@ export class SearchFormComponent implements OnChanges, OnInit {
    * Open the scope modal so the user can select DSO as scope
    */
   openScopeModal() {
+    if (this.dashboardFlag === 'dashboard') {
+      this.resetAllFilters();
+      return;
+    }
+    this.isReset = false;
     const ref = this.modalService.open(ScopeSelectorModalComponent);
     ref.componentInstance.scopeChange
       .pipe(take(1))
       .subscribe((scope: DSpaceObject) => {
-        this.selectedScope.next(scope);
+        this.selectedScope.next(undefined);
+        setTimeout(() => this.selectedScope.next(scope));
         this.onScopeChange(scope);
       });
   }
@@ -1365,7 +1382,6 @@ export class SearchFormComponent implements OnChanges, OnInit {
 
     if (!removed) return;
 
-    // ✅ remove from applied filters (THIS WAS MISSING)
     this.appliedFilterTypes.delete(removed.type);
 
     // remove from map

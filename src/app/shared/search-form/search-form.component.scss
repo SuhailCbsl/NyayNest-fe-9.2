@@ -296,7 +296,7 @@
   align-items: center;
   flex: 1;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .year-range-filter span {
@@ -332,7 +332,6 @@
   margin-left: 10px;
 }
 
-/* � POPOVER FIX (VERY IMPORTANT) */
 :host ::ng-deep .p-popover,
 :host ::ng-deep .p-popover-panel,
 :host ::ng-deep .p-popover-content {
@@ -359,7 +358,6 @@
   box-shadow: none;
 }
 
-/* 🔹 Popover content */
 .search-option {
   padding: 8px 12px;
   cursor: pointer;
@@ -421,26 +419,45 @@
   background: #e3f2fd;
 }
 
-/* 🔥 FIX ICON COLOR */
 :host ::ng-deep .white-search-btn .pi {
   color: #6b7280 !important;
 }
 
-.p-datepicker-panel {
-  position: absolute !important;
-  left: auto !important;
-  right: auto !important;
+// .p-datepicker-panel {
+//   position: absolute !important;
+//   left: auto !important;
+//   right: auto !important;
+// }
+
+// .p-datepicker-panel {
+//   transform: none !important;
+// }
+
+// .p-datepicker {
+//   position: static !important;
+// }
+
+:host ::ng-deep .p-datepicker-panel {
+  z-index: 1001;
+  transform-origin: center bottom;
+  top: -190.5px;
+  left: 0px;
+  background: white !important;
+  width: 210% !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16) !important;
+  border-radius: 10px !important;
 }
 
-.p-datepicker-panel {
-  transform: none !important;
+:host ::ng-deep .p-datepicker-year:hover {
+  background-color: #e9ecef !important;
+  cursor: pointer;
 }
 
-.p-datepicker {
-  position: static !important;
+:host::ng-deep .p-icon:hover {
+  background-color: #e9ecef !important;
+  cursor: pointer;
 }
 
-/* RESPONSIVE */
 @media (max-width: 768px) {
   .row1,
   .filters-row {
@@ -455,5 +472,69 @@
   .date-range-inline {
     width: 100%;
     justify-content: space-between;
+  }
+}
+.filter-tags {
+  display: flex;
+  flex-wrap: nowrap;
+  /* Prevent wrapping */
+  overflow-x: auto;
+  /* Enable horizontal scroll */
+  white-space: nowrap;
+  /* Keep items on a single line */
+  gap: 8px;
+  padding: 8px;
+  scrollbar-color: #f94f00 transparent;
+  position: relative;
+}
+
+/* WebKit Scrollbar (Chrome, Safari, Edge) */
+.filter-tags::-webkit-scrollbar {
+  height: 4px;
+  /* Small height as per your screenshot */
+}
+
+.filter-tags::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.filter-tags::-webkit-scrollbar-thumb {
+  background-color: #f94f00;
+  border-radius: 10px;
+}
+
+.filter-tags::-webkit-scrollbar-thumb:hover {
+  background-color: #e94400;
+}
+
+.filter-tags::-webkit-scrollbar-button {
+  background-color: #174377;
+  width: 12px;
+  height: 8px;
+}
+
+.filter-tag {
+  background: #fff3e0;
+  color: #e65100;
+  padding: 4px 8px;
+  border-radius: 15px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  animation: fadeIn 0.3s ease-in;
+  white-space: nowrap;
+
+  .close {
+    cursor: pointer;
+    font-weight: bold;
+    padding: 2px 4px;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background: rgba(230, 81, 0, 0.2);
+    }
   }
 }

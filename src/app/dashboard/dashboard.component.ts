@@ -952,7 +952,7 @@ export class DashboardComponent {
 
   goToCaseDetail(item: any, data): void {
     this.selectedItem = item;
-    this.router.navigate(['/search'], {
+    this.router.navigate(['/admin/search'], {
       queryParams: {
         name: item.name,
         count: item.count,

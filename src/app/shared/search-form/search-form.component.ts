@@ -147,14 +147,13 @@ export class SearchFormComponent implements OnChanges, OnInit {
   availableFilters: SearchFilterConfig[] = [];
   appliedFilterTypes: Set<string> = new Set();
 
-  sortBy: string = 'dc.date.accessioned';
-  sortOrder: string = 'desc';
-  resultPerPage: string = '10';
+  sortBy: string = '';
+  sortOrder: string = '';
+  resultPerPage: number = 10;
   searchCaseBy: string = '';
 
   currentPage: number = 1;
   totalResults: number = 0;
-  resultsPerPage: number = 10;
   temp: any;
 
   searchType: 'phonetic' | 'fuzzy' | 'normal' = 'normal';
@@ -264,6 +263,16 @@ export class SearchFormComponent implements OnChanges, OnInit {
 
   userQuery: string = '';
 
+  startDate = { year: 2000, month: 1, day: 1 };
+
+  minDate = { year: 1900, month: 1, day: 1 };
+
+  maxDate = { year: 2100, month: 12, day: 31 };
+
+  currentYear = new Date().getFullYear();
+  currentMonth = new Date().getMonth() + 1;
+  currentDay = new Date().getDate();
+
   constructor(
     protected router: Router,
     protected searchService: SearchService,
@@ -336,8 +345,6 @@ export class SearchFormComponent implements OnChanges, OnInit {
    * @param data Updated parameters
    */
   updateSearch(data: any) {
-    const goToFirstPage = { 'spc.page': 1 };
-
     let userQuery = this?.userQuery?.trim();
 
     let backendQuery = userQuery;
@@ -351,7 +358,6 @@ export class SearchFormComponent implements OnChanges, OnInit {
         case 'phonetic':
           backendQuery = terms
             .map((term) => {
-              // ❌ ignore short tokens like "ch"
               if (term.length <= 2) {
                 return `+"${term}"`; // exact only
               }
@@ -395,19 +401,14 @@ export class SearchFormComponent implements OnChanges, OnInit {
       }
     }
     const queryParams = {
-      ...goToFirstPage,
-
-      // ❗ DO NOT spread full data
       scope: data.scope,
       sortBy: data.sortBy,
       sortOrder: data.sortOrder,
-      resultPerPage: data.resultPerPage,
       searchCaseBy: data.searchCaseBy,
       searchMetadata: data.searchMetadata,
 
-      // ✅ only backend query goes to URL
       query: backendQuery,
-      userQuery: userQuery && userQuery.length > 0 ? userQuery : null, // optional: include original user query for reference (not used by backend)
+      userQuery: userQuery && userQuery.length > 0 ? userQuery : null,
       searchType: this.searchType,
     };
 
@@ -542,12 +543,10 @@ export class SearchFormComponent implements OnChanges, OnInit {
           this.metadataSuggestions.length > 0 &&
           this.activeSuggestionIndex >= 0
         ) {
-          // ✅ suggestion selected
           this.selectSuggestion(
             this.metadataSuggestions[this.activeSuggestionIndex],
           );
         } else if (this.searchMetadata && this.searchCaseBy) {
-          // ✅ manual search (THIS is your requirement)
           this.applyFilter(this.searchCaseBy, this.searchMetadata);
           this.searchMetadata = '';
         }
@@ -598,7 +597,8 @@ export class SearchFormComponent implements OnChanges, OnInit {
         scope: null,
         query: null,
         phonetic: null,
-        'spc.page': null,
+        'spc.rpp': 10,
+        'spc.page': 1,
         dateFrom: null,
         dateTo: null,
         userQuery: null,
@@ -641,10 +641,9 @@ export class SearchFormComponent implements OnChanges, OnInit {
 
     // Reset pagination/sorting/flags ---
     this.currentPage = 1;
-    this.resultsPerPage = 10;
-    this.resultPerPage = '10';
-    this.sortBy = 'dc.title';
-    this.sortOrder = 'asc';
+    this.resultPerPage = 10;
+    this.sortBy = '';
+    this.sortOrder = '';
     // this.phoneticEnabled = false;
     this.checkReset = 'true';
     this.isFilterDisabled('true');
@@ -722,7 +721,23 @@ export class SearchFormComponent implements OnChanges, OnInit {
   }
 
   ngOnInit() {
-    // Ensure phonetic checkbox state matches URL on initial load
+    this.startDate = {
+      year: this.currentYear,
+      month: this.currentMonth,
+      day: this.currentDay,
+    };
+
+    this.minDate = {
+      year: this.currentYear - 100 > 1900 ? this.currentYear - 100 : 1900,
+      month: 1,
+      day: 1,
+    };
+
+    this.maxDate = {
+      year: this.currentYear + 100 < 2100 ? this.currentYear + 100 : 2100,
+      month: 12,
+      day: 31,
+    };
     this.getState();
     console.log('Dynamic State Value on Init:', this.state);
 
@@ -811,6 +826,9 @@ export class SearchFormComponent implements OnChanges, OnInit {
         // NEVER fallback to backend query
         this.searchType = params['searchType'] || 'normal';
         this.currentPage = +params['spc.page'] || 1;
+        if (params['spc.rpp']) {
+          this.resultPerPage = +params['spc.rpp'];
+        }
         // -------------- scope / dashboard handling --------------
         if (params['scope']) {
           this.dsoService
@@ -933,7 +951,7 @@ export class SearchFormComponent implements OnChanges, OnInit {
         // Only call updateResults if NOT in dashboard mode after initialization
         // In dashboard mode, let onPageChange() handle pagination updates
         if (!this.dashboardInitialized || this.dashboardFlag !== 'dashboard') {
-          // this.updateResults();
+          this.updateResults();
         }
       });
 
@@ -1087,7 +1105,25 @@ export class SearchFormComponent implements OnChanges, OnInit {
 
   onResultPerPageChange() {
     this.currentPage = 1;
-    this.updateSearch({ pageSize: this.resultPerPage });
+
+    this.paginationService.updateRoute('spc', {
+      page: 1,
+      pageSize: this.resultPerPage,
+    });
+  }
+
+  updateResults() {
+    console.log('UPDATE RESULTS CALLED');
+    console.log('currentPage:', this.currentPage);
+    console.log('resultPerPage:', this.resultPerPage);
+
+    this.submitSearch.emit({
+      query: this.userQuery,
+      page: this.currentPage,
+      rpp: this.resultPerPage,
+      sortBy: this.sortBy,
+      sortOrder: this.sortOrder,
+    });
   }
 
   // When you programmatically set selectedFromDate elsewhere (eg from URL params),
@@ -1124,7 +1160,7 @@ export class SearchFormComponent implements OnChanges, OnInit {
     const filterParam = `f.${type}`;
 
     const queryParams: any = {};
-    queryParams[filterParam] = `${value},equals`;
+    queryParams[filterParam] = `${value.toLowerCase()},equals`;
 
     this.currentPage = 1;
 

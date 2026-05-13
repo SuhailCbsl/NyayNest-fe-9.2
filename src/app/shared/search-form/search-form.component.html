@@ -97,6 +97,9 @@
             (click)="dFrom.toggle()"
             name="fromDate"
             class="form-control date-input-ngb"
+            [startDate]="startDate"
+            [minDate]="minDate"
+            [maxDate]="maxDate"
             readonly
           />
           <button
@@ -124,6 +127,9 @@
             (click)="dTo.toggle()"
             name="toDate"
             class="form-control date-input-ngb"
+            [startDate]="startDate"
+            [minDate]="minDate"
+            [maxDate]="maxDate"
             readonly
           />
           <button
@@ -213,6 +219,9 @@
                 name="fromDate"
                 (click)="dDateFrom.toggle()"
                 class="form-control date-input-ngb"
+                [startDate]="startDate"
+                [minDate]="minDate"
+                [maxDate]="maxDate"
                 readonly
               />
               <button
@@ -235,6 +244,9 @@
                 (click)="dDateTo.toggle()"
                 name="toDate"
                 class="form-control date-input-ngb"
+                [startDate]="startDate"
+                [minDate]="minDate"
+                [maxDate]="maxDate"
                 readonly
               />
               <button
@@ -298,9 +310,7 @@
         name="sortBy"
         (change)="onSortChange()"
       >
-        <option value="dc.date.accessioned" disabled selected hidden>
-          Sort By
-        </option>
+        <option value="" disabled hidden>Sort By</option>
         <option value="dc.title">Case Number</option>
         <option value="dc.CaseYear">Case Year</option>
         <option value="dc.CaseStatus">Case Status</option>
@@ -314,7 +324,7 @@
         name="sortOrder"
         (change)="onSortOrderChange()"
       >
-        <option value="asc" disabled selected hidden>Sort Order</option>
+        <option value="" disabled hidden>Sort Order</option>
 
         <option value="asc">Ascending</option>
         <option value="desc">Descending</option>
@@ -327,12 +337,11 @@
         name="resultPerPage"
         (change)="onResultPerPageChange()"
       >
-        <option value="">Result Per Pages</option>
-        <option value="5">5</option>
-        <option value="10">10</option>
-        <option value="20">20</option>
-        <option value="50">50</option>
-        <option value="100">100</option>
+        <option [ngValue]="5">5</option>
+        <option [ngValue]="10">10</option>
+        <option [ngValue]="20">20</option>
+        <option [ngValue]="50">50</option>
+        <option [ngValue]="100">100</option>
       </select>
     </div>
     <!-- Filter Tags -->

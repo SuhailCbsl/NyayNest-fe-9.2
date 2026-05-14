@@ -34,7 +34,10 @@ before(() => {
     // Find URL of our REST API & save to global variable via task
     let baseRestUrl = FALLBACK_TEST_REST_BASE_URL;
     if (!config.rest.baseUrl) {
-      console.warn("Could not load 'rest.baseUrl' from config.json. Falling back to " + FALLBACK_TEST_REST_BASE_URL);
+      console.warn(
+        "Could not load 'rest.baseUrl' from config.json. Falling back to " +
+          FALLBACK_TEST_REST_BASE_URL,
+      );
     } else {
       baseRestUrl = config.rest.baseUrl;
     }
@@ -43,12 +46,14 @@ before(() => {
     // Find domain of our REST API & save to global variable via task.
     let baseDomain = FALLBACK_TEST_REST_DOMAIN;
     if (!config.rest.host) {
-      console.warn("Could not load 'rest.host' from config.json. Falling back to " + FALLBACK_TEST_REST_DOMAIN);
+      console.warn(
+        "Could not load 'rest.host' from config.json. Falling back to " +
+          FALLBACK_TEST_REST_DOMAIN,
+      );
     } else {
       baseDomain = config.rest.host;
     }
     cy.task('saveRestBaseDomain', baseDomain);
-
   });
 });
 
@@ -56,7 +61,10 @@ before(() => {
 beforeEach(() => {
   // Pre-agree to all Orejime cookies by setting the orejime-anonymous cookie
   // This just ensures it doesn't get in the way of matching other objects in the page.
-  cy.setCookie('orejime-anonymous', '{"authentication":true,"preferences":true,"acknowledgement":true,"google-analytics":true,"correlation-id":true,"accessibility":true}');
+  cy.setCookie(
+    'orejime-anonymous',
+    '{"authentication":true,"preferences":true,"acknowledgement":true,"google-analytics":true,"correlation-id":true,"accessibility":true}',
+  );
 
   // Remove any CSRF cookies saved from prior tests
   cy.clearCookie(DSPACE_XSRF_COOKIE);
@@ -64,7 +72,7 @@ beforeEach(() => {
 
 // NOTE: FALLBACK_TEST_REST_BASE_URL is only used if Cypress cannot read the REST API BaseURL
 // from the Angular UI's config.json. See 'before()' above.
-const FALLBACK_TEST_REST_BASE_URL = 'http://localhost:8080/server';
+const FALLBACK_TEST_REST_BASE_URL = 'http://localhost:8081/server';
 const FALLBACK_TEST_REST_DOMAIN = 'localhost';
 
 // USEFUL REGEX for testing

@@ -1,8 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  ComponentFixture,
-  TestBed,
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
   DYNAMIC_FORM_CONTROL_MAP_FN,
   DynamicCheckboxModel,
@@ -53,7 +50,6 @@ import { SectionsService } from '../sections.service';
 import { SubmissionSectionAccessesComponent } from './section-accesses.component';
 import { SectionAccessesService } from './section-accesses.service';
 
-
 function getMockDsDynamicTypeBindRelationService(): DsDynamicTypeBindRelationService {
   return jasmine.createSpyObj('DsDynamicTypeBindRelationService', {
     getRelatedFormModel: jasmine.createSpy('getRelatedFormModel'),
@@ -84,7 +80,8 @@ describe('SubmissionSectionAccessesComponent', () => {
 
   const sectionData = {
     header: 'submit.progressbar.accessCondition',
-    config: 'http://localhost:8080/server/api/config/submissionaccessoptions/AccessConditionDefaultConfiguration',
+    config:
+      'http://localhost:8081/server/api/config/submissionaccessoptions/AccessConditionDefaultConfiguration',
     mandatory: true,
     sectionType: 'accessCondition',
     collapsed: false,
@@ -100,7 +97,6 @@ describe('SubmissionSectionAccessesComponent', () => {
   };
 
   describe('First with canChangeDiscoverable true', () => {
-
     beforeEach(async () => {
       await TestBed.configureTestingModule({
         imports: [
@@ -111,28 +107,42 @@ describe('SubmissionSectionAccessesComponent', () => {
         ],
         providers: [
           { provide: SectionsService, useValue: sectionsServiceStub },
-          { provide: SubmissionAccessesConfigDataService, useValue: submissionAccessesConfigService },
+          {
+            provide: SubmissionAccessesConfigDataService,
+            useValue: submissionAccessesConfigService,
+          },
           { provide: SectionAccessesService, useValue: sectionAccessesService },
-          { provide: SectionFormOperationsService, useValue: sectionFormOperationsService },
+          {
+            provide: SectionFormOperationsService,
+            useValue: sectionFormOperationsService,
+          },
           { provide: JsonPatchOperationsBuilder, useValue: operationsBuilder },
           { provide: FormService, useValue: getMockFormService() },
           { provide: Store, useValue: storeStub },
-          { provide: SubmissionJsonPatchOperationsService, useValue: SubmissionJsonPatchOperationsServiceStub },
+          {
+            provide: SubmissionJsonPatchOperationsService,
+            useValue: SubmissionJsonPatchOperationsServiceStub,
+          },
           { provide: 'sectionDataProvider', useValue: sectionData },
           { provide: 'submissionIdProvider', useValue: '1508' },
-          { provide: DsDynamicTypeBindRelationService, useValue: getMockDsDynamicTypeBindRelationService() },
+          {
+            provide: DsDynamicTypeBindRelationService,
+            useValue: getMockDsDynamicTypeBindRelationService(),
+          },
           { provide: SubmissionObjectDataService, useValue: {} },
           { provide: SubmissionService, useValue: {} },
           { provide: XSRFService, useValue: {} },
           { provide: APP_CONFIG, useValue: environment },
           { provide: APP_DATA_SERVICES_MAP, useValue: {} },
-          { provide: DYNAMIC_FORM_CONTROL_MAP_FN, useValue: dsDynamicFormControlMapFn },
+          {
+            provide: DYNAMIC_FORM_CONTROL_MAP_FN,
+            useValue: dsDynamicFormControlMapFn,
+          },
           { provide: LiveRegionService, useValue: getLiveRegionServiceStub() },
           FormBuilderService,
           provideMockStore({}),
         ],
-      })
-        .compileComponents();
+      }).compileComponents();
     });
 
     beforeEach(() => {
@@ -160,7 +170,9 @@ describe('SubmissionSectionAccessesComponent', () => {
 
     it('formModel should have 1 model type checkbox and 1 model type array', () => {
       expect(component.formModel[0] instanceof DynamicCheckboxModel).toBeTrue();
-      expect(component.formModel[1] instanceof DynamicFormArrayModel).toBeTrue();
+      expect(
+        component.formModel[1] instanceof DynamicFormArrayModel,
+      ).toBeTrue();
     });
 
     it('formModel type array should have formgroup with 1 input and 2 datepickers', () => {
@@ -176,9 +188,15 @@ describe('SubmissionSectionAccessesComponent', () => {
       const maxStartDate = { year: 2024, month: 12, day: 20 };
       const maxEndDate = { year: 2022, month: 6, day: 20 };
 
-      const startDateModel = formbuilderService.findById('startDate', component.formModel);
+      const startDateModel = formbuilderService.findById(
+        'startDate',
+        component.formModel,
+      );
       expect(startDateModel.max).toEqual(maxStartDate);
-      const endDateModel = formbuilderService.findById('endDate', component.formModel);
+      const endDateModel = formbuilderService.findById(
+        'endDate',
+        component.formModel,
+      );
       expect(endDateModel.max).toEqual(maxEndDate);
     });
 
@@ -197,7 +215,6 @@ describe('SubmissionSectionAccessesComponent', () => {
   });
 
   describe('when canDescoverable is false', () => {
-
     beforeEach(async () => {
       formService = getMockFormService();
       await TestBed.configureTestingModule({
@@ -209,29 +226,42 @@ describe('SubmissionSectionAccessesComponent', () => {
         ],
         providers: [
           { provide: SectionsService, useValue: sectionsServiceStub },
-          { provide: SubmissionAccessesConfigDataService, useValue: getSubmissionAccessesConfigNotChangeDiscoverableService() },
+          {
+            provide: SubmissionAccessesConfigDataService,
+            useValue: getSubmissionAccessesConfigNotChangeDiscoverableService(),
+          },
           { provide: SectionAccessesService, useValue: sectionAccessesService },
-          { provide: SectionFormOperationsService, useValue: sectionFormOperationsService },
+          {
+            provide: SectionFormOperationsService,
+            useValue: sectionFormOperationsService,
+          },
           { provide: JsonPatchOperationsBuilder, useValue: operationsBuilder },
           { provide: FormService, useValue: formService },
           { provide: Store, useValue: storeStub },
-          { provide: SubmissionJsonPatchOperationsService, useValue: SubmissionJsonPatchOperationsServiceStub },
+          {
+            provide: SubmissionJsonPatchOperationsService,
+            useValue: SubmissionJsonPatchOperationsServiceStub,
+          },
           { provide: 'sectionDataProvider', useValue: sectionData },
           { provide: 'submissionIdProvider', useValue: '1508' },
-          { provide: DsDynamicTypeBindRelationService, useValue: getMockDsDynamicTypeBindRelationService() },
+          {
+            provide: DsDynamicTypeBindRelationService,
+            useValue: getMockDsDynamicTypeBindRelationService(),
+          },
           { provide: SubmissionObjectDataService, useValue: {} },
           { provide: SubmissionService, useValue: {} },
           { provide: XSRFService, useValue: {} },
           { provide: APP_CONFIG, useValue: environment },
           { provide: APP_DATA_SERVICES_MAP, useValue: {} },
-          { provide: DYNAMIC_FORM_CONTROL_MAP_FN, useValue: dsDynamicFormControlMapFn },
+          {
+            provide: DYNAMIC_FORM_CONTROL_MAP_FN,
+            useValue: dsDynamicFormControlMapFn,
+          },
           { provide: LiveRegionService, useValue: getLiveRegionServiceStub() },
           FormBuilderService,
           provideMockStore({}),
-
         ],
-      })
-        .compileComponents();
+      }).compileComponents();
     });
 
     beforeEach(() => {
@@ -243,14 +273,14 @@ describe('SubmissionSectionAccessesComponent', () => {
       fixture.detectChanges();
     });
 
-
     it('should have formModel length should be 1', () => {
       expect(component.formModel.length).toEqual(1);
     });
 
     it('formModel should have only 1 model type array', () => {
-      expect(component.formModel[0] instanceof DynamicFormArrayModel).toBeTrue();
+      expect(
+        component.formModel[0] instanceof DynamicFormArrayModel,
+      ).toBeTrue();
     });
-
   });
 });

@@ -3,10 +3,7 @@ import deepFreeze from 'deep-freeze';
 
 import { RestRequestMethod } from '../data/rest-request-method';
 import { RemoveFromObjectCacheAction } from './object-cache.actions';
-import {
-  AddToSSBAction,
-  EmptySSBAction,
-} from './server-sync-buffer.actions';
+import { AddToSSBAction, EmptySSBAction } from './server-sync-buffer.actions';
 import { serverSyncBufferReducer } from './server-sync-buffer.reducer';
 
 class NullAction extends RemoveFromObjectCacheAction {
@@ -19,22 +16,24 @@ class NullAction extends RemoveFromObjectCacheAction {
 }
 
 describe('serverSyncBufferReducer', () => {
-  const selfLink1 = 'https://localhost:8080/api/core/items/1698f1d3-be98-4c51-9fd8-6bfedcbd59b7';
-  const selfLink2 = 'https://localhost:8080/api/core/items/28b04544-1766-4e82-9728-c4e93544ecd3';
+  const selfLink1 =
+    'https://localhost:8081/api/core/items/1698f1d3-be98-4c51-9fd8-6bfedcbd59b7';
+  const selfLink2 =
+    'https://localhost:8081/api/core/items/28b04544-1766-4e82-9728-c4e93544ecd3';
   const testState = {
-    buffer:
-      [
-        {
-          href: selfLink1,
-          method: RestRequestMethod.PATCH,
-        },
-        {
-          href: selfLink2,
-          method: RestRequestMethod.GET,
-        },
-      ],
+    buffer: [
+      {
+        href: selfLink1,
+        method: RestRequestMethod.PATCH,
+      },
+      {
+        href: selfLink2,
+        method: RestRequestMethod.GET,
+      },
+    ],
   };
-  const newSelfLink = 'https://localhost:8080/api/core/items/1ce6b5ae-97e1-4e5a-b4b0-f9029bad10c0';
+  const newSelfLink =
+    'https://localhost:8081/api/core/items/1ce6b5ae-97e1-4e5a-b4b0-f9029bad10c0';
 
   deepFreeze(testState);
 
@@ -83,7 +82,11 @@ describe('serverSyncBufferReducer', () => {
     const action = new EmptySSBAction(RestRequestMethod.PATCH);
     // testState has already been frozen above
     const emptyState = serverSyncBufferReducer(testState, action);
-    expect(emptyState).toEqual({ buffer: testState.buffer.filter((entry) => entry.method !== RestRequestMethod.PATCH) });
+    expect(emptyState).toEqual({
+      buffer: testState.buffer.filter(
+        (entry) => entry.method !== RestRequestMethod.PATCH,
+      ),
+    });
   });
 
   it('should add an entry to the buffer if the AddSSBAction is dispatched', () => {
@@ -91,8 +94,8 @@ describe('serverSyncBufferReducer', () => {
     // testState has already been frozen above
     const newState = serverSyncBufferReducer(testState, action);
     expect(newState.buffer).toContain({
-      href: newSelfLink, method: RestRequestMethod.PUT,
-    })
-    ;
+      href: newSelfLink,
+      method: RestRequestMethod.PUT,
+    });
   });
 });

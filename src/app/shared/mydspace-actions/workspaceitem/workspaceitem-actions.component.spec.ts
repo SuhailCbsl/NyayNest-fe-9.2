@@ -3,24 +3,11 @@ import {
   Injector,
   NO_ERRORS_SCHEMA,
 } from '@angular/core';
-import {
-  ComponentFixture,
-  TestBed,
-  waitForAsync,
-} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import {
-  ActivatedRoute,
-  Router,
-} from '@angular/router';
-import {
-  NgbModal,
-  NgbModule,
-} from '@ng-bootstrap/ng-bootstrap';
-import {
-  TranslateLoader,
-  TranslateModule,
-} from '@ngx-translate/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
 
 import { AuthService } from '../../../core/auth/auth.service';
@@ -91,7 +78,11 @@ const item = Object.assign(new Item(), {
   },
 });
 const rd = createSuccessfulRemoteDataObject(item);
-mockObject = Object.assign(new WorkspaceItem(), { item: of(rd), id: '1234', uuid: '1234' });
+mockObject = Object.assign(new WorkspaceItem(), {
+  item: of(rd),
+  id: '1234',
+  uuid: '1234',
+});
 
 const ePersonMock: EPerson = Object.assign(new EPerson(), {
   handle: null,
@@ -160,16 +151,18 @@ const ePersonMock: EPerson = Object.assign(new EPerson(), {
   },
   _links: {
     groups: {
-      href: 'http://localhost:8080/server/api/eperson/epersons/914955b1-cf2e-4884-8af7-a166aa24cf73/groups',
+      href: 'http://localhost:8081/server/api/eperson/epersons/914955b1-cf2e-4884-8af7-a166aa24cf73/groups',
     },
     self: {
-      href: 'http://localhost:8080/server/api/eperson/epersons/914955b1-cf2e-4884-8af7-a166aa24cf73',
+      href: 'http://localhost:8081/server/api/eperson/epersons/914955b1-cf2e-4884-8af7-a166aa24cf73',
     },
   },
 });
 
 authService = jasmine.createSpyObj('authService', {
-  getAuthenticatedUserFromStore: jasmine.createSpy('getAuthenticatedUserFromStore'),
+  getAuthenticatedUserFromStore: jasmine.createSpy(
+    'getAuthenticatedUserFromStore',
+  ),
 });
 
 describe('WorkspaceitemActionsComponent', () => {
@@ -190,7 +183,10 @@ describe('WorkspaceitemActionsComponent', () => {
       ],
       providers: [
         Injector,
-        { provide: NotificationsService, useValue: new NotificationsServiceStub() },
+        {
+          provide: NotificationsService,
+          useValue: new NotificationsServiceStub(),
+        },
         { provide: Router, useValue: new RouterStub() },
         { provide: WorkspaceitemDataService, useValue: mockDataService },
         { provide: SearchService, useValue: searchService },
@@ -201,9 +197,11 @@ describe('WorkspaceitemActionsComponent', () => {
         NgbModal,
       ],
       schemas: [NO_ERRORS_SCHEMA],
-    }).overrideComponent(WorkspaceitemActionsComponent, {
-      set: { changeDetection: ChangeDetectionStrategy.Default },
-    }).compileComponents();
+    })
+      .overrideComponent(WorkspaceitemActionsComponent, {
+        set: { changeDetection: ChangeDetectionStrategy.Default },
+      })
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -211,7 +209,9 @@ describe('WorkspaceitemActionsComponent', () => {
     component = fixture.componentInstance;
     component.object = mockObject;
     notificationsServiceStub = TestBed.inject(NotificationsService as any);
-    (authService.getAuthenticatedUserFromStore as jasmine.Spy).and.returnValue(of(ePersonMock));
+    (authService.getAuthenticatedUserFromStore as jasmine.Spy).and.returnValue(
+      of(ePersonMock),
+    );
     fixture.detectChanges();
   });
 
@@ -240,7 +240,9 @@ describe('WorkspaceitemActionsComponent', () => {
   });
 
   it('should display view button', () => {
-    const btn = fixture.debugElement.query(By.css('button[data-test="view-btn"]'));
+    const btn = fixture.debugElement.query(
+      By.css('button[data-test="view-btn"]'),
+    );
 
     expect(btn).not.toBeNull();
   });
@@ -253,7 +255,9 @@ describe('WorkspaceitemActionsComponent', () => {
       btn.nativeElement.click();
       fixture.detectChanges();
 
-      const confirmBtn: any = ((document as any).querySelector('.modal-footer .btn-danger'));
+      const confirmBtn: any = (document as any).querySelector(
+        '.modal-footer .btn-danger',
+      );
       confirmBtn.click();
 
       fixture.detectChanges();
@@ -268,8 +272,12 @@ describe('WorkspaceitemActionsComponent', () => {
   });
 
   it('should display a success notification on delete success', waitForAsync(() => {
-    spyOn((component as any).modalService, 'open').and.returnValue({ result: Promise.resolve('ok') });
-    mockDataService.delete.and.returnValue(createSuccessfulRemoteDataObject$({}));
+    spyOn((component as any).modalService, 'open').and.returnValue({
+      result: Promise.resolve('ok'),
+    });
+    mockDataService.delete.and.returnValue(
+      createSuccessfulRemoteDataObject$({}),
+    );
     spyOn(component, 'reload');
 
     component.confirmDiscard('ok');
@@ -281,8 +289,12 @@ describe('WorkspaceitemActionsComponent', () => {
   }));
 
   it('should display an error notification on delete failure', waitForAsync(() => {
-    spyOn((component as any).modalService, 'open').and.returnValue({ result: Promise.resolve('ok') });
-    mockDataService.delete.and.returnValue(createFailedRemoteDataObject$('Error', 500));
+    spyOn((component as any).modalService, 'open').and.returnValue({
+      result: Promise.resolve('ok'),
+    });
+    mockDataService.delete.and.returnValue(
+      createFailedRemoteDataObject$('Error', 500),
+    );
     spyOn(component, 'reload');
 
     component.confirmDiscard('ok');
@@ -299,7 +311,9 @@ describe('WorkspaceitemActionsComponent', () => {
 
     fixture.whenStable().then(() => {
       expect(searchService.getEndpoint).toHaveBeenCalled();
-      expect(requestServce.removeByHrefSubstring).toHaveBeenCalledWith('discover/search/objects');
+      expect(requestServce.removeByHrefSubstring).toHaveBeenCalledWith(
+        'discover/search/objects',
+      );
     });
   }));
 });

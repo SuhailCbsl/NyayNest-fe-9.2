@@ -25,7 +25,6 @@ import { RouterModule } from '@angular/router';
   imports: [
     CommonModule,
     ItemAdminSearchResultActionsComponent,
-    ListableObjectComponentLoaderComponent,
     ThemedThumbnailComponent,
     RouterModule,
   ],

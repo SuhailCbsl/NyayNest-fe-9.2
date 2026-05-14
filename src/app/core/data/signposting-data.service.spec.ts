@@ -1,8 +1,4 @@
-import {
-  fakeAsync,
-  TestBed,
-  tick,
-} from '@angular/core/testing';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
 
 import { APP_CONFIG } from '../../../config/app-config.interface';
@@ -37,12 +33,15 @@ describe('SignpostingDataService', () => {
 
   const environmentRest = {
     rest: {
-      baseUrl: 'http://localhost:8080',
+      baseUrl: 'http://localhost:8081',
     },
   };
 
   beforeEach(() => {
-    const restSpy = jasmine.createSpyObj('DspaceRestService', ['get', 'getWithHeaders']);
+    const restSpy = jasmine.createSpyObj('DspaceRestService', [
+      'get',
+      'getWithHeaders',
+    ]);
 
     TestBed.configureTestingModule({
       providers: [
@@ -53,7 +52,9 @@ describe('SignpostingDataService', () => {
     });
 
     service = TestBed.inject(SignpostingDataService);
-    restServiceSpy = TestBed.inject(DspaceRestService) as jasmine.SpyObj<DspaceRestService>;
+    restServiceSpy = TestBed.inject(
+      DspaceRestService,
+    ) as jasmine.SpyObj<DspaceRestService>;
   });
 
   it('should be created', () => {
@@ -62,7 +63,7 @@ describe('SignpostingDataService', () => {
 
   it('should return signposting links', fakeAsync(() => {
     const uuid = '123';
-    const baseUrl = 'http://localhost:8080';
+    const baseUrl = 'http://localhost:8081';
 
     restServiceSpy.get.and.returnValue(of(mockResponse));
 
@@ -77,12 +78,14 @@ describe('SignpostingDataService', () => {
     tick();
 
     expect(result).toEqual(expectedResult);
-    expect(restServiceSpy.get).toHaveBeenCalledWith(`${baseUrl}/signposting/links/${uuid}`);
+    expect(restServiceSpy.get).toHaveBeenCalledWith(
+      `${baseUrl}/signposting/links/${uuid}`,
+    );
   }));
 
   it('should handle error and return an empty array', fakeAsync(() => {
     const uuid = '123';
-    const baseUrl = 'http://localhost:8080';
+    const baseUrl = 'http://localhost:8081';
 
     restServiceSpy.get.and.returnValue(of(mockErrResponse));
 
@@ -95,6 +98,8 @@ describe('SignpostingDataService', () => {
     tick();
 
     expect(result).toEqual([]);
-    expect(restServiceSpy.get).toHaveBeenCalledWith(`${baseUrl}/signposting/links/${uuid}`);
+    expect(restServiceSpy.get).toHaveBeenCalledWith(
+      `${baseUrl}/signposting/links/${uuid}`,
+    );
   }));
 });

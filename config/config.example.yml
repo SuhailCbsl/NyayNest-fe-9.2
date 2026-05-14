@@ -74,7 +74,7 @@ rest:
   nameSpace: /server
   # Provide a different REST url to be used during SSR execution. It must contain the whole url including protocol, server port and
   # server namespace (uncomment to use it).
-  #ssrBaseUrl: http://localhost:8080/server
+  #ssrBaseUrl: http://localhost:8081/server
 
 # Caching settings
 cache:

@@ -62,7 +62,7 @@ export class DefaultAppConfig implements AppConfig {
   rest: ServerConfig = {
     ssl: false,
     host: 'localhost',
-    port: 8080,
+    port: 8081,
     // NOTE: Space is capitalized because 'namespace' is a reserved string in TypeScript
     nameSpace: '/',
   };

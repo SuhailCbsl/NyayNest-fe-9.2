@@ -1,13 +1,6 @@
 import { Injector } from '@angular/core';
-import {
-  fakeAsync,
-  TestBed,
-  tick,
-} from '@angular/core/testing';
-import {
-  MatomoInitializerService,
-  MatomoTracker,
-} from 'ngx-matomo-client';
+import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { MatomoInitializerService, MatomoTracker } from 'ngx-matomo-client';
 import { MatomoTestingModule } from 'ngx-matomo-client/testing';
 import { of } from 'rxjs';
 
@@ -39,12 +32,27 @@ describe('MatomoService', () => {
   let configService: jasmine.SpyObj<ConfigurationDataService>;
 
   beforeEach(() => {
-    matomoTracker = jasmine.createSpyObj('MatomoTracker', ['setConsentGiven', 'forgetConsentGiven', 'getVisitorId']);
-    matomoInitializer = jasmine.createSpyObj('MatomoInitializerService', ['initializeTracker', 'initialize']);
-    orejimeService = jasmine.createSpyObj('OrejimeService', ['getSavedPreferences']);
-    nativeWindowService = jasmine.createSpyObj('NativeWindowService', [], { nativeWindow: {} });
-    configService = jasmine.createSpyObj('ConfigurationDataService', ['findByPropertyName']);
-    configService.findByPropertyName.and.returnValue(createFailedRemoteDataObject$());
+    matomoTracker = jasmine.createSpyObj('MatomoTracker', [
+      'setConsentGiven',
+      'forgetConsentGiven',
+      'getVisitorId',
+    ]);
+    matomoInitializer = jasmine.createSpyObj('MatomoInitializerService', [
+      'initializeTracker',
+      'initialize',
+    ]);
+    orejimeService = jasmine.createSpyObj('OrejimeService', [
+      'getSavedPreferences',
+    ]);
+    nativeWindowService = jasmine.createSpyObj('NativeWindowService', [], {
+      nativeWindow: {},
+    });
+    configService = jasmine.createSpyObj('ConfigurationDataService', [
+      'findByPropertyName',
+    ]);
+    configService.findByPropertyName.and.returnValue(
+      createFailedRemoteDataObject$(),
+    );
 
     TestBed.configureTestingModule({
       imports: [MatomoTestingModule.forRoot()],
@@ -68,7 +76,9 @@ describe('MatomoService', () => {
   it('should set changeMatomoConsent on native window', () => {
     orejimeService.getSavedPreferences.and.returnValue(of({ matomo: true }));
     service.init();
-    expect(nativeWindowService.nativeWindow.changeMatomoConsent).toBe(service.changeMatomoConsent);
+    expect(nativeWindowService.nativeWindow.changeMatomoConsent).toBe(
+      service.changeMatomoConsent,
+    );
   });
 
   it('should call setConsentGiven when consent is true', () => {
@@ -85,15 +95,30 @@ describe('MatomoService', () => {
 
   it('should initialize tracker with values from angular configuration', () => {
     environment.production = true;
-    environment.matomo = { trackerUrl: 'http://localhost:80801' };
-    configService.findByPropertyName.withArgs(MATOMO_TRACKER_URL).and.returnValue(
-      createSuccessfulRemoteDataObject$(Object.assign(new ConfigurationProperty(),{ values: ['http://matomo'] })),
-    );
-    configService.findByPropertyName.withArgs(MATOMO_ENABLED).and.returnValue(
-      createSuccessfulRemoteDataObject$(Object.assign(new ConfigurationProperty(),{ values: ['true'] })),
-    );
-    configService.findByPropertyName.withArgs(MATOMO_SITE_ID).and.returnValue(
-      createSuccessfulRemoteDataObject$(Object.assign(new ConfigurationProperty(), { values: ['1'] })));
+    environment.matomo = { trackerUrl: 'http://localhost:80811' };
+    configService.findByPropertyName
+      .withArgs(MATOMO_TRACKER_URL)
+      .and.returnValue(
+        createSuccessfulRemoteDataObject$(
+          Object.assign(new ConfigurationProperty(), {
+            values: ['http://matomo'],
+          }),
+        ),
+      );
+    configService.findByPropertyName
+      .withArgs(MATOMO_ENABLED)
+      .and.returnValue(
+        createSuccessfulRemoteDataObject$(
+          Object.assign(new ConfigurationProperty(), { values: ['true'] }),
+        ),
+      );
+    configService.findByPropertyName
+      .withArgs(MATOMO_SITE_ID)
+      .and.returnValue(
+        createSuccessfulRemoteDataObject$(
+          Object.assign(new ConfigurationProperty(), { values: ['1'] }),
+        ),
+      );
     orejimeService.getSavedPreferences.and.returnValue(of({ matomo: true }));
 
     service.init();
@@ -101,21 +126,36 @@ describe('MatomoService', () => {
     expect(matomoTracker.setConsentGiven).toHaveBeenCalled();
     expect(matomoInitializer.initializeTracker).toHaveBeenCalledWith({
       siteId: '1',
-      trackerUrl: 'http://localhost:80801',
+      trackerUrl: 'http://localhost:80811',
     });
   });
 
   it('should initialize tracker with REST configuration correct parameters in production', fakeAsync(() => {
     environment.production = true;
     environment.matomo = { trackerUrl: '' };
-    configService.findByPropertyName.withArgs(MATOMO_TRACKER_URL).and.returnValue(
-      createSuccessfulRemoteDataObject$(Object.assign(new ConfigurationProperty(),{ values: ['http://example.com'] })),
-    );
-    configService.findByPropertyName.withArgs(MATOMO_ENABLED).and.returnValue(
-      createSuccessfulRemoteDataObject$(Object.assign(new ConfigurationProperty(),{ values: ['true'] })),
-    );
-    configService.findByPropertyName.withArgs(MATOMO_SITE_ID).and.returnValue(
-      createSuccessfulRemoteDataObject$(Object.assign(new ConfigurationProperty(), { values: ['1'] })));
+    configService.findByPropertyName
+      .withArgs(MATOMO_TRACKER_URL)
+      .and.returnValue(
+        createSuccessfulRemoteDataObject$(
+          Object.assign(new ConfigurationProperty(), {
+            values: ['http://example.com'],
+          }),
+        ),
+      );
+    configService.findByPropertyName
+      .withArgs(MATOMO_ENABLED)
+      .and.returnValue(
+        createSuccessfulRemoteDataObject$(
+          Object.assign(new ConfigurationProperty(), { values: ['true'] }),
+        ),
+      );
+    configService.findByPropertyName
+      .withArgs(MATOMO_SITE_ID)
+      .and.returnValue(
+        createSuccessfulRemoteDataObject$(
+          Object.assign(new ConfigurationProperty(), { values: ['1'] }),
+        ),
+      );
     orejimeService.getSavedPreferences.and.returnValue(of({ matomo: true }));
 
     service.init();
@@ -140,14 +180,29 @@ describe('MatomoService', () => {
   it('should not initialize tracker if matomo is disabled', () => {
     environment.production = true;
     environment.matomo = { trackerUrl: '' };
-    configService.findByPropertyName.withArgs(MATOMO_TRACKER_URL).and.returnValue(
-      createSuccessfulRemoteDataObject$(Object.assign(new ConfigurationProperty(),{ values: ['http://example.com'] })),
-    );
-    configService.findByPropertyName.withArgs(MATOMO_ENABLED).and.returnValue(
-      createSuccessfulRemoteDataObject$(Object.assign(new ConfigurationProperty(),{ values: ['false'] })),
-    );
-    configService.findByPropertyName.withArgs(MATOMO_SITE_ID).and.returnValue(
-      createSuccessfulRemoteDataObject$(Object.assign(new ConfigurationProperty(), { values: ['1'] })));
+    configService.findByPropertyName
+      .withArgs(MATOMO_TRACKER_URL)
+      .and.returnValue(
+        createSuccessfulRemoteDataObject$(
+          Object.assign(new ConfigurationProperty(), {
+            values: ['http://example.com'],
+          }),
+        ),
+      );
+    configService.findByPropertyName
+      .withArgs(MATOMO_ENABLED)
+      .and.returnValue(
+        createSuccessfulRemoteDataObject$(
+          Object.assign(new ConfigurationProperty(), { values: ['false'] }),
+        ),
+      );
+    configService.findByPropertyName
+      .withArgs(MATOMO_SITE_ID)
+      .and.returnValue(
+        createSuccessfulRemoteDataObject$(
+          Object.assign(new ConfigurationProperty(), { values: ['1'] }),
+        ),
+      );
     orejimeService.getSavedPreferences.and.returnValue(of({ matomo: true }));
 
     service.init();
@@ -162,11 +217,12 @@ describe('MatomoService', () => {
     });
 
     it('should add trackerId parameter', fakeAsync(() => {
-      service.appendVisitorId('http://example.com/')
-        .subscribe(url => expect(url).toEqual('http://example.com/?trackerId=12345'));
+      service
+        .appendVisitorId('http://example.com/')
+        .subscribe((url) =>
+          expect(url).toEqual('http://example.com/?trackerId=12345'),
+        );
       tick();
     }));
-
   });
-
 });

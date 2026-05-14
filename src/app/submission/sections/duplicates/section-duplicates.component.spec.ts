@@ -1,9 +1,5 @@
 import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectorRef,
-  Component,
-  NO_ERRORS_SCHEMA,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import {
   ComponentFixture,
   fakeAsync,
@@ -11,10 +7,7 @@ import {
   tick,
   waitForAsync,
 } from '@angular/core/testing';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateModule } from '@ngx-translate/core';
@@ -73,29 +66,32 @@ function getMockCollectionDataService(): CollectionDataService {
   });
 }
 
-const duplicates: Duplicate[] = [{
-  title: 'Unique title',
-  uuid: defaultUUID,
-  workflowItemId: 1,
-  workspaceItemId: 2,
-  owningCollection: 'Test Collection',
-  metadata: {
-    'dc.title': [
-      Object.assign(new MetadataValue(), {
-        'value': 'Unique title',
-        'language': null,
-        'authority': null,
-        'confidence': -1,
-        'place': 0,
-      })],
-  },
-  type: DUPLICATE,
-  _links: {
-    self: {
-      href: 'http://localhost:8080/server/api/core/submission/duplicates/search?uuid=testid',
+const duplicates: Duplicate[] = [
+  {
+    title: 'Unique title',
+    uuid: defaultUUID,
+    workflowItemId: 1,
+    workspaceItemId: 2,
+    owningCollection: 'Test Collection',
+    metadata: {
+      'dc.title': [
+        Object.assign(new MetadataValue(), {
+          value: 'Unique title',
+          language: null,
+          authority: null,
+          confidence: -1,
+          place: 0,
+        }),
+      ],
+    },
+    type: DUPLICATE,
+    _links: {
+      self: {
+        href: 'http://localhost:8081/server/api/core/submission/duplicates/search?uuid=testid',
+      },
     },
   },
-}];
+];
 
 const sectionObject = {
   header: 'submission.sections.submit.progressbar.duplicates',
@@ -137,8 +133,11 @@ describe('SubmissionSectionDuplicatesComponent test suite', () => {
         key: 'dc.title',
         language: 'en_US',
         value: 'Community 1-Collection 1',
-      }],
-    license: createSuccessfulRemoteDataObject$(Object.assign(new License(), { text: licenseText })),
+      },
+    ],
+    license: createSuccessfulRemoteDataObject$(
+      Object.assign(new License(), { text: licenseText }),
+    ),
   });
   const paginationService = new PaginationServiceStub();
 
@@ -158,11 +157,20 @@ describe('SubmissionSectionDuplicatesComponent test suite', () => {
         VarDirective,
       ],
       providers: [
-        { provide: CollectionDataService, useValue: getMockCollectionDataService() },
-        { provide: SectionFormOperationsService, useValue: getMockFormOperationsService() },
+        {
+          provide: CollectionDataService,
+          useValue: getMockCollectionDataService(),
+        },
+        {
+          provide: SectionFormOperationsService,
+          useValue: getMockFormOperationsService(),
+        },
         { provide: FormService, useValue: getMockFormService() },
         { provide: JsonPatchOperationsBuilder, useValue: jsonPatchOpBuilder },
-        { provide: SubmissionFormsConfigDataService, useValue: getMockSubmissionFormsConfigService() },
+        {
+          provide: SubmissionFormsConfigDataService,
+          useValue: getMockSubmissionFormsConfigService(),
+        },
         { provide: NotificationsService, useClass: NotificationsServiceStub },
         { provide: SectionsService, useClass: SectionsServiceStub },
         { provide: SubmissionService, useClass: SubmissionServiceStub },
@@ -174,7 +182,9 @@ describe('SubmissionSectionDuplicatesComponent test suite', () => {
         { provide: FormBuilderService, useValue: getMockFormBuilderService() },
       ],
       schemas: [NO_ERRORS_SCHEMA],
-    }).compileComponents().then();
+    })
+      .compileComponents()
+      .then();
   }));
 
   // First test to check the correct component creation
@@ -187,9 +197,10 @@ describe('SubmissionSectionDuplicatesComponent test suite', () => {
       sectionsServiceStub.isSectionReadOnly.and.returnValue(of(false));
       sectionsServiceStub.getSectionErrors.and.returnValue(of([]));
       sectionsServiceStub.getSectionData.and.returnValue(of(sectionObject));
-      testFixture = TestBed.createComponent(SubmissionSectionDuplicatesComponent);
+      testFixture = TestBed.createComponent(
+        SubmissionSectionDuplicatesComponent,
+      );
       testComp = testFixture.componentInstance;
-
     });
 
     afterEach(() => {
@@ -211,12 +222,21 @@ describe('SubmissionSectionDuplicatesComponent test suite', () => {
       formBuilderService = TestBed.inject(FormBuilderService);
       formOperationsService = TestBed.inject(SectionFormOperationsService);
       collectionDataService = TestBed.inject(CollectionDataService);
-      compAsAny.pathCombiner = new JsonPatchOperationPathCombiner('sections', sectionObject.id);
-      spyOn(comp, 'getDuplicateData').and.returnValue(of({ potentialDuplicates: duplicates }));
-      collectionDataService.findById.and.returnValue(createSuccessfulRemoteDataObject$(mockCollection));
+      compAsAny.pathCombiner = new JsonPatchOperationPathCombiner(
+        'sections',
+        sectionObject.id,
+      );
+      spyOn(comp, 'getDuplicateData').and.returnValue(
+        of({ potentialDuplicates: duplicates }),
+      );
+      collectionDataService.findById.and.returnValue(
+        createSuccessfulRemoteDataObject$(mockCollection),
+      );
       sectionsServiceStub.getSectionErrors.and.returnValue(of([]));
       sectionsServiceStub.isSectionReadOnly.and.returnValue(of(false));
-      compAsAny.submissionService.getSubmissionScope.and.returnValue(SubmissionScopeType.WorkspaceItem);
+      compAsAny.submissionService.getSubmissionScope.and.returnValue(
+        SubmissionScopeType.WorkspaceItem,
+      );
     });
 
     afterEach(() => {
@@ -238,18 +258,21 @@ describe('SubmissionSectionDuplicatesComponent test suite', () => {
     // These are very simple as we don't really have a 'false' state unless we're still loading
     it('Should return TRUE if the isLoading is FALSE', () => {
       compAsAny.isLoading = false;
-      expect(compAsAny.getSectionStatus()).toBeObservable(cold('(a|)', {
-        a: true,
-      }));
+      expect(compAsAny.getSectionStatus()).toBeObservable(
+        cold('(a|)', {
+          a: true,
+        }),
+      );
     });
     it('Should return FALSE', () => {
       compAsAny.isLoading = true;
-      expect(compAsAny.getSectionStatus()).toBeObservable(cold('(a|)', {
-        a: false,
-      }));
+      expect(compAsAny.getSectionStatus()).toBeObservable(
+        cold('(a|)', {
+          a: false,
+        }),
+      );
     });
   });
-
 });
 
 // declare a test component
@@ -263,6 +286,4 @@ describe('SubmissionSectionDuplicatesComponent test suite', () => {
     ReactiveFormsModule,
   ],
 })
-class TestComponent {
-
-}
+class TestComponent {}

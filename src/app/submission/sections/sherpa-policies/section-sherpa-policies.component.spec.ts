@@ -1,11 +1,5 @@
-import {
-  CUSTOM_ELEMENTS_SCHEMA,
-  DebugElement,
-} from '@angular/core';
-import {
-  ComponentFixture,
-  TestBed,
-} from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA, DebugElement } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { TranslateModule } from '@ngx-translate/core';
 import { of } from 'rxjs';
@@ -37,7 +31,8 @@ describe('SubmissionSectionSherpaPoliciesComponent', () => {
 
   const sectionData = {
     header: 'submit.progressbar.sherpaPolicies',
-    config: 'http://localhost:8080/server/api/config/submissionaccessoptions/SherpaPoliciesDefaultConfiguration',
+    config:
+      'http://localhost:8081/server/api/config/submissionaccessoptions/SherpaPoliciesDefaultConfiguration',
     mandatory: true,
     sectionType: 'sherpaPolicies',
     collapsed: false,
@@ -50,7 +45,6 @@ describe('SubmissionSectionSherpaPoliciesComponent', () => {
   };
 
   describe('SubmissionSectionSherpaPoliciesComponent', () => {
-
     beforeEach(async () => {
       await TestBed.configureTestingModule({
         imports: [
@@ -64,26 +58,32 @@ describe('SubmissionSectionSherpaPoliciesComponent', () => {
           { provide: 'sectionDataProvider', useValue: sectionData },
           { provide: 'submissionIdProvider', useValue: '1508' },
         ],
-      }).overrideComponent(SubmissionSectionSherpaPoliciesComponent, {
-        add: {
-          schemas: [CUSTOM_ELEMENTS_SCHEMA],
-        },
-        remove: {
-          imports: [
-            MetadataInformationComponent,
-            AlertComponent,
-            PublisherPolicyComponent,
-            PublicationInformationComponent,
-          ],
-        },
-      }).compileComponents();
+      })
+        .overrideComponent(SubmissionSectionSherpaPoliciesComponent, {
+          add: {
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
+          },
+          remove: {
+            imports: [
+              MetadataInformationComponent,
+              AlertComponent,
+              PublisherPolicyComponent,
+              PublicationInformationComponent,
+            ],
+          },
+        })
+        .compileComponents();
     });
 
     beforeEach(() => {
-      fixture = TestBed.createComponent(SubmissionSectionSherpaPoliciesComponent);
+      fixture = TestBed.createComponent(
+        SubmissionSectionSherpaPoliciesComponent,
+      );
       component = fixture.componentInstance;
       de = fixture.debugElement;
-      sectionsServiceStub.getSectionData.and.returnValue(of(SherpaDataResponse));
+      sectionsServiceStub.getSectionData.and.returnValue(
+        of(SherpaDataResponse),
+      );
       fixture.detectChanges();
     });
 
@@ -111,8 +111,5 @@ describe('SubmissionSectionSherpaPoliciesComponent', () => {
       de.query(By.css('[data-test="refresh-btn"]')).nativeElement.click();
       expect(operationsBuilder.remove).toHaveBeenCalled();
     });
-
-
   });
-
 });

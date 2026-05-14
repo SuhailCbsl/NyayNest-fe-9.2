@@ -1,7 +1,4 @@
-import {
-  HTTP_INTERCEPTORS,
-  HttpClient,
-} from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 import {
   HttpClientTestingModule,
   HttpTestingController,
@@ -9,10 +6,7 @@ import {
 import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 
-import {
-  APP_CONFIG,
-  AppConfig,
-} from '../../../config/app-config.interface';
+import { APP_CONFIG, AppConfig } from '../../../config/app-config.interface';
 import { DspaceRestInterceptor } from './dspace-rest.interceptor';
 import { DspaceRestService } from './dspace-rest.service';
 
@@ -23,7 +17,7 @@ describe('DspaceRestInterceptor', () => {
     rest: {
       ssl: false,
       host: 'localhost',
-      port: 8080,
+      port: 8081,
       nameSpace: '/server',
       baseUrl: 'http://api.example.com/server',
     },
@@ -32,7 +26,7 @@ describe('DspaceRestInterceptor', () => {
     rest: {
       ssl: false,
       host: 'localhost',
-      port: 8080,
+      port: 8081,
       nameSpace: '/server',
       baseUrl: 'http://api.example.com/server',
       ssrBaseUrl: 'http://ssr.example.com/server',
@@ -40,7 +34,7 @@ describe('DspaceRestInterceptor', () => {
   };
 
   describe('When SSR base URL is not set ', () => {
-    describe('and it\'s in the browser', () => {
+    describe("and it's in the browser", () => {
       beforeEach(() => {
         TestBed.configureTestingModule({
           imports: [HttpClientTestingModule],
@@ -73,7 +67,7 @@ describe('DspaceRestInterceptor', () => {
       });
     });
 
-    describe('and it\'s in SSR mode', () => {
+    describe("and it's in SSR mode", () => {
       beforeEach(() => {
         TestBed.configureTestingModule({
           imports: [HttpClientTestingModule],
@@ -109,7 +103,7 @@ describe('DspaceRestInterceptor', () => {
   });
 
   describe('When SSR base URL is set ', () => {
-    describe('and it\'s in the browser', () => {
+    describe("and it's in the browser", () => {
       beforeEach(() => {
         TestBed.configureTestingModule({
           imports: [HttpClientTestingModule],
@@ -142,7 +136,7 @@ describe('DspaceRestInterceptor', () => {
       });
     });
 
-    describe('and it\'s in SSR mode', () => {
+    describe("and it's in SSR mode", () => {
       beforeEach(() => {
         TestBed.configureTestingModule({
           imports: [HttpClientTestingModule],
@@ -177,15 +171,20 @@ describe('DspaceRestInterceptor', () => {
       });
 
       it('should not replace any query param containing the base URL', () => {
-        const url = 'http://api.example.com/server/items?url=http://api.example.com/server/item/1';
+        const url =
+          'http://api.example.com/server/items?url=http://api.example.com/server/item/1';
         const ssrBaseUrl = appConfigWithSSR.rest.ssrBaseUrl;
 
         httpClient.get(url).subscribe((response) => {
           expect(response).toBeTruthy();
         });
 
-        const req = httpMock.expectOne(ssrBaseUrl + '/items?url=http://api.example.com/server/item/1');
-        expect(req.request.url).toBe(ssrBaseUrl + '/items?url=http://api.example.com/server/item/1');
+        const req = httpMock.expectOne(
+          ssrBaseUrl + '/items?url=http://api.example.com/server/item/1',
+        );
+        expect(req.request.url).toBe(
+          ssrBaseUrl + '/items?url=http://api.example.com/server/item/1',
+        );
         req.flush({});
         httpMock.verify();
       });

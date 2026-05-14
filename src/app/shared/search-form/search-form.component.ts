@@ -77,7 +77,6 @@ interface FilterTag {
     PopoverModule,
     NgbDatepickerModule,
     DatePickerModule,
-    JsonPipe,
   ],
   providers: [
     {
@@ -347,9 +346,9 @@ export class SearchFormComponent implements OnChanges, OnInit {
   updateSearch(data: any) {
     let userQuery = this?.userQuery?.trim();
 
-    let backendQuery = userQuery;
+    let backendQuery = this.internalQuery || userQuery;
 
-    if (userQuery) {
+    if (userQuery && !this.internalQuery) {
       const normalized = userQuery.toLowerCase().trim().replace(/\s+/g, ' ');
 
       const terms = normalized.split(' ');
@@ -817,19 +816,26 @@ export class SearchFormComponent implements OnChanges, OnInit {
         ),
       )
       .subscribe((params) => {
+        console.log('QUERY PARAMS:', params);
+
         const userQueryParam = params['userQuery'];
 
         if (userQueryParam && userQueryParam.trim().length > 0) {
           this.userQuery = userQueryParam;
+        } else {
+          this.userQuery = '';
         }
 
-        // NEVER fallback to backend query
+        // pagination
         this.searchType = params['searchType'] || 'normal';
         this.currentPage = +params['spc.page'] || 1;
-        if (params['spc.rpp']) {
-          this.resultPerPage = +params['spc.rpp'];
-        }
-        // -------------- scope / dashboard handling --------------
+        this.resultPerPage = +params['spc.rpp'] || 10;
+
+        // sorting
+        this.sortBy = params['sortBy'] || '';
+        this.sortOrder = params['sortOrder'] || '';
+
+        // ---------------- scope handling ----------------
         if (params['scope']) {
           this.dsoService
             .findById(params['scope'])
@@ -837,10 +843,11 @@ export class SearchFormComponent implements OnChanges, OnInit {
             .subscribe((scope: DSpaceObject) => {
               this.selectedScope.next(scope);
             });
-          return;
+        } else {
+          this.selectedScope.next(undefined);
         }
 
-        // Only initialize dashboard on first load
+        // ---------------- dashboard init ----------------
         if (
           this.dashboardFlag === 'dashboard' &&
           this.uuidFromDashBoard &&
@@ -851,108 +858,101 @@ export class SearchFormComponent implements OnChanges, OnInit {
             .pipe(getFirstSucceededRemoteDataPayload())
             .subscribe((scope: DSpaceObject) => {
               this.selectedScope.next(scope);
-              // Only add filters if they have a value
+
               if (this.caseNatureFilter) {
                 this._addFilter('CaseNature', this.caseNatureFilter);
               }
+
               if (this.caseTypeNameFilter) {
                 this._addFilter('CaseTypeName', this.caseTypeNameFilter);
               }
-              this.searchMetadata = '';
-              this.searchCaseBy = '';
-              this.currentPage = 1;
+
               this.dashboardInitialized = true;
             });
-          return;
-        }
-        if (this.searchBarFlag === 'searchBar' && this.searchBarValue) {
-          // ONLY assign if it's a clean user query (no backend syntax)
-          if (!this.searchBarValue.includes('search_text:')) {
-            this.query = this.searchBarValue;
-          }
         }
 
-        // If no explicit scope param — clear scope (but leave default handling elsewhere)
-        this.selectedScope.next(undefined);
-
-        // -------------- date params handling --------------
+        // ---------------- date handling ----------------
         const dateFromParam = params['dateFrom'];
         const dateToParam = params['dateTo'];
 
-        if (dateFromParam || dateToParam) {
-          const parsedFrom = dateFromParam ? new Date(dateFromParam) : null;
-          const parsedTo = dateToParam ? new Date(dateToParam) : null;
+        console.log('dateFromParam:', dateFromParam);
+        console.log('dateToParam:', dateToParam);
 
-          const fromValid = parsedFrom && !isNaN(parsedFrom.getTime());
-          const toValid = parsedTo && !isNaN(parsedTo.getTime());
+        if (dateFromParam && dateToParam) {
+          const parsedFrom = new Date(dateFromParam);
+          const parsedTo = new Date(dateToParam);
 
-          if (fromValid || toValid) {
-            // normalize to midnight-local Dates
-            this.selectedFromDate = fromValid
-              ? this.normalizeToDate(parsedFrom)
-              : null;
-            this.selectedToDate = toValid
-              ? this.normalizeToDate(parsedTo)
-              : null;
+          if (!isNaN(parsedFrom.getTime()) && !isNaN(parsedTo.getTime())) {
+            this.selectedFromDate = this.normalizeToDate(parsedFrom);
+            this.selectedToDate = this.normalizeToDate(parsedTo);
 
-            // if both sides valid, create internalQuery (inclusive day range)
-            if (fromValid && toValid) {
-              const fromIso = new Date(
-                this.selectedFromDate!.getFullYear(),
-                this.selectedFromDate!.getMonth(),
-                this.selectedFromDate!.getDate(),
-                0,
-                0,
-                0,
-                0,
-              ).toISOString();
-              const toIso = new Date(
-                this.selectedToDate!.getFullYear(),
-                this.selectedToDate!.getMonth(),
-                this.selectedToDate!.getDate(),
-                23,
-                59,
-                59,
-                999,
-              ).toISOString();
-              this.internalQuery = `lastModified:[${fromIso} TO ${toIso}]`;
-              this.dateScopeActive = true;
-              this.appliedFilterTypes.add(this.DATE_FILTER_TYPE);
-            } else {
-              // partial date present -> don't build a range
-              this.internalQuery = null;
-            }
+            this.syncDateModelsFromSelectedDates();
 
-            // sync NgbDateStruct models so inputs show values
-            this.syncDateModelsFromSelectedDates?.();
+            const fromIso = new Date(
+              this.selectedFromDate!.getFullYear(),
+              this.selectedFromDate!.getMonth(),
+              this.selectedFromDate!.getDate(),
+              0,
+              0,
+              0,
+              0,
+            ).toISOString();
 
-            // push change detection so inputs render on refresh/navigation
+            const toIso = new Date(
+              this.selectedToDate!.getFullYear(),
+              this.selectedToDate!.getMonth(),
+              this.selectedToDate!.getDate(),
+              23,
+              59,
+              59,
+              999,
+            ).toISOString();
+
+            // IMPORTANT
+            this.internalQuery = `lastModified:[${fromIso} TO ${toIso}]`;
+
+            console.log('internalQuery:', this.internalQuery);
+
+            this.dateScopeActive = true;
+
+            this.appliedFilterTypes.add(this.DATE_FILTER_TYPE);
+
+            this.currentPage = 1;
+
             try {
               this.cdf.detectChanges();
-            } catch (e) {
-              /* ignore */
-            }
-
-            // update results to reflect URL date immediately
-            this.currentPage = 1;
-            // this.updateSearch({});
+            } catch (e) {}
+            this.router.navigate([], {
+              queryParams: {
+                query: this.internalQuery,
+                userQuery: null,
+                'spc.page': 1,
+              },
+              queryParamsHandling: 'merge',
+            });
             return;
           }
         }
 
-        // If here: no valid date params found. Only clear stored dates if params explicitly absent.
-        this.selectedFromDate =
-          this.selectedFromDate && !params['dateFrom']
-            ? null
-            : this.selectedFromDate;
-        this.selectedToDate =
-          this.selectedToDate && !params['dateTo'] ? null : this.selectedToDate;
+        // ---------------- no date params ----------------
+        this.internalQuery = null;
+        this.selectedFromDate = null;
+        this.selectedToDate = null;
 
-        // Only call updateResults if NOT in dashboard mode after initialization
-        // In dashboard mode, let onPageChange() handle pagination updates
-        if (!this.dashboardInitialized || this.dashboardFlag !== 'dashboard') {
-          this.updateResults();
-        }
+        this.syncDateModelsFromSelectedDates();
+
+        try {
+          this.cdf.detectChanges();
+        } catch (e) {}
+
+        // normal search refresh
+        this.submitSearch.emit({
+          query: this.userQuery,
+          page: this.currentPage,
+          rpp: this.resultPerPage,
+          sortBy: this.sortBy,
+          sortOrder: this.sortOrder,
+        });
       });
 
     // Navigation / reload specific handling (browser-only)
@@ -1116,9 +1116,9 @@ export class SearchFormComponent implements OnChanges, OnInit {
     console.log('UPDATE RESULTS CALLED');
     console.log('currentPage:', this.currentPage);
     console.log('resultPerPage:', this.resultPerPage);
-
+    debugger;
     this.submitSearch.emit({
-      query: this.userQuery,
+      query: this.internalQuery || this.userQuery,
       page: this.currentPage,
       rpp: this.resultPerPage,
       sortBy: this.sortBy,
@@ -1287,8 +1287,8 @@ export class SearchFormComponent implements OnChanges, OnInit {
     ).toISOString();
 
     // IMPORTANT: set as internalQuery (Solr-style range) rather than a SearchFilter
-    this.internalQuery = `lastModified:[${fromIso} TO ${toIso}]`;
-
+    // this.internalQuery = `lastModified:[${fromIso} TO ${toIso}]`;
+    // this.updateSearch({});
     this.dateScopeActive = true;
     // Defensive: remove any visible date tag (you said you don't want it)
     this.filterTags = this.filterTags.filter(

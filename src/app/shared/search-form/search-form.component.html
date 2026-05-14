@@ -92,7 +92,6 @@
             ngbDatepicker
             #dFrom="ngbDatepicker"
             [(ngModel)]="fromDateModel"
-            (ngModelChange)="onFromDateModelChange($event, 'from')"
             (dateSelect)="onFromDateSelect($event)"
             (click)="dFrom.toggle()"
             name="fromDate"
@@ -122,7 +121,6 @@
             ngbDatepicker
             #dTo="ngbDatepicker"
             [(ngModel)]="toDateModel"
-            (ngModelChange)="onFromDateModelChange($event, 'to')"
             (dateSelect)="onToDateSelect($event)"
             (click)="dTo.toggle()"
             name="toDate"

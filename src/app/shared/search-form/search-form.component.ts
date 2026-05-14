@@ -56,6 +56,7 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { APP_CONFIG, AppConfig } from 'src/config/app-config.interface';
 import { SearchFilter } from '../search/models/search-filter.model';
 import { SearchObjects } from '../search/models/search-objects.model';
+import { SortDirection } from 'src/app/core/cache/models/sort-options.model';
 
 interface FilterTag {
   label: string;
@@ -147,7 +148,7 @@ export class SearchFormComponent implements OnChanges, OnInit {
   appliedFilterTypes: Set<string> = new Set();
 
   sortBy: string = '';
-  sortOrder: string = '';
+  sortOrder: string = 'desc';
   resultPerPage: number = 10;
   searchCaseBy: string = '';
 
@@ -401,8 +402,6 @@ export class SearchFormComponent implements OnChanges, OnInit {
     }
     const queryParams = {
       scope: data.scope,
-      sortBy: data.sortBy,
-      sortOrder: data.sortOrder,
       searchCaseBy: data.searchCaseBy,
       searchMetadata: data.searchMetadata,
 
@@ -411,7 +410,8 @@ export class SearchFormComponent implements OnChanges, OnInit {
       searchType: this.searchType,
     };
 
-    this.router.navigate(this.getSearchLinkParts(), {
+    this.router.navigate([], {
+      relativeTo: this.route,
       queryParams,
       queryParamsHandling: 'merge',
     });
@@ -642,7 +642,7 @@ export class SearchFormComponent implements OnChanges, OnInit {
     this.currentPage = 1;
     this.resultPerPage = 10;
     this.sortBy = '';
-    this.sortOrder = '';
+    this.sortOrder = 'asc';
     // this.phoneticEnabled = false;
     this.checkReset = 'true';
     this.isFilterDisabled('true');
@@ -832,8 +832,8 @@ export class SearchFormComponent implements OnChanges, OnInit {
         this.resultPerPage = +params['spc.rpp'] || 10;
 
         // sorting
-        this.sortBy = params['sortBy'] || '';
-        this.sortOrder = params['sortOrder'] || '';
+        this.sortBy = params['spc.sf'] || '';
+        this.sortOrder = (params['spc.sd'] || 'DESC').toLowerCase();
 
         // ---------------- scope handling ----------------
         if (params['scope']) {
@@ -922,36 +922,41 @@ export class SearchFormComponent implements OnChanges, OnInit {
             try {
               this.cdf.detectChanges();
             } catch (e) {}
-            this.router.navigate([], {
-              queryParams: {
-                query: this.internalQuery,
-                userQuery: null,
-                'spc.page': 1,
-              },
-              queryParamsHandling: 'merge',
-            });
-            return;
+            if (params['query'] !== this.internalQuery) {
+              this.router.navigate([], {
+                queryParams: {
+                  query: this.internalQuery,
+                  userQuery: null,
+                  'spc.page': 1,
+                },
+                queryParamsHandling: 'merge',
+                replaceUrl: true,
+              });
+
+              return;
+            }
           }
         }
 
         // ---------------- no date params ----------------
-        this.internalQuery = null;
-        this.selectedFromDate = null;
-        this.selectedToDate = null;
+        // ---------------- no date params ----------------
+        if (!dateFromParam || !dateToParam) {
+          this.internalQuery = null;
+          this.selectedFromDate = null;
+          this.selectedToDate = null;
 
-        this.syncDateModelsFromSelectedDates();
+          this.syncDateModelsFromSelectedDates();
 
-        try {
-          this.cdf.detectChanges();
-        } catch (e) {}
+          try {
+            this.cdf.detectChanges();
+          } catch (e) {}
+        }
 
         // normal search refresh
         this.submitSearch.emit({
-          query: this.userQuery,
+          query: this.internalQuery || this.userQuery,
           page: this.currentPage,
           rpp: this.resultPerPage,
-          sortBy: this.sortBy,
-          sortOrder: this.sortOrder,
         });
       });
 
@@ -1094,13 +1099,37 @@ export class SearchFormComponent implements OnChanges, OnInit {
   }
 
   onSortChange() {
+    if (!this.sortBy || !this.sortOrder) {
+      return;
+    }
+
     this.currentPage = 1;
-    this.updateSearch({ sortBy: this.sortBy, sortOrder: this.sortOrder });
+
+    this.paginationService.updateRoute('spc', {
+      page: 1,
+      sortField: this.sortBy,
+      sortDirection:
+        this.sortOrder.toLowerCase() === 'asc'
+          ? SortDirection.ASC
+          : SortDirection.DESC,
+    });
   }
 
   onSortOrderChange() {
+    if (!this.sortBy || !this.sortOrder) {
+      return;
+    }
+
     this.currentPage = 1;
-    this.updateSearch({ sortBy: this.sortBy, sortOrder: this.sortOrder });
+
+    this.paginationService.updateRoute('spc', {
+      page: 1,
+      sortField: this.sortBy,
+      sortDirection:
+        this.sortOrder.toLowerCase() === 'asc'
+          ? SortDirection.ASC
+          : SortDirection.DESC,
+    });
   }
 
   onResultPerPageChange() {
@@ -1109,20 +1138,6 @@ export class SearchFormComponent implements OnChanges, OnInit {
     this.paginationService.updateRoute('spc', {
       page: 1,
       pageSize: this.resultPerPage,
-    });
-  }
-
-  updateResults() {
-    console.log('UPDATE RESULTS CALLED');
-    console.log('currentPage:', this.currentPage);
-    console.log('resultPerPage:', this.resultPerPage);
-    debugger;
-    this.submitSearch.emit({
-      query: this.internalQuery || this.userQuery,
-      page: this.currentPage,
-      rpp: this.resultPerPage,
-      sortBy: this.sortBy,
-      sortOrder: this.sortOrder,
     });
   }
 

@@ -71,7 +71,11 @@ class SearchDataService extends BaseDataService<any> {
    * @param args            params for the query string
    * @param linksToFollow   links we want to embed in query string if shouldEmbed is true
    */
-  public addEmbedParams(href: string, args: string[], ...linksToFollow: FollowLinkConfig<any>[]) {
+  public addEmbedParams(
+    href: string,
+    args: string[],
+    ...linksToFollow: FollowLinkConfig<any>[]
+  ) {
     return super.addEmbedParams(href, args, ...linksToFollow);
   }
 }
@@ -81,7 +85,6 @@ class SearchDataService extends BaseDataService<any> {
  */
 @Injectable({ providedIn: 'root' })
 export class SearchService {
-
   /**
    * Endpoint link path for retrieving general search results
    */
@@ -90,7 +93,8 @@ export class SearchService {
   /**
    * The ResponseParsingService constructor name
    */
-  private parser: GenericConstructor<ResponseParsingService> = SearchResponseParsingService;
+  private parser: GenericConstructor<ResponseParsingService> =
+    SearchResponseParsingService;
 
   /**
    * The RestRequest constructor name
@@ -102,7 +106,8 @@ export class SearchService {
    */
   private searchDataService: SearchDataService;
 
-  public appliedFilters$: BehaviorSubject<AppliedFilter[]> = new BehaviorSubject([]);
+  public appliedFilters$: BehaviorSubject<AppliedFilter[]> =
+    new BehaviorSubject([]);
 
   constructor(
     private routeService: RouteService,
@@ -124,8 +129,15 @@ export class SearchService {
    */
   getSelectedValuesForFilter(filterName: string): Observable<AppliedFilter[]> {
     return this.appliedFilters$.pipe(
-      map((appliedFilters: AppliedFilter[]) => appliedFilters.filter((appliedFilter: AppliedFilter) => appliedFilter.filter === filterName)),
-      distinctUntilChanged((previous: AppliedFilter[], next: AppliedFilter[]) => JSON.stringify(previous) === JSON.stringify(next)),
+      map((appliedFilters: AppliedFilter[]) =>
+        appliedFilters.filter(
+          (appliedFilter: AppliedFilter) => appliedFilter.filter === filterName,
+        ),
+      ),
+      distinctUntilChanged(
+        (previous: AppliedFilter[], next: AppliedFilter[]) =>
+          JSON.stringify(previous) === JSON.stringify(next),
+      ),
     );
   }
 
@@ -134,7 +146,10 @@ export class SearchService {
    * @param {GenericConstructor<ResponseParsingService>} parser The ResponseParsingService constructor name
    * @param {boolean} request The RestRequest constructor name
    */
-  setServiceOptions(parser: GenericConstructor<ResponseParsingService>, request: GenericConstructor<RestRequest>) {
+  setServiceOptions(
+    parser: GenericConstructor<ResponseParsingService>,
+    request: GenericConstructor<RestRequest>,
+  ) {
     if (parser) {
       this.parser = parser;
     }
@@ -166,47 +181,76 @@ export class SearchService {
    * @param linksToFollow List of {@link FollowLinkConfig} that indicate which {@link HALLink}s should be automatically resolved
    * @returns {Observable<RemoteData<SearchObjects<T>>>} Emits a paginated list with all search results found
    */
-  search<T extends DSpaceObject>(searchOptions?: PaginatedSearchOptions, responseMsToLive?: number, useCachedVersionIfAvailable = true, reRequestOnStale = true, ...linksToFollow: FollowLinkConfig<T>[]): Observable<RemoteData<SearchObjects<T>>> {
+  search<T extends DSpaceObject>(
+    searchOptions?: PaginatedSearchOptions,
+    responseMsToLive?: number,
+    useCachedVersionIfAvailable = true,
+    reRequestOnStale = true,
+    ...linksToFollow: FollowLinkConfig<T>[]
+  ): Observable<RemoteData<SearchObjects<T>>> {
     const href$ = this.getEndpoint(searchOptions);
 
     let startTime: number;
-    href$.pipe(
-      take(1),
-      map((href: string) => {
-        const args = this.searchDataService.addEmbedParams(href, [], ...linksToFollow);
-        if (isNotEmpty(args)) {
-          return new URLCombiner(href, `?${args.join('&')}`).toString();
-        } else {
-          return href;
-        }
-      }),
-    ).subscribe((url: string) => {
-      const request = new this.request(this.requestService.generateRequestId(), url);
+    href$
+      .pipe(
+        take(1),
+        map((href: string) => {
+          const args = this.searchDataService.addEmbedParams(
+            href,
+            [],
+            ...linksToFollow,
+          );
+          if (isNotEmpty(args)) {
+            return new URLCombiner(href, `?${args.join('&')}`).toString();
+          } else {
+            return href;
+          }
+        }),
+      )
+      .subscribe((url: string) => {
+        const request = new this.request(
+          this.requestService.generateRequestId(),
+          url,
+        );
 
-      const getResponseParserFn: () => GenericConstructor<ResponseParsingService> = () => {
-        return this.parser;
-      };
+        const getResponseParserFn: () => GenericConstructor<ResponseParsingService> =
+          () => {
+            return this.parser;
+          };
 
-      Object.assign(request, {
-        responseMsToLive: hasValue(responseMsToLive) ? responseMsToLive : request.responseMsToLive,
-        getResponseParser: getResponseParserFn,
-        searchOptions: searchOptions,
+        Object.assign(request, {
+          responseMsToLive: hasValue(responseMsToLive)
+            ? responseMsToLive
+            : request.responseMsToLive,
+          getResponseParser: getResponseParserFn,
+          searchOptions: searchOptions,
+        });
+
+        startTime = new Date().getTime();
+        this.requestService.send(request, useCachedVersionIfAvailable);
       });
 
-      startTime = new Date().getTime();
-      this.requestService.send(request, useCachedVersionIfAvailable);
-    });
-
     const sqr$ = href$.pipe(
-      switchMap((href: string) => this.rdb.buildFromHref<SearchObjects<T>>(href)),
+      switchMap((href: string) =>
+        this.rdb.buildFromHref<SearchObjects<T>>(href),
+      ),
     );
 
-    return this.directlyAttachIndexableObjects(sqr$, useCachedVersionIfAvailable, reRequestOnStale, ...linksToFollow).pipe(
+    return this.directlyAttachIndexableObjects(
+      sqr$,
+      useCachedVersionIfAvailable,
+      reRequestOnStale,
+      ...linksToFollow,
+    ).pipe(
       // This skip ensures that if a stale object is present in the cache when you do a
       // call it isn't immediately returned, but we wait until the remote data for the new request
       // is created. If useCachedVersionIfAvailable is false it also ensures you don't get a
       // cached completed object
-      skipWhile((rd: RemoteData<SearchObjects<T>>) => rd.isStale || (!useCachedVersionIfAvailable && rd.lastUpdated < startTime)),
+      skipWhile(
+        (rd: RemoteData<SearchObjects<T>>) =>
+          rd.isStale ||
+          (!useCachedVersionIfAvailable && rd.lastUpdated < startTime),
+      ),
     );
   }
 
@@ -224,39 +268,56 @@ export class SearchService {
    *                                    {@link HALLink}s should be automatically resolved
    * @protected
    */
-  protected directlyAttachIndexableObjects<T extends DSpaceObject>(sqr$: Observable<RemoteData<SearchObjects<T>>>, useCachedVersionIfAvailable = true, reRequestOnStale = true, ...linksToFollow: FollowLinkConfig<T>[]): Observable<RemoteData<SearchObjects<T>>> {
+  protected directlyAttachIndexableObjects<T extends DSpaceObject>(
+    sqr$: Observable<RemoteData<SearchObjects<T>>>,
+    useCachedVersionIfAvailable = true,
+    reRequestOnStale = true,
+    ...linksToFollow: FollowLinkConfig<T>[]
+  ): Observable<RemoteData<SearchObjects<T>>> {
     return sqr$.pipe(
       switchMap((resultsRd: RemoteData<SearchObjects<T>>) => {
         if (hasValue(resultsRd.payload) && isNotEmpty(resultsRd.payload.page)) {
           // retrieve the indexableObjects for all search results on the page
-          const searchResult$Array: Observable<SearchResult<T>>[] = resultsRd.payload.page.map((result: SearchResult<T>) =>
-            this.dspaceObjectService.findByHref(result._links.indexableObject.href, useCachedVersionIfAvailable, reRequestOnStale, ...linksToFollow as any).pipe(
-              getFirstCompletedRemoteData(),
-              getRemoteDataPayload(),
-              hasValueOperator(),
-              map((indexableObject: DSpaceObject) => {
-                // determine the constructor of the search result (ItemSearchResult,
-                // CollectionSearchResult, etc) based on the kind of the indeaxbleObject it
-                // contains. Recreate the result with that constructor
-                const constructor: GenericConstructor<ListableObject> = indexableObject.constructor as GenericConstructor<ListableObject>;
-                const resultConstructor = getSearchResultFor(constructor);
+          const searchResult$Array: Observable<SearchResult<T>>[] =
+            resultsRd.payload.page.map((result: SearchResult<T>) =>
+              this.dspaceObjectService
+                .findByHref(
+                  result._links.indexableObject.href,
+                  useCachedVersionIfAvailable,
+                  reRequestOnStale,
+                  ...(linksToFollow as any),
+                )
+                .pipe(
+                  getFirstCompletedRemoteData(),
+                  getRemoteDataPayload(),
+                  hasValueOperator(),
+                  map((indexableObject: DSpaceObject) => {
+                    // determine the constructor of the search result (ItemSearchResult,
+                    // CollectionSearchResult, etc) based on the kind of the indeaxbleObject it
+                    // contains. Recreate the result with that constructor
+                    const constructor: GenericConstructor<ListableObject> =
+                      indexableObject.constructor as GenericConstructor<ListableObject>;
+                    const resultConstructor = getSearchResultFor(constructor);
 
-                // Attach the payload directly to the indexableObject property on the result
-                return Object.assign(new resultConstructor(), result, {
-                  indexableObject,
-                }) as SearchResult<T>;
-              }),
-            ),
-          );
+                    // Attach the payload directly to the indexableObject property on the result
+                    return Object.assign(new resultConstructor(), result, {
+                      indexableObject,
+                    }) as SearchResult<T>;
+                  }),
+                ),
+            );
 
           // Swap the original page in the remoteData with the new one, now that the results have the
           // correct types, and all indexableObjects are directly attached.
           return observableCombineLatest(searchResult$Array).pipe(
             map((page: SearchResult<T>[]) => {
-
-              const payload = Object.assign(new SearchObjects(), resultsRd.payload, {
-                page,
-              }) as SearchObjects<T>;
+              const payload = Object.assign(
+                new SearchObjects(),
+                resultsRd.payload,
+                {
+                  page,
+                },
+              ) as SearchObjects<T>;
 
               return new RemoteData(
                 resultsRd.timeCompleted,
@@ -277,7 +338,6 @@ export class SearchService {
     );
   }
 
-
   /**
    * Method to request a single page of filter values for a given value
    * @param {SearchFilterConfig} filterConfig The filter config for which we want to request filter values
@@ -288,26 +348,46 @@ export class SearchService {
    *                                    no valid cached version. Defaults to true
    * @returns {Observable<RemoteData<PaginatedList<FacetValue>>>} Emits the given page of facet values
    */
-  getFacetValuesFor(filterConfig: SearchFilterConfig, valuePage: number, searchOptions?: PaginatedSearchOptions, filterQuery?: string, useCachedVersionIfAvailable = true): Observable<RemoteData<FacetValues>> {
+  getFacetValuesFor(
+    filterConfig: SearchFilterConfig,
+    valuePage: number,
+    searchOptions?: PaginatedSearchOptions,
+    filterQuery?: string,
+    useCachedVersionIfAvailable = true,
+  ): Observable<RemoteData<FacetValues>> {
     let href;
     let args: string[] = [];
     if (hasValue(filterQuery)) {
       args.push(`prefix=${encodeURIComponent(filterQuery)}`);
     }
     if (hasValue(searchOptions)) {
-      searchOptions = Object.assign(new PaginatedSearchOptions({}), searchOptions, {
-        pagination: Object.assign({}, searchOptions.pagination, {
-          currentPage: valuePage,
-          pageSize: filterConfig.pageSize,
-        }),
-      });
+      searchOptions = Object.assign(
+        new PaginatedSearchOptions({}),
+        searchOptions,
+        {
+          pagination: Object.assign({}, searchOptions.pagination, {
+            currentPage: valuePage,
+            pageSize: filterConfig.pageSize,
+          }),
+        },
+      );
       href = searchOptions.toRestUrl(filterConfig._links.self.href, args);
     } else {
-      args = [`page=${valuePage - 1}`, `size=${filterConfig.pageSize}`, ...args];
-      href = new URLCombiner(filterConfig._links.self.href, `?${args.join('&')}`).toString();
+      args = [
+        `page=${valuePage - 1}`,
+        `size=${filterConfig.pageSize}`,
+        ...args,
+      ];
+      href = new URLCombiner(
+        filterConfig._links.self.href,
+        `?${args.join('&')}`,
+      ).toString();
     }
 
-    let request = new this.request(this.requestService.generateRequestId(), href);
+    let request = new this.request(
+      this.requestService.generateRequestId(),
+      href,
+    );
     request = Object.assign(request, {
       getResponseParser(): GenericConstructor<ResponseParsingService> {
         return FacetValueResponseParsingService;
@@ -321,15 +401,29 @@ export class SearchService {
       // call it isn't immediately returned, but we wait until the remote data for the new request
       // is created. If useCachedVersionIfAvailable is false it also ensures you don't get a
       // cached completed object
-      skipWhile((rd: RemoteData<FacetValues>) => rd.isStale || (!useCachedVersionIfAvailable && rd.lastUpdated < startTime)),
+      skipWhile(
+        (rd: RemoteData<FacetValues>) =>
+          rd.isStale ||
+          (!useCachedVersionIfAvailable && rd.lastUpdated < startTime),
+      ),
       tap((facetValuesRD: RemoteData<FacetValues>) => {
         if (facetValuesRD.hasSucceeded) {
-          const appliedFilters: AppliedFilter[] = (facetValuesRD.payload.appliedFilters ?? [])
+          const appliedFilters: AppliedFilter[] = (
+            facetValuesRD.payload.appliedFilters ?? []
+          )
             .filter((appliedFilter: AppliedFilter) => hasValue(appliedFilter))
             // TODO this should ideally be fixed in the backend
-            .map((appliedFilter: AppliedFilter) => Object.assign({}, appliedFilter, {
-              operator: hasValue(appliedFilter.value.match(/\[\s*(\*|\d+)\s*TO\s*(\*|\d+)\s*]/)) ? 'range' : appliedFilter.operator,
-            }));
+            .map((appliedFilter: AppliedFilter) =>
+              Object.assign({}, appliedFilter, {
+                operator: hasValue(
+                  appliedFilter.value.match(
+                    /\[\s*(\*|\d+)\s*TO\s*(\*|\d+)\s*]/,
+                  ),
+                )
+                  ? 'range'
+                  : appliedFilter.operator,
+              }),
+            );
           this.appliedFilters$.next(appliedFilters);
         }
       }),
@@ -341,13 +435,15 @@ export class SearchService {
    * @returns {Observable<ViewMode>} The current view mode
    */
   getViewMode(): Observable<ViewMode> {
-    return this.routeService.getQueryParamMap().pipe(map((params) => {
-      if (isNotEmpty(params.get('view')) && hasValue(params.get('view'))) {
-        return params.get('view');
-      } else {
-        return ViewMode.ListElement;
-      }
-    }));
+    return this.routeService.getQueryParamMap().pipe(
+      map((params) => {
+        if (isNotEmpty(params.get('view')) && hasValue(params.get('view'))) {
+          return params.get('view');
+        } else {
+          return ViewMode.ListElement;
+        }
+      }),
+    );
   }
 
   /**
@@ -356,7 +452,12 @@ export class SearchService {
    * @param {string[]} searchLinkParts
    */
   setViewMode(viewMode: ViewMode, searchLinkParts?: string[]) {
-    this.paginationService.getCurrentPagination(this.searchConfigurationService.paginationID, new PaginationComponentOptions()).pipe(take(1))
+    this.paginationService
+      .getCurrentPagination(
+        this.searchConfigurationService.paginationID,
+        new PaginationComponentOptions(),
+      )
+      .pipe(take(1))
       .subscribe((config) => {
         let pageParams = { page: 1 };
         const queryParams = { view: viewMode };
@@ -365,7 +466,12 @@ export class SearchService {
         } else if (config.pageSize === 1) {
           pageParams = Object.assign(pageParams, { pageSize: 10 });
         }
-        this.paginationService.updateRouteWithUrl(this.searchConfigurationService.paginationID, hasValue(searchLinkParts) ? searchLinkParts : [this.getSearchLink()], pageParams, queryParams);
+        this.paginationService.updateRouteWithUrl(
+          this.searchConfigurationService.paginationID,
+          hasValue(searchLinkParts) ? searchLinkParts : [this.getSearchLink()],
+          pageParams,
+          queryParams,
+        );
       });
   }
 
@@ -375,10 +481,23 @@ export class SearchService {
    * @param searchQueryResponse The response objects of the performed search
    * @param clickedObject       Optional UUID of an object a search was performed and clicked for
    */
-  trackSearch(config: PaginatedSearchOptions, searchQueryResponse: SearchObjects<DSpaceObject>, clickedObject?: string) {
-    const filters: { filter: string, operator: string, value: string, label: string; }[] = [];
+  trackSearch(
+    config: PaginatedSearchOptions,
+    searchQueryResponse: SearchObjects<DSpaceObject>,
+    clickedObject?: string,
+  ) {
+    const filters: {
+      filter: string;
+      operator: string;
+      value: string;
+      label: string;
+    }[] = [];
     const appliedFilters = searchQueryResponse.appliedFilters || [];
-    for (let i = 0, filtersLength = appliedFilters.length; i < filtersLength; i++) {
+    for (
+      let i = 0, filtersLength = appliedFilters.length;
+      i < filtersLength;
+      i++
+    ) {
       const appliedFilter = appliedFilters[i];
       filters.push(appliedFilter);
     }
@@ -387,7 +506,7 @@ export class SearchService {
       properties: {
         searchOptions: config,
         page: {
-          size: config.pagination.size, // same as searchQueryResponse.page.elementsPerPage
+          size: config.pagination.pageSize, // same as searchQueryResponse.page.elementsPerPage
           totalElements: searchQueryResponse.pageInfo.totalElements,
           totalPages: searchQueryResponse.pageInfo.totalPages,
           number: config.pagination.currentPage, // same as searchQueryResponse.page.currentPage
@@ -410,5 +529,4 @@ export class SearchService {
   getSearchLink(): string {
     return '/search';
   }
-
 }

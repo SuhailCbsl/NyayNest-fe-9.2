@@ -4,7 +4,7 @@
   class="d-flex justify-content-center align-items-center vh-100 spinner-overlay"
 >
   <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
+    <span class="visually-hidden">{{ "dashboard.loading" | translate }}</span>
   </div>
 </div>
 <!-- Top Tabs -->
@@ -227,7 +227,7 @@
         <div class="search-wrapper">
           <input
             type="text"
-            placeholder="Search by Case Type/Case Year"
+            [placeholder]="'dashboard.search_cases_placeholder' | translate"
             [formControl]="searchControl"
             class="search-input"
             (keyup)="onSearchKeyup($event)"
@@ -258,14 +258,14 @@
             (click)="caseType('Criminal')"
             class="mx-1"
           >
-            Criminal
+            {{ "dashboard.criminal_tab" | translate }}
           </button>
           <button
             [class.active]="activeTab === 'Civil'"
             (click)="caseType('Civil')"
             class="mx-1"
           >
-            Civil
+            {{ "dashboard.civil_tab" | translate }}
           </button>
           <button
             *ngIf="state === 'Delhi'"
@@ -273,7 +273,7 @@
             (click)="caseType('Session')"
             class="mx-1"
           >
-            Session
+            {{ "dashboard.session_tab" | translate }}
           </button>
         </div>
 

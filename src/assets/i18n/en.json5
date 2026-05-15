@@ -7253,6 +7253,11 @@
   "dashboard.pending": "Pending",
   "dashboard.case_types": "Case Types",
   "dashboard.current_date_time": "{{date}} | {{time}} IST",
+  "dashboard.loading": "Loading...",
+  "dashboard.search_cases_placeholder": "Search by Case Type/Case Year",
+  "dashboard.criminal_tab": "Criminal",
+  "dashboard.civil_tab": "Civil",
+  "dashboard.session_tab": "Session",
 
   // Footer
   "footer.link.nyaynest": "Copyright © 2026 NyayNest ",

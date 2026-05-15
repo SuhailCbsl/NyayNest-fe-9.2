@@ -6,19 +6,16 @@
 
   <div class="container content">
     <h1 class="main-title">
-      <span class="nyay">Nyay</span><span class="nest">Nest</span>
+      <span class="nyay">{{ "Nyay" | translate }}</span
+      ><span class="nest">{{ "Nest" | translate }}</span>
     </h1>
-    <p class="subtitle">Digital Repository for Legal Resources</p>
+    <p class="subtitle">{{ "home.subheading" | translate }}</p>
 
     <p class="description">
-      NyayNest is a comprehensive digital repository dedicated to legal
-      documents and resources.<br />
-      Access a wide range of case laws, judgments, statutes, and legal
-      literature.<br />
-      Search and browse through collections organized by subject, jurisdiction,
-      and date.<br />
-      Contribute to the legal community by uploading and sharing relevant
-      documents.
+      {{ "home.paragraph1" | translate }}<br />
+      {{ "home.paragraph2" | translate }}<br />
+      {{ "home.paragraph3" | translate }}<br />
+      {{ "home.paragraph4" | translate }}
     </p>
 
     <!-- <div class="button-row">
@@ -29,11 +26,11 @@
       <div class="feature-box">
         <img src="assets/dspace/images/document-text.png" alt="doc" />
 
-        <span>Browse Documents</span>
+        <span>{{ "home.temp2" | translate }}</span>
       </div>
       <div class="feature-box">
         <img src="assets/dspace/images/document-text.png" alt="filter" />
-        <span>Advanced Search</span>
+        <span>{{ "home.temp3" | translate }}</span>
       </div>
     </div>
   </div>

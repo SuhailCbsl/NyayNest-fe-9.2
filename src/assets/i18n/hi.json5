@@ -11160,6 +11160,24 @@
   // "Nest": "Nest",
   Nest: "नेस्ट",
 
+  //=========== Home page ==================
+  "home.subheading": "न्यायपालिका के दस्तावेजों के लिए आपका विश्वसनीय डिजिटल भंडार",
+  Nyay: "न्याय",
+  Nest: "नेस्ट",
+
+  "home.temp1": "शुरू हो जाओ",
+  "home.temp2": "केंद्रीकृत डिजिटल रिपोजिटरी",
+  "home.temp3": "स्मार्ट खोज और फ़िल्टर",
+
+  "home.subheading": "न्यायपालिका के दस्तावेजों के लिए आपका विश्वसनीय डिजिटल भंडार",
+  "home.paragraph1": "न्यायनेस्ट एक मजबूत और सुरक्षित डिजिटल समाधान है जिसे तरीके में क्रांति लाने के लिए डिज़ाइन किया गया है",
+  "home.paragraph2": "न्यायालय कानूनी दस्तावेजों, केस फाइलों और न्यायिक कार्यप्रवाह का प्रबंधन और उन तक पहुंच बनाते हैं।",
+  "home.paragraph3": "आधुनिक प्रौद्योगिकियों पर आधारित तथा कागज रहित न्यायपालिका के दृष्टिकोण के अनुरूप",
+  "home.paragraph4": "न्यायनेस्ट निर्बाध, कुशल और पारदर्शी न्यायिक प्रक्रिया सुनिश्चित करता है",
+  "home.temp1": "शुरू हो जाओ",
+  "home.temp2": "केंद्रीकृत डिजिटल रिपोजिटरी",
+  "home.temp3": "स्मार्ट खोज और फ़िल्टर",
+
   //========== Dashboard ====================
   "dashboard.high_court": "उच्च न्यायालय",
   "dashboard.district_court": "जिला अदालत",
@@ -11177,4 +11195,31 @@
   "dashboard.criminal_tab": "आपराधिक",
   "dashboard.civil_tab": "नागरिक",
   "dashboard.session_tab": "सत्र",
+
+  //============== Footer ====================
+  "footer.link.nyaynest": "कॉपीराइट © 2026 न्यायनेस्ट ",
+  "footer.link.poweredby": " - संचालित द्वारा",
+  "footer.link.version": "v1.1.0",
+  "footer.link.cbsl": " सीबीएसएल समूह",
+
+  //============== Report ======================
+  "menu.section.reports.audittrail": "ऑडिट ट्रेल रिपोर्ट",
+  "menu.section.reports.data-upload": "डेटा अपलोड रिपोर्ट",
+  "menu.section.reports.datatrend": "डेटा रुझान रिपोर्ट",
+  "datatrendreport.breadcrumbs": "डेटा रुझान रिपोर्ट",
+  "audittrailreports.breadcrumbs": "ऑडिट ट्रेल रिपोर्ट",
+  "datauploadreport.breadcrumbs": "डेटा अपलोड रिपोर्ट",
+  "dataupload.report.search": "खोज",
+  "dataupload.report.update_upload_item": "आइटम अपलोड अपडेट करें",
+  "dataupload.report.total_page_count": "कुल पृष्ठ संख्या",
+  "dataupload.report.export": "निर्यात करें",
+  "dataupload.report.export.csv": "सीएसवी निर्यात करें",
+  "dataupload.report.export.pdf": "पीडीएफ निर्यात करें",
+
+  "audit.trail.report.search.placeholder": "खोज",
+  "audittrail.report.search": "खोज",
+  "audittrail.report.reset": "रीसेट करें",
+  "audittrail.report.export": "निर्यात करें",
+  "audittrail.report.export.csv": "सीएसवी निर्यात करें",
+  "audittrail.report.export.pdf": "पीडीएफ निर्यात करें",
 }

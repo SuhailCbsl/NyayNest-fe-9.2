@@ -4,6 +4,7 @@ import {
   ApplicationConfig,
   DOCUMENT,
   importProvidersFrom,
+  LOCALE_ID,
 } from '@angular/core';
 import {
   NoPreloading,
@@ -63,6 +64,11 @@ import {
 } from './shared/mydspace-actions/claimed-task/switcher/claimed-task-actions-decorator';
 import { DSpaceRouterStateSerializer } from './shared/ngrx/dspace-router-state-serializer';
 import { STARTS_WITH_DECORATOR_MAP } from './shared/starts-with/starts-with-decorator';
+// hindi translation
+import { registerLocaleData } from '@angular/common';
+import localeHi from '@angular/common/locales/hi';
+
+registerLocaleData(localeHi);
 
 export function getConfig() {
   return environment;
@@ -149,6 +155,11 @@ export const commonAppConfig: ApplicationConfig = {
       provide: HTTP_INTERCEPTORS,
       useClass: DspaceRestInterceptor,
       multi: true,
+    },
+    // translation mode setup for Hindi
+    {
+      provide: LOCALE_ID,
+      useValue: 'hi',
     },
     providePrimeNG({ theme: { preset: { theme: Lara } } }),
     // register the dynamic matcher used by form. MUST be provided by the app module

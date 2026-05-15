@@ -11222,4 +11222,10 @@
   "audittrail.report.export": "निर्यात करें",
   "audittrail.report.export.csv": "सीएसवी निर्यात करें",
   "audittrail.report.export.pdf": "पीडीएफ निर्यात करें",
+
+  //============== admin search page ====================
+  "admin.search_items": "आइटम खोजें",
+  "admin.search_fuzzy": "अस्पष्ट खोज",
+  "admin.search_phonetic": "ध्वन्यात्मक खोज",
+  "admin.search_type": "तलाश की विधि",
 }

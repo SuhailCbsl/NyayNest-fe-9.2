@@ -28,7 +28,7 @@ import {
   NgbModal,
   NgbTooltipModule,
 } from '@ng-bootstrap/ng-bootstrap';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, take } from 'rxjs/operators';
 
@@ -289,6 +289,7 @@ export class SearchFormComponent implements OnChanges, OnInit {
     private notificationService: NotificationsService,
     @Inject(PLATFORM_ID) private platformId: Object,
     private cdf: ChangeDetectorRef,
+    private translationService: TranslateService,
     @Inject(APP_CONFIG) protected appConfig?: AppConfig,
   ) {
     this.showThumbnails =
@@ -978,11 +979,11 @@ export class SearchFormComponent implements OnChanges, OnInit {
   get searchButtonLabel(): string {
     switch (this.searchType) {
       case 'fuzzy':
-        return 'Fuzzy';
+        return this.translationService.instant('admin.search_fuzzy');
       case 'phonetic':
-        return 'Phonetic';
+        return this.translationService.instant('admin.search_phonetic');
       default:
-        return 'Search Type';
+        return this.translationService.instant('admin.search_type');
     }
   }
 

@@ -7391,4 +7391,9 @@
   "search.filters.filter.DocType.head": "DocType",
   "search.filters.filter.DocumentType.head": "Document Type",
   "search.filters.filter.DocumentNo.head": "DocumentNo",
+
+  "admin.search_items": "Search Items",
+  "admin.search_fuzzy": "Fuzzy",
+  "admin.search_phonetic": "Phonetic",
+  "admin.search_type": "Search Type",
 }

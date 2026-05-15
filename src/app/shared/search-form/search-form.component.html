@@ -28,7 +28,7 @@
           class="search-input form-control"
           [(ngModel)]="userQuery"
           name="userQuery"
-          placeholder="Search Items"
+          [placeholder]="'admin.search_items' | translate"
           (keyup.enter)="onSubmit()"
         />
         <i class="search-icon fas fa-search"></i>

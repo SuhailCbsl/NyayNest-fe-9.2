@@ -147,7 +147,7 @@ export class SearchFormComponent implements OnChanges, OnInit {
   availableFilters: SearchFilterConfig[] = [];
   appliedFilterTypes: Set<string> = new Set();
 
-  sortBy: string = '';
+  sortBy: string = 'dc.date.accessioned';
   sortOrder: string = 'desc';
   resultPerPage: number = 10;
   searchCaseBy: string = '';
@@ -1172,11 +1172,56 @@ export class SearchFormComponent implements OnChanges, OnInit {
   }
 
   applyFilterToSearch(type: string, value: string) {
+    this.currentPage = 1;
+
+    // YEAR RANGE
+    if (this.isYearField(type)) {
+      const [fromYear, toYear] = value.split(' to ').map((v) => v.trim());
+
+      const rangeQuery = `${type}:[${fromYear} TO ${toYear}]`;
+
+      this.internalQuery = this.internalQuery
+        ? `${this.internalQuery} AND ${rangeQuery}`
+        : rangeQuery;
+
+      this.router.navigate([], {
+        queryParams: {
+          query: this.internalQuery,
+          'spc.page': 1,
+        },
+        queryParamsHandling: 'merge',
+      });
+
+      return;
+    }
+
+    // DATE RANGE
+    if (this.isDateField(type)) {
+      const [fromDate, toDate] = value.split(' to ').map((v) => v.trim());
+
+      const rangeQuery = `${type}:[${fromDate}T00:00:00Z TO ${toDate}T23:59:59Z]`;
+
+      this.internalQuery = this.internalQuery
+        ? `${this.internalQuery} AND ${rangeQuery}`
+        : rangeQuery;
+
+      this.router.navigate([], {
+        queryParams: {
+          query: this.internalQuery,
+          'spc.page': 1,
+        },
+        queryParamsHandling: 'merge',
+      });
+
+      return;
+    }
+
+    // NORMAL FACET FILTERS
     const filterParam = `f.${type}`;
 
     const queryParams: any = {};
-    queryParams[filterParam] = `${value.toLowerCase()},equals`;
 
+    queryParams[filterParam] = `${value},equals`;
     this.currentPage = 1;
 
     this.router.navigate(this.getSearchLinkParts(), {

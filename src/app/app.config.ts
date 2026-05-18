@@ -67,8 +67,13 @@ import { STARTS_WITH_DECORATOR_MAP } from './shared/starts-with/starts-with-deco
 // hindi translation
 import { registerLocaleData } from '@angular/common';
 import localeHi from '@angular/common/locales/hi';
+import { TranslateService } from '@ngx-translate/core';
 
 registerLocaleData(localeHi);
+
+export function localeFactory(translate: TranslateService): string {
+  return translate.currentLang || 'en';
+}
 
 export function getConfig() {
   return environment;
@@ -159,7 +164,8 @@ export const commonAppConfig: ApplicationConfig = {
     // translation mode setup for Hindi
     {
       provide: LOCALE_ID,
-      useValue: 'hi',
+      useFactory: localeFactory,
+      deps: [TranslateService],
     },
     providePrimeNG({ theme: { preset: { theme: Lara } } }),
     // register the dynamic matcher used by form. MUST be provided by the app module

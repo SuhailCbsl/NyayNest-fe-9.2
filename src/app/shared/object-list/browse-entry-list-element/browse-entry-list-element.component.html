@@ -1,4 +1,4 @@
-<div class="d-flex flex-row">
+<!-- <div class="d-flex flex-row">
   @if (linkType !== linkTypes.None) {
     <a [target]="(linkType === linkTypes.ExternalLink) ? '_blank' : '_self'" [attr.rel]="(linkType === linkTypes.ExternalLink) ? 'noopener noreferrer' : null" [routerLink]="[]" [queryParams]="queryParams$ | async" class="lead" role="link" tabindex="0">
       {{object.value}}
@@ -11,4 +11,28 @@
   }
   <span class="pe-2">&nbsp;</span>
   <span class="badge rounded-pill bg-secondary align-self-center ps-2 pe-2">{{object.count}}</span>
+</div> -->
+<div
+  *ngIf="linkType != linkTypes.None"
+  [routerLink]="[]"
+  [queryParams]="queryParams$ | async"
+  [queryParamsHandling]="'merge'"
+  [target]="linkType == linkTypes.ExternalLink ? '_blank' : '_self'"
+  [attr.rel]="linkType == linkTypes.ExternalLink ? 'noopener noreferrer' : null"
+  class="d-flex flex-row clickable-card"
+>
+  <span class="lead case-text">{{ object.value }}</span>
+  <span class="pr-2">&nbsp;</span>
+  <span class="badge badge-pill badge-secondary align-self-center case-count">
+    {{ object.count }}
+  </span>
+</div>
+
+<!-- Non-clickable version -->
+<div *ngIf="linkType == linkTypes.None" class="d-flex flex-row">
+  <span class="lead case-text">{{ object.value }}</span>
+  <span class="pr-2">&nbsp;</span>
+  <span class="badge badge-pill badge-secondary align-self-center case-count">
+    {{ object.count }}
+  </span>
 </div>

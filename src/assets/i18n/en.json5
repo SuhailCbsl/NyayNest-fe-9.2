@@ -1041,7 +1041,7 @@
 
   "browse.metadata.subject": "Subject",
 
-  "browse.metadata.title": "Title",
+  "browse.metadata.title": "Case No",
 
   "browse.metadata.srsc": "Subject Category",
 
@@ -1059,7 +1059,7 @@
 
   "browse.metadata.nsi.tree.description": "Select an index to add as search filter",
 
-  "browse.metadata.title.breadcrumbs": "Browse by Title",
+  "browse.metadata.title.breadcrumbs": "Browse by Case No",
 
   "browse.metadata.map": "Browse by Geolocation",
 
@@ -3471,7 +3471,7 @@
 
   "menu.section.browse_community_by_title": "By Title",
 
-  "menu.section.browse_global": "All of NyayNest",
+  "menu.section.browse_global": "Search Cases By",
 
   "menu.section.browse_global_by_author": "By Author",
 
@@ -7396,4 +7396,51 @@
   "admin.search_fuzzy": "Fuzzy",
   "admin.search_phonetic": "Phonetic",
   "admin.search_type": "Search Type",
+
+  //Search Dropdown
+  "menu.section.browse_global_by_title": "Case No",
+  "menu.section.browse_global_by_CaseTypeName": "Case Type",
+  "menu.section.browse_global_by_CaseYear": "Case Year",
+  "menu.section.browse_global_by_CaseTypeNameCaseNoCaseYear": "Case Type/Case No/Case Year",
+  "menu.section.browse_global_by_CaseStatus": "Case Status",
+  "menu.section.browse_global_by_CNRNo": "CNRNo",
+  "menu.section.browse_global_by_GoshwaraNo": "Goshwara No",
+  "menu.section.browse_global_by_JudgeName": "Hon'ble Judge",
+  "menu.section.browse_global_by_Petitioner": "Petitioner",
+  "menu.section.browse_global_by_AdvocateNameofPetitioner": "Petitioner’s Advocate",
+  "menu.section.browse_global_by_Respondent": "Respondent",
+  "menu.section.browse_global_by_AdvocateNameofRespondent": "Respondent’s Advocate",
+
+  "browse.metadata.CaseTypeName": "Case Type",
+  "browse.metadata.CaseTypeName.breadcrumbs": "Browse by Case Type",
+
+  "browse.metadata.CaseYear": "Case Year",
+  "browse.metadata.CaseYear.breadcrumbs": "Browse by Case Year",
+
+  "browse.metadata.CaseTypeNameCaseNoCaseYear": "Case Type/Case No/Case Year",
+  "browse.metadata.CaseTypeNameCaseNoCaseYear.breadcrumbs": "Browse by Case Type/Case No/Case Year",
+
+  "browse.metadata.CaseStatus": "Case Status",
+  "browse.metadata.CaseStatus.breadcrumbs": "Browse by Case Status",
+
+  "browse.metadata.CNRNo": "CNR No",
+  "browse.metadata.CNRNo.breadcrumbs": "Browse by CNR No",
+
+  "browse.metadata.GoshwaraNo": "Goshwara No",
+  "browse.metadata.GoshwaraNo.breadcrumbs": "Browse by Goshwara No",
+
+  "browse.metadata.JudgeName": "Judge",
+  "browse.metadata.JudgeName.breadcrumbs": "Browse by Judge",
+
+  "browse.metadata.Petitioner": "Petitioner",
+  "browse.metadata.Petitioner.breadcrumbs": "Browse by Petitioner",
+
+  "browse.metadata.AdvocateNameofPetitioner": "Petitioner’s Advocate",
+  "browse.metadata.AdvocateNameofPetitioner.breadcrumbs": "Browse by Petitioner’s Advocate",
+
+  "browse.metadata.Respondent": "Respondent",
+  "browse.metadata.Respondent.breadcrumbs": "Browse by Respondent",
+
+  "browse.metadata.AdvocateNameofRespondent": "Respondent’s Advocate",
+  "browse.metadata.AdvocateNameofRespondent.breadcrumbs": "Browse by Respondent’s Advocate",
 }

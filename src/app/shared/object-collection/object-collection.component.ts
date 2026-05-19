@@ -1,8 +1,4 @@
-import {
-  AsyncPipe,
-  isPlatformBrowser,
-  NgClass,
-} from '@angular/common';
+import { AsyncPipe, isPlatformBrowser, NgClass } from '@angular/common';
 import {
   ChangeDetectorRef,
   Component,
@@ -14,15 +10,9 @@ import {
   Output,
   PLATFORM_ID,
 } from '@angular/core';
-import {
-  ActivatedRoute,
-  Router,
-} from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import {
-  distinctUntilChanged,
-  map,
-} from 'rxjs/operators';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 
 import {
   SortDirection,
@@ -87,7 +77,7 @@ export class ObjectCollectionComponent implements OnInit {
    */
   @Input() hideGear = false;
   @Input() selectable = false;
-  @Input() selectionConfig: {repeatable: boolean, listId: string};
+  @Input() selectionConfig: { repeatable: boolean; listId: string };
 
   /**
    * Whether to show an RSS syndication button for the current search options
@@ -98,8 +88,10 @@ export class ObjectCollectionComponent implements OnInit {
    * Emit custom event for listable object custom actions.
    */
   @Output() customEvent = new EventEmitter<any>();
-  @Output() deselectObject: EventEmitter<ListableObject> = new EventEmitter<ListableObject>();
-  @Output() selectObject: EventEmitter<ListableObject> = new EventEmitter<ListableObject>();
+  @Output() deselectObject: EventEmitter<ListableObject> =
+    new EventEmitter<ListableObject>();
+  @Output() selectObject: EventEmitter<ListableObject> =
+    new EventEmitter<ListableObject>();
 
   /**
    * Emit when one of the collection's object has changed.
@@ -119,7 +111,8 @@ export class ObjectCollectionComponent implements OnInit {
   /**
    * Send an import event to the parent component
    */
-  @Output() importObject: EventEmitter<ListableObject> = new EventEmitter<ListableObject>();
+  @Output() importObject: EventEmitter<ListableObject> =
+    new EventEmitter<ListableObject>();
 
   /**
    * The link type of the rendered list elements
@@ -167,12 +160,14 @@ export class ObjectCollectionComponent implements OnInit {
    * An event fired when the sort direction is changed.
    * Event's payload equals to the newly selected sort direction.
    */
-  @Output() sortDirectionChange: EventEmitter<SortDirection> = new EventEmitter<SortDirection>();
+  @Output() sortDirectionChange: EventEmitter<SortDirection> =
+    new EventEmitter<SortDirection>();
 
   /**
    * An event fired one of the pagination parameters is changed
    */
-  @Output() paginationChange: EventEmitter<SortDirection> = new EventEmitter<any>();
+  @Output() paginationChange: EventEmitter<SortDirection> =
+    new EventEmitter<any>();
 
   /**
    * An event fired when the sort field is changed.
@@ -205,9 +200,6 @@ export class ObjectCollectionComponent implements OnInit {
    */
   placeholderFontClass: string;
 
-
-
-
   /**
    * @param cdRef
    *    ChangeDetectorRef service provided by Angular.
@@ -223,16 +215,16 @@ export class ObjectCollectionComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private elementRef: ElementRef,
-    @Inject(PLATFORM_ID) private platformId: any) {
-  }
+    @Inject(PLATFORM_ID) private platformId: any,
+  ) {}
 
   ngOnInit(): void {
-    this.currentMode$ = this.route
-      .queryParams
-      .pipe(
-        map((params) => isEmpty(params?.view) ? ViewMode.ListElement : params.view),
-        distinctUntilChanged(),
-      );
+    this.currentMode$ = this.route.queryParams.pipe(
+      map((params) =>
+        isEmpty(params?.view) ? ViewMode.ListElement : params.view,
+      ),
+      distinctUntilChanged(),
+    );
     if (isPlatformBrowser(this.platformId)) {
       const width = this.elementRef.nativeElement.offsetWidth;
       this.placeholderFontClass = setPlaceHolderAttributes(width);
@@ -286,10 +278,9 @@ export class ObjectCollectionComponent implements OnInit {
   }
 
   /**
-  * Go to the next page
-  */
+   * Go to the next page
+   */
   goNext() {
     this.next.emit(true);
   }
-
 }

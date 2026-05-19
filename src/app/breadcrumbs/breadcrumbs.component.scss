@@ -39,7 +39,8 @@ li.breadcrumb-item.active {
   content: quote("•") !important;
 }
 
-.text-truncate {
+.breadcrumb-text {
   color: #f94f00;
   font-weight: bold;
+  white-space: nowrap;
 }

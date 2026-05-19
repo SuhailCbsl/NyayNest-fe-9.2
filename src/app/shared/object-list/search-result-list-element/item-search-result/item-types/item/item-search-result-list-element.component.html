@@ -1,133 +1,91 @@
-<div class="row">
+<div class="custom-admin-card d-flex align-items-center">
+  <!-- Thumbnail -->
   @if (showThumbnails) {
     <div class="col-3 col-md-2">
-      @if (linkType !== linkTypes.None) {
-        <a
-          [target]="linkType === linkTypes.ExternalLink ? '_blank' : '_self'"
-          [attr.rel]="
-            linkType === linkTypes.ExternalLink ? 'noopener noreferrer' : null
-          "
-          [routerLink]="[itemPageRoute]"
-          class="dont-break-out"
-          tabindex="-1"
-        >
-          <ds-thumbnail
-            [thumbnail]="dso?.thumbnail | async"
-            [limitWidth]="true"
-          >
-          </ds-thumbnail>
-        </a>
-      }
-      @if (linkType === linkTypes.None) {
-        <span class="dont-break-out">
-          <ds-thumbnail
-            [thumbnail]="dso?.thumbnail | async"
-            [limitWidth]="true"
-          >
-          </ds-thumbnail>
-        </span>
-      }
+      <a
+        [routerLink]="[itemPageRoute]"
+        class="dont-break-out"
+        tabindex="-1"
+        target="_blank"
+      >
+        <ds-thumbnail [thumbnail]="dso?.thumbnail | async" [limitWidth]="true">
+        </ds-thumbnail>
+      </a>
     </div>
   }
-  <div [ngClass]="showThumbnails ? 'col-9' : 'col-md-12'">
-    <div class="d-flex">
-      @if (showLabel) {
-        <ds-badges
-          [object]="dso"
-          [context]="context"
-          [showAccessStatus]="true"
-        ></ds-badges>
-      }
+
+  <!-- Metadata -->
+  <div class="flex-grow-1">
+    <!-- Case ID Badge -->
+    <div class="mb-2">
+      <a [routerLink]="[itemPageRoute]" target="_blank">
+        <span class="badge bg-warning text-dark">
+          {{ dso.firstMetadataValue("dc.CaseTypeName") }}/{{
+            dso.firstMetadataValue("dc.title")
+          }}/{{ dso.firstMetadataValue("dc.CaseYear") }}
+        </span>
+      </a>
     </div>
 
-    @if (object !== undefined && object !== null) {
-      <ds-truncatable [id]="dso.id">
-        @if (linkType !== linkTypes.None) {
-          <a
-            [target]="linkType === linkTypes.ExternalLink ? '_blank' : '_self'"
-            [attr.rel]="
-              linkType === linkTypes.ExternalLink ? 'noopener noreferrer' : null
-            "
-            [routerLink]="[itemPageRoute]"
-            class="lead item-list-title dont-break-out"
-            [innerHTML]="dsoTitle"
-            role="link"
-            tabindex="0"
-          ></a>
-        }
-        @if (linkType === linkTypes.None) {
-          <span
-            class="lead item-list-title dont-break-out"
-            [innerHTML]="dsoTitle"
-          ></span>
-        }
-        <span class="text-muted">
-          <ds-truncatable-part [id]="dso.id" [minLines]="1">
-            @if (
-              dso.firstMetadataValue("dc.publisher") ||
-              dso.firstMetadataValue("dc.date.issued")
-            ) {
-              (
-              @if (dso.firstMetadataValue("dc.publisher")) {
-                <span
-                  class="item-list-publisher"
-                  [innerHTML]="firstMetadataValue('dc.publisher')"
-                ></span>
-              }
-              @if (
-                dso.firstMetadataValue("dc.publisher") &&
-                dso.firstMetadataValue("dc.date.issued")
-              ) {
-                <span>, </span>
-              }
-              @if (dso.firstMetadataValue("dc.date.issued")) {
-                <span
-                  class="item-list-date"
-                  [innerHTML]="firstMetadataValue('dc.date.issued')"
-                ></span>
-              }
-              )
-            }
-            @if (
-              dso.allMetadata([
-                "dc.contributor.author",
-                "dc.creator",
-                "dc.contributor.*",
-              ]).length > 0
-            ) {
-              <span class="item-list-authors">
-                @for (
-                  author of allMetadataValues([
-                    "dc.contributor.author",
-                    "dc.creator",
-                    "dc.contributor.*",
-                  ]);
-                  track author;
-                  let last = $last
-                ) {
-                  <span>
-                    <span [innerHTML]="author"
-                      ><span [innerHTML]="author"></span
-                    ></span>
-                    @if (!last) {
-                      <span>; </span>
-                    }
-                  </span>
-                }
-              </span>
-            }
-          </ds-truncatable-part>
-        </span>
-        @if (dso.firstMetadataValue("dc.description.abstract")) {
-          <div class="item-list-abstract">
-            <ds-truncatable-part [id]="dso.id" [minLines]="3"
-              ><span
-                [innerHTML]="firstMetadataValue('dc.description.abstract')"
-              ></span>
-            </ds-truncatable-part>
-          </div>
-        }
-      </ds-truncatable>
-    }
+    <!-- Your full metadata layout -->
+    <div class="case-metadata">
+      <div class="row-item">
+        <div class="label">Case Nature</div>
+        <div class="colon">:</div>
+        <div class="value">{{ dso.firstMetadataValue("dc.CaseNature") }}</div>
+      </div>
+
+      <div class="row-item">
+        <div class="label">Case Status</div>
+        <div class="colon">:</div>
+        <div class="value">{{ dso.firstMetadataValue("dc.CaseStatus") }}</div>
+      </div>
+
+      <div class="row-item">
+        <div class="label">Petitioner</div>
+        <div class="colon">:</div>
+        <div class="value">{{ dso.firstMetadataValue("dc.Petitioner") }}</div>
+      </div>
+
+      <div class="row-item">
+        <div class="label">Petitioner's Advocate</div>
+        <div class="colon">:</div>
+        <div class="value">
+          {{ dso.firstMetadataValue("dc.AdvocateNameofPetitioner") }}
+        </div>
+      </div>
+
+      <div class="row-item">
+        <div class="label">Respondent</div>
+        <div class="colon">:</div>
+        <div class="value">{{ dso.firstMetadataValue("dc.Respondent") }}</div>
+      </div>
+
+      <div class="row-item">
+        <div class="label">Respondent's Advocate</div>
+        <div class="colon">:</div>
+        <div class="value">
+          {{ dso.firstMetadataValue("dc.AdvocateNameofRespondent") }}
+        </div>
+      </div>
+
+      <div class="row-item">
+        <div class="label">Honourable Judge</div>
+        <div class="colon">:</div>
+        <div class="value">{{ dso.firstMetadataValue("dc.JudgeName") }}</div>
+      </div>
+
+      <div class="row-item">
+        <div class="label">Judgement</div>
+        <div class="colon">:</div>
+        <div class="value">{{ dso.firstMetadataValue("dc.Judgement") }}</div>
+      </div>
+    </div>
+
+    <!-- Admin Actions -->
+    <!-- <div class="mt-2">
+      <ds-item-admin-search-result-actions-element [item]="dso" [small]="false">
+      </ds-item-admin-search-result-actions-element>
+    </div> -->
   </div>
 </div>

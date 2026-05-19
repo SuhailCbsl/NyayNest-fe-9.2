@@ -1,7 +1,61 @@
-@import '../../../../../../../styles/variables';
+@import "../../../../../../../styles/variables";
 
 .item-list-supervision {
-    a {
-        cursor: pointer;
-    }
+  a {
+    cursor: pointer;
+  }
+}
+
+.case-metadata {
+  margin-top: 8px;
+}
+
+.row-item {
+  display: grid;
+  grid-template-columns: 180px 20px 1fr; // controls alignment
+  margin-bottom: 4px;
+}
+
+.label {
+  font-weight: 600;
+}
+
+.colon {
+  text-align: center;
+}
+
+.value {
+  color: #444;
+}
+
+.thumbnail-width-height {
+  margin: auto;
+}
+
+/* Thumbnail container */
+.thumbnail-wrapper {
+  width: 120px;
+  min-width: 120px;
+  margin-right: 12px;
+}
+
+/* Real thumbnail */
+.thumbnail-wrapper ds-thumbnail {
+  width: 100%;
+  height: 160px;
+}
+
+/* Grey placeholder */
+.thumbnail-placeholder {
+  width: 100%;
+  height: 160px;
+  background-color: #e0e0e0;
+  border: 1px solid #d6d6d6;
+  border-radius: 4px;
+}
+
+/* Align card properly */
+.custom-admin-card {
+  display: flex;
+  align-items: flex-start;
 }

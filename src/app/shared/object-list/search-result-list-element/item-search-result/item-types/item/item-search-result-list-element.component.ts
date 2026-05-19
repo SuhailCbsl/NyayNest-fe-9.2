@@ -1,11 +1,5 @@
-import {
-  AsyncPipe,
-  NgClass,
-} from '@angular/common';
-import {
-  Component,
-  OnInit,
-} from '@angular/core';
+import { AsyncPipe, NgClass } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { Item } from '../../../../../../core/shared/item.model';
@@ -18,6 +12,8 @@ import { listableObjectComponent } from '../../../../../object-collection/shared
 import { TruncatableComponent } from '../../../../../truncatable/truncatable.component';
 import { TruncatablePartComponent } from '../../../../../truncatable/truncatable-part/truncatable-part.component';
 import { SearchResultListElementComponent } from '../../../search-result-list-element.component';
+import { ItemAdminSearchResultActionsComponent } from 'src/app/admin/admin-search-page/admin-search-results/item-admin-search-result-actions.component';
+import { ThumbnailComponent } from 'src/themes/custom/app/thumbnail/thumbnail.component';
 
 @listableObjectComponent('PublicationSearchResult', ViewMode.ListElement)
 @listableObjectComponent(ItemSearchResult, ViewMode.ListElement)
@@ -25,28 +21,35 @@ import { SearchResultListElementComponent } from '../../../search-result-list-el
   selector: 'ds-item-search-result-list-element',
   styleUrls: ['./item-search-result-list-element.component.scss'],
   templateUrl: './item-search-result-list-element.component.html',
-  imports: [
-    AsyncPipe,
-    NgClass,
-    RouterLink,
-    ThemedBadgesComponent,
-    ThemedThumbnailComponent,
-    TruncatableComponent,
-    TruncatablePartComponent,
-  ],
+  imports: [AsyncPipe, RouterLink, ThemedThumbnailComponent],
 })
 /**
  * The component for displaying a list element for an item search result of the type Publication
  */
-export class ItemSearchResultListElementComponent extends SearchResultListElementComponent<ItemSearchResult, Item> implements OnInit {
-  /**
-   * Route to the item's page
-   */
+export class ItemSearchResultListElementComponent
+  extends SearchResultListElementComponent<ItemSearchResult, Item>
+  implements OnInit
+{
   itemPageRoute: string;
 
   ngOnInit(): void {
     super.ngOnInit();
-    this.showThumbnails = this.showThumbnails ?? this.appConfig.browseBy.showThumbnails;
-    this.itemPageRoute = getItemPageRoute(this.dso);
+
+    // thumbnail setting (same as public)
+    this.showThumbnails =
+      this.showThumbnails ?? this.appConfig.browseBy.showThumbnails;
+
+    // route for item click
+    this.itemPageRoute = `/items/${this.dso.uuid}/doc-view`;
+  }
+
+  highlight(field: string): string {
+    const highlight = (this.object?.indexableObject as any)?.highlight;
+
+    if (highlight && highlight[field] && highlight[field].length > 0) {
+      return highlight[field][0]; // already contains <em>
+    }
+
+    return this.dso.firstMetadataValue(field);
   }
 }

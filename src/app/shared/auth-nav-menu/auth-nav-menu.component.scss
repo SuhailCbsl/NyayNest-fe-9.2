@@ -1,4 +1,11 @@
-#loginDropdownMenu, #logoutDropdownMenu {
+// Ensure login button is styled correctly when dropdown is open
+.dropdownLogin.show,
+.dropdownLogin[aria-expanded="true"] {
+  background-color: #1a3c77 !important;
+  color: #fff !important;
+}
+#loginDropdownMenu,
+#logoutDropdownMenu {
   min-width: 330px;
   z-index: 1002;
 }
@@ -7,20 +14,27 @@
   min-height: 75px;
 }
 
-.dropdown-item.active, .dropdown-item:active,
-.dropdown-item:hover, .dropdown-item:focus {
+.dropdown-item.active,
+.dropdown-item:active,
+.dropdown-item:hover,
+.dropdown-item:focus {
   background-color: transparent !important;
 }
 
-.loginLink, .dropdownLogin, .logoutLink, .dropdownLogout {
+.loginLink,
+.dropdownLogin,
+.logoutLink,
+.dropdownLogout {
   color: var(--ds-header-icon-color);
 
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     color: var(--ds-header-icon-color-hover);
   }
 }
 
-.dropdownLogin, .dropdownLogout {
+.dropdownLogin,
+.dropdownLogout {
   &:not(:focus-visible).active,
   &:not(:focus-visible):active,
   &:not(:focus-visible).active:focus,
@@ -29,6 +43,30 @@
   }
 }
 
-.dropdown-toggle::after {
-  margin-left: 0;
+.dropdownLogin {
+  background-color: #1a3c77;
+  /* Dark blue background */
+  color: white;
+  /* White text */
+  border: none;
+  border-radius: 15px;
+  /* Rounded corners */
+  padding: 5px 15px;
+  /* Adjust padding as per image */
+  font-weight: 500;
+  font-size: 14px;
+  text-align: center;
+  display: inline-block;
+  min-width: 72px;
+  height: 30px;
+  line-height: 20px;
+  cursor: pointer;
+  // transition: background-color 0.3s ease;
+}
+
+.dropdownLogin:hover {
+  text-decoration: none;
+  border: 1px solid #1a3c77;
+  background-color: transparent !important;
+  color: #1a3c77 !important;
 }

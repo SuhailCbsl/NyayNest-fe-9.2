@@ -7443,4 +7443,29 @@
 
   "browse.metadata.AdvocateNameofRespondent": "Respondent’s Advocate",
   "browse.metadata.AdvocateNameofRespondent.breadcrumbs": "Browse by Respondent’s Advocate",
+
+  // custom component
+  "custom_browse_by_case_type": "Case Type",
+  "custom_browse_by_case_type_placeholder": "Enter Case Type",
+  "custom_browse_by_case_no": "Case No",
+  "custom_browse_by_case_no_placeholder": "Enter Case No",
+  "custom_browse_by_case_year": "Case Year",
+  "custom_browse_by_case_year_placeholder": "Enter Case Year",
+  "custom_browse_by_reset": "Reset",
+  "custom_browse_by_search": "Search",
+
+  "admin_search_section_title": "Administrative Search",
+  "admin_search_results_count": "Now showing {{range}} of {{total}}",
+  "admin_search_case_nature": "Case Nature",
+  "admin_search_case_status": "Case Status",
+  "admin_search_petitioner": "Petitioner",
+  "admin_search_petitioner_advocate": "Petitioner's Advocate",
+  "admin_search_respondent": "Respondent",
+  "admin_search_respondent_advocate": "Respondent's Advocate",
+  "admin_search_judge": "Honourable Judge",
+  "admin_search_judgment": "Judgment"
+
+
+
+
 }

@@ -6,3 +6,1083 @@
     padding-left: 20px;
   }
 }
+
+.suggestion-list {
+  position: absolute;
+  width: 91%;
+  background: white;
+  border: 1px solid #ddd;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.suggestion-list li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.suggestion-list li:hover {
+  background: #f5f5f5;
+}
+
+label {
+  font-size: 15px;
+}
+
+//search CSS//
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css");
+
+.admin-search-container {
+  font-family: Arial, sans-serif;
+  background-color: white !important;
+  padding: 5px;
+  // min-height: 100vh;
+}
+
+.header {
+  background-color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.search-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.view-toggle {
+  display: flex;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.view-btn {
+  background: #4a90e2;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &.active {
+    background: #2c5aa0;
+  }
+
+  &:hover {
+    background: #357abd;
+  }
+}
+
+.browse-filter {
+  padding: 8px 15px;
+  border: 1px solid #174377;
+  color: #174377;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background: #174377;
+    color: white;
+  }
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+
+  &:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+  }
+}
+
+.search-btn {
+  background: #ff6b35;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background: #e55a2b;
+  }
+}
+
+.settings-icons {
+  display: flex;
+  gap: 10px;
+}
+
+.icon-btn {
+  width: 35px;
+  height: 35px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+
+  &:hover {
+    background: #f5f5f5;
+    border-color: #4a90e2;
+  }
+}
+
+.filters-row {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: nowrap;
+}
+
+.filter-dropdown {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  font-size: 14px;
+
+  &:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+  }
+}
+
+.metadata-input-group {
+  display: flex;
+  flex: 1;
+  position: relative;
+}
+
+.metadata-input {
+  flex: 1;
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+}
+
+.add-btn {
+  background: #174377;
+  color: white;
+  border: 1px solid #174377;
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  &:hover {
+    background: #174377;
+  }
+}
+
+.filter-tags {
+  display: flex;
+  flex-wrap: nowrap; /* Prevent wrapping */
+  overflow-x: auto; /* Enable horizontal scroll */
+  white-space: nowrap; /* Keep items on a single line */
+  gap: 8px;
+  padding: 8px;
+  scrollbar-color: #f94f00 transparent;
+  position: relative;
+}
+
+/* WebKit Scrollbar (Chrome, Safari, Edge) */
+.filter-tags::-webkit-scrollbar {
+  height: 4px; /* Small height as per your screenshot */
+}
+
+.filter-tags::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+.filter-tags::-webkit-scrollbar-thumb {
+  background-color: #f94f00;
+  border-radius: 10px;
+}
+
+.filter-tags::-webkit-scrollbar-thumb:hover {
+  background-color: #e94400;
+}
+
+.filter-tags::-webkit-scrollbar-button {
+  background-color: #174377;
+  width: 12px;
+  height: 8px;
+}
+
+.filter-tag {
+  background: #fff3e0;
+  color: #e65100;
+  padding: 4px 8px;
+  border-radius: 15px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  animation: fadeIn 0.3s ease-in;
+  white-space: nowrap;
+
+  .close {
+    cursor: pointer;
+    font-weight: bold;
+    padding: 2px 4px;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+
+    &:hover {
+      background: rgba(230, 81, 0, 0.2);
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.main-content {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.document-preview {
+  flex: 1;
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.document-placeholder {
+  width: 100%;
+  height: 400px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #f9f9f9;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.document-content {
+  line-height: 1.6;
+  color: #333;
+
+  h3 {
+    color: #2c5aa0;
+    margin-bottom: 15px;
+  }
+
+  p {
+    margin: 10px 0;
+  }
+
+  .selected-heading {
+    color: #4a90e2;
+    font-weight: bold;
+    margin: 20px 0;
+  }
+
+  .red-heading {
+    color: #ff6b35;
+    font-weight: bold;
+    margin: 20px 0;
+  }
+}
+
+.case-details {
+  flex: 1;
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 10px;
+  font-weight: lighter;
+  word-wrap: break-word;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+.section-title {
+  color: #174377;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.results-count {
+  color: #666;
+  font-size: 14px;
+  margin-left: auto;
+}
+
+.item-badge {
+  background: #ff6b35;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  display: inline-block;
+}
+
+.details-list {
+  margin-bottom: 20px;
+}
+
+.first-row {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.detail-row {
+  display: flex;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+.detail-label {
+  font-weight: bold;
+  width: 200px;
+  flex-shrink: 0;
+  color: #333;
+
+  @media (max-width: 480px) {
+    width: auto;
+  }
+}
+
+.detail-value {
+  color: #666;
+  flex: 1;
+  word-wrap: break-word;
+}
+
+.view-more {
+  color: #4a90e2;
+  text-decoration: none;
+  cursor: pointer;
+  margin-left: 10px;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s;
+  font-size: 14px;
+
+  &:hover {
+    background: #f5f5f5;
+    border-color: #4a90e2;
+    color: #4a90e2;
+  }
+
+  &.delete {
+    color: #d32f2f;
+    border-color: #d32f2f;
+
+    &:hover {
+      background: #ffebee;
+      border-color: #d32f2f;
+      color: #d32f2f;
+    }
+  }
+
+  i {
+    font-size: 12px;
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .admin-search-container {
+    padding: 10px;
+  }
+
+  .search-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-dropdown {
+    width: 100%;
+  }
+
+  .metadata-input-group {
+    width: 100%;
+  }
+}
+
+.metadata-input-group {
+  position: relative;
+}
+
+.metadata-input {
+  width: 100%;
+  padding: 6px 10px;
+  box-sizing: border-box;
+  z-index: 1;
+}
+
+// .suggestion-list {
+//   position: absolute;
+//   top: 100%;
+//   /* push below input */
+//   left: 0;
+//   right: 0;
+//   background: white;
+//   border: 1px solid #ccc;
+//   border-top: none;
+//   max-height: 200px;
+//   overflow-y: auto;
+//   z-index: 10;
+//   /* ensures it appears above other elements */
+//   list-style: none;
+//   margin: 0;
+//   padding: 0;
+// }
+
+// .suggestion-list li {
+//   padding: 8px 12px;
+//   cursor: pointer;
+// }
+
+// .suggestion-list li:hover {
+//   background-color: #f0f0f0;
+// }
+
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Ensure the top-level .row (parent of .container) uses full width */
+:host > .row {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box;
+  background: none;
+}
+
+:host > .row > div {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box;
+}
+
+.item-list-supervision {
+  a {
+    cursor: pointer;
+  }
+}
+
+.container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  font-size: 10px;
+  box-sizing: border-box;
+  background: none;
+}
+
+.full-width-row {
+  display: flex;
+  width: 100%;
+  margin-bottom: 8px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+}
+
+.row {
+  display: flex;
+  position: relative;
+  width: 100%;
+  margin-bottom: 5px; // spacing between rows
+  align-items: center;
+
+  .left,
+  .right {
+    flex: 1;
+  }
+
+  .left {
+    flex: 0 0 180px;
+    width: 180px;
+    min-width: 180px;
+    max-width: 180px;
+    text-align: left;
+    color: #222;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+    word-break: break-word;
+    white-space: pre-line;
+    padding-right: 8px;
+  }
+
+  .right {
+    flex: 2 1 0%;
+    min-width: 0;
+    text-align: left;
+    color: #5c5c5c;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+    word-break: break-word;
+    white-space: pre-line;
+    padding-left: 8px;
+    box-sizing: border-box;
+  }
+
+  .center {
+    flex: 0 0 18px;
+    max-width: 18px;
+    text-align: center;
+    color: #000;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+}
+
+.custom-badge {
+  display: inline-block;
+  background: #f26522;
+  color: #fff;
+  padding: 2px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  margin-right: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 768px) {
+  .full-width-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .left,
+  .center,
+  .right {
+    flex: 1 1 100%;
+    max-width: 100%;
+    padding: 2px 0;
+  }
+  .center {
+    display: none;
+  }
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+
+/* in your component's SCSS file */
+
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.ngb-pagination {
+  display: flex;
+  gap: 4px;
+}
+
+.ngb-pagination .page-link {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ngb-pagination .page-item.active .page-link {
+  background-color: #000;
+  color: #fff;
+}
+
+// Edits for phonetic UI starts
+.search-container {
+  position: relative;
+  display: inline-block;
+}
+
+.search-input {
+  width: 357px; /* Adjust as needed */
+  padding-right: 30px; /* Space for the icon */
+}
+
+.search-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none; /* Allows clicking on the input */
+  color: #f26522; /* Icon color */
+}
+
+.phonetic-search {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center horizontally if needed */
+}
+
+/* Keep small spacing between checkbox and label text */
+.phonetic-search input[type="checkbox"] {
+  margin-right: 4px; /* Slightly increased for better alignment */
+}
+
+/* Label styling to align items center vertically and maintain lighter font */
+.phonetic-search label {
+  display: flex;
+  align-items: center;
+  font-weight: lighter;
+  margin: 0;
+}
+
+/* Icon style with proper spacing and color */
+.phonetic-search i {
+  margin-left: 5px;
+  color: #888888;
+  display: flex;
+  align-items: center;
+}
+// phonetic design end
+//calendar
+.search-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.phonetic-search {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.date-range-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.date-range-filter {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-right: 5px;
+}
+
+:host ::ng-deep .date-input {
+  display: inline-flex;
+  align-items: center;
+  width: 140px; /* set desired width */
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  overflow: hidden; /* ensures the icon fits rounded border */
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    border-color: #174377; /* primary blue on hover */
+  }
+}
+
+:host ::ng-deep .date-input .p-inputtext {
+  width: 100% !important;
+  border: none !important;
+  border-radius: 6px 0 0 6px !important;
+  box-shadow: none !important;
+  font-size: 14px;
+  padding: 8px 10px;
+  color: #333;
+}
+
+:host ::ng-deep .date-input .p-datepicker-trigger {
+  background-color: #174377 !important; /* navy blue */
+  color: white !important;
+  border: none !important;
+  border-radius: 0 6px 6px 0 !important;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0 !important;
+  padding: 0 !important;
+  transition: all 0.3s ease;
+}
+
+:host ::ng-deep .p-datepicker {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+/* 🎯 Shrink popup calendar size */
+:host ::ng-deep .p-datepicker {
+  font-size: 12px !important; /* smaller font overall */
+  width: 240px !important; /* default ~320px, shrink it */
+  padding: 0.25rem !important;
+  border-radius: 6px;
+}
+
+/* 🧱 Adjust header (month/year + arrows) */
+:host ::ng-deep .p-datepicker .p-datepicker-header {
+  padding: 0.3rem !important;
+}
+
+:host ::ng-deep .p-datepicker .p-datepicker-prev,
+:host ::ng-deep .p-datepicker .p-datepicker-next {
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+  font-size: 0.9rem !important;
+}
+
+/* 📅 Day cells (reduce size and spacing) */
+:host ::ng-deep .p-datepicker-calendar td,
+:host ::ng-deep .p-datepicker-calendar th {
+  width: 1.8rem !important;
+  height: 1.8rem !important;
+  line-height: 1.8rem !important;
+  padding: 0 !important;
+}
+
+/* highlight today's date smaller but visible */
+:host ::ng-deep .p-datepicker-calendar td.p-datepicker-today > span {
+  background-color: #174377 !important;
+  color: white !important;
+  border-radius: 4px;
+  font-size: 0.8rem !important;
+}
+
+/* smoother look */
+:host ::ng-deep .p-datepicker-calendar td > span {
+  font-size: 0.8rem !important;
+  border-radius: 4px;
+}
+
+/* reduce dropdown (month/year select) height */
+:host ::ng-deep .p-datepicker select {
+  font-size: 0.8rem !important;
+  padding: 0.2rem !important;
+}
+/* styles.scss */
+.compact-calendar-panel.p-datepicker {
+  width: 220px !important;
+  font-size: 12px !important;
+}
+.compact-calendar-panel.p-datepicker .p-datepicker-calendar td,
+.compact-calendar-panel.p-datepicker .p-datepicker-calendar th {
+  width: 1.8rem !important;
+  height: 1.8rem !important;
+  font-size: 0.82rem !important;
+}
+.compact-calendar-panel.p-datepicker .p-datepicker-header {
+  padding: 0.3rem !important;
+}
+:host ::ng-deep .compact-calendar-panel.p-datepicker {
+  width: 200px !important; /* reduce overall popup width */
+  font-size: 11px !important; /* smaller text everywhere */
+  border-radius: 6px !important;
+  padding: 0.25rem !important;
+}
+
+/* reduce header area spacing and icons */
+:host ::ng-deep .compact-calendar-panel .p-datepicker-header {
+  padding: 0.25rem !important;
+}
+
+:host ::ng-deep .compact-calendar-panel .p-datepicker-prev,
+:host ::ng-deep .compact-calendar-panel .p-datepicker-next {
+  width: 24px !important;
+  height: 24px !important;
+  font-size: 0.8rem !important;
+}
+
+/* smaller calendar day cells */
+:host ::ng-deep .compact-calendar-panel .p-datepicker-calendar td,
+:host ::ng-deep .compact-calendar-panel .p-datepicker-calendar th {
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+  line-height: 1.5rem !important;
+  padding: 0 !important;
+  font-size: 0.75rem !important;
+}
+
+/* shrink month/year dropdowns */
+:host ::ng-deep .compact-calendar-panel select {
+  font-size: 0.75rem !important;
+  padding: 0.15rem !important;
+}
+
+/* shrink today's highlight */
+:host
+  ::ng-deep
+  .compact-calendar-panel
+  .p-datepicker-calendar
+  td.p-datepicker-today
+  > span {
+  background-color: #174377 !important;
+  color: white !important;
+  border-radius: 3px !important;
+  font-size: 0.75rem !important;
+  width: 1.3rem !important;
+  height: 1.3rem !important;
+  line-height: 1.3rem !important;
+}
+
+/* shrink month view button section */
+:host ::ng-deep .compact-calendar-panel .p-monthpicker {
+  width: 200px !important;
+}
+/* Wrap container for both inputs (From/To) */
+.date-range-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Individual date input + button pair */
+.date-wrap {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  border: 1px solid #cfd4da;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* Input inside date-wrap */
+.date-input-ngb {
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 5px 8px;
+  font-size: 13px;
+  width: 120px; /* control width */
+  height: 100%;
+  box-shadow: none;
+  text-align: left;
+}
+
+/* Button with calendar icon */
+.calendar-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: #174377;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.calendar-icon:hover {
+  background: #0e2e55;
+}
+
+.calendar-icon i {
+  font-size: 15px;
+}
+
+/* Add subtle focus ring */
+.date-input-ngb:focus,
+.calendar-icon:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(23, 67, 119, 0.25);
+}
+
+/* Make popup compact (scoped to component) */
+:host ::ng-deep .ngb-datepicker {
+  width: 210px !important;
+  font-size: 12px !important;
+  padding: 0.25rem !important;
+  border-radius: 6px !important;
+}
+
+/* Header (month selector) */
+:host ::ng-deep .ngb-dp-header {
+  padding: 0.25rem 0.5rem !important;
+}
+
+/* Navigation arrows */
+:host ::ng-deep .ngb-dp-arrow {
+  width: 26px !important;
+  height: 26px !important;
+}
+
+/* Days grid */
+:host ::ng-deep .ngb-dp-weekday,
+:host ::ng-deep .ngb-dp-day {
+  width: 26px !important;
+  height: 26px !important;
+  line-height: 26px !important;
+  font-size: 0.75rem !important;
+}
+
+/* Active/today state */
+:host ::ng-deep .ngb-dp-day.today .btn,
+:host ::ng-deep .ngb-dp-day.active .btn {
+  background-color: #174377 !important;
+  color: #fff !important;
+  border-radius: 4px !important;
+}
+
+/* Ensure popup stays above other elements */
+:host ::ng-deep .ngb-datepicker-popup {
+  z-index: 2050 !important;
+}
+
+//calendar end
+//Fir year
+:host ::ng-deep .fir-year .p-datepicker-trigger {
+  background-color: #174377;
+  border-color: #174377;
+}
+
+:host ::ng-deep .fir-year .p-datepicker-trigger .pi {
+  color: white;
+}
+
+// first row
+.row1 {
+  display: flex;
+  gap: 2px;
+}
+
+// thumbnail size
+ds-thumbnail .thumbnail {
+  width: 240px !important;
+}
+
+ds-thumbnail img {
+  width: 240px !important;
+  height: auto !important;
+}
+
+:host ::ng-deep .white-search-btn {
+  background-color: #ffffff !important;
+  border: 1px solid #d1d5db !important; /* light grey border */
+  color: #6b7280 !important; /* grey text */
+}
+
+:host ::ng-deep .white-search-btn .pi {
+  color: #6b7280 !important; /* grey icon */
+}
+
+:host ::ng-deep .white-search-btn:hover {
+  background-color: #f9fafb !important;
+}
+
+.p-overlaypanel-content {
+  padding: 0;
+  margin: 5px;
+}
+
+// styling start for filter box
+.search-option {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.search-option:hover {
+  background: #f1f3f5;
+}
+
+.search-option.active {
+  background: #e3f2fd;
+  font-weight: 600;
+}

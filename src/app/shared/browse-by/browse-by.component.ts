@@ -9,10 +9,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import {
-  TranslateModule,
-  TranslateService,
-} from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import {
   BehaviorSubject,
   combineLatest as observableCombineLatest,
@@ -30,10 +27,7 @@ import { RemoteData } from '../../core/data/remote-data';
 import { PaginationService } from '../../core/pagination/pagination.service';
 import { RouteService } from '../../core/services/route.service';
 import { ViewMode } from '../../core/shared/view-mode.model';
-import {
-  fadeIn,
-  fadeInOut,
-} from '../animations/fade';
+import { fadeIn, fadeInOut } from '../animations/fade';
 import { hasValue } from '../empty.util';
 import { ErrorComponent } from '../error/error.component';
 import { ThemedLoadingComponent } from '../loading/themed-loading.component';
@@ -44,15 +38,15 @@ import { ThemedResultsBackButtonComponent } from '../results-back-button/themed-
 import { StartsWithLoaderComponent } from '../starts-with/starts-with-loader.component';
 import { StartsWithType } from '../starts-with/starts-with-type';
 import { VarDirective } from '../utils/var.directive';
+import { ActivatedRoute } from '@angular/router';
+import { CustomizeBrowseByComponent } from './customize-browse-by.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'ds-base-browse-by',
   styleUrls: ['./browse-by.component.scss'],
   templateUrl: './browse-by.component.html',
-  animations: [
-    fadeIn,
-    fadeInOut,
-  ],
+  animations: [fadeIn, fadeInOut],
   imports: [
     AsyncPipe,
     ErrorComponent,
@@ -62,13 +56,14 @@ import { VarDirective } from '../utils/var.directive';
     ThemedResultsBackButtonComponent,
     TranslateModule,
     VarDirective,
+    FormsModule,
+    CustomizeBrowseByComponent,
   ],
 })
 /**
  * Component to display a browse-by page for any ListableObject
  */
 export class BrowseByComponent implements OnInit, OnChanges, OnDestroy {
-
   /**
    * ViewMode that should be passed to {@link ListableObjectComponentLoaderComponent}.
    */
@@ -154,14 +149,20 @@ export class BrowseByComponent implements OnInit, OnChanges, OnDestroy {
    * Subscription that has to be unsubscribed from on destroy
    */
   sub: Subscription;
+  /**
+   * An object injector used to inject the startsWithOptions to the switchable StartsWith component
+   */
+  objectInjector: Injector;
+  isCustomCaseBrowse = false;
+  currentBrowseId: string | null = null;
 
-  public constructor(private injector: Injector,
-                     protected paginationService: PaginationService,
-                     protected translateService: TranslateService,
-                     private routeService: RouteService,
-  ) {
-
-  }
+  public constructor(
+    private injector: Injector,
+    protected paginationService: PaginationService,
+    protected translateService: TranslateService,
+    private routeService: RouteService,
+    private router: ActivatedRoute,
+  ) {}
 
   /**
    * The label used by the back button.
@@ -173,7 +174,15 @@ export class BrowseByComponent implements OnInit, OnChanges, OnDestroy {
    */
   back = () => {
     const page = +this.previousPage$.value > 1 ? +this.previousPage$.value : 1;
-    this.paginationService.updateRoute(this.paginationConfig.id, { page: page }, { [this.paginationConfig.id + '.return']: null, value: null, startsWith: null });
+    this.paginationService.updateRoute(
+      this.paginationConfig.id,
+      { page: page },
+      {
+        [this.paginationConfig.id + '.return']: null,
+        value: null,
+        startsWith: null,
+      },
+    );
   };
 
   /**
@@ -191,24 +200,54 @@ export class BrowseByComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.updateBrowseState();
     const startsWith$ = this.routeService.getQueryParameterValue('startsWith');
     const value$ = this.routeService.getQueryParameterValue('value');
 
-    this.shouldDisplayResetButton$ = observableCombineLatest([startsWith$, value$]).pipe(
+    this.shouldDisplayResetButton$ = observableCombineLatest([
+      startsWith$,
+      value$,
+    ]).pipe(
       map(([startsWith, value]) => hasValue(startsWith) || hasValue(value)),
     );
   }
 
   ngOnChanges(): void {
+    this.updateBrowseState();
     if (this.sub) {
       this.sub.unsubscribe();
     }
-    this.sub = this.routeService.getQueryParameterValue(this.paginationConfig.id + '.return').subscribe(this.previousPage$);
+    this.sub = this.routeService
+      .getQueryParameterValue(this.paginationConfig.id + '.return')
+      .subscribe(this.previousPage$);
   }
 
   ngOnDestroy(): void {
     if (this.sub) {
       this.sub.unsubscribe();
     }
+  }
+  generateInjector(): void {
+    this.objectInjector = Injector.create({
+      providers: [
+        {
+          provide: 'startsWithOptions',
+          useFactory: () => this.startsWithOptions,
+          deps: [],
+        },
+        {
+          provide: 'paginationId',
+          useFactory: () => this.paginationConfig?.id,
+          deps: [],
+        },
+      ],
+      parent: this.injector,
+    });
+  }
+  private updateBrowseState() {
+    const id = this.router.snapshot.paramMap.get('id');
+
+    this.currentBrowseId = id;
+    this.isCustomCaseBrowse = id === 'CaseTypeNameCaseNoCaseYear';
   }
 }

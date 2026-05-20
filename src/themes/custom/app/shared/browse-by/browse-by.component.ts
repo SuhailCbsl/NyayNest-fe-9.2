@@ -7,12 +7,10 @@ import { ObjectCollectionComponent } from 'src/app/shared/object-collection/obje
 import { ThemedResultsBackButtonComponent } from 'src/app/shared/results-back-button/themed-results-back-button.component';
 import { VarDirective } from 'src/app/shared/utils/var.directive';
 
-import {
-  fadeIn,
-  fadeInOut,
-} from '../../../../../app/shared/animations/fade';
+import { fadeIn, fadeInOut } from '../../../../../app/shared/animations/fade';
 import { BrowseByComponent as BaseComponent } from '../../../../../app/shared/browse-by/browse-by.component';
 import { StartsWithLoaderComponent } from '../../../../../app/shared/starts-with/starts-with-loader.component';
+import { CustomizeBrowseByComponent } from 'src/app/shared/browse-by/customize-browse-by.component';
 
 @Component({
   selector: 'ds-themed-browse-by',
@@ -20,10 +18,7 @@ import { StartsWithLoaderComponent } from '../../../../../app/shared/starts-with
   styleUrls: ['../../../../../app/shared/browse-by/browse-by.component.scss'],
   // templateUrl: './browse-by.component.html',
   templateUrl: '../../../../../app/shared/browse-by/browse-by.component.html',
-  animations: [
-    fadeIn,
-    fadeInOut,
-  ],
+  animations: [fadeIn, fadeInOut],
   imports: [
     AsyncPipe,
     ErrorComponent,
@@ -33,7 +28,7 @@ import { StartsWithLoaderComponent } from '../../../../../app/shared/starts-with
     ThemedResultsBackButtonComponent,
     TranslateModule,
     VarDirective,
+    CustomizeBrowseByComponent,
   ],
 })
-export class BrowseByComponent extends BaseComponent {
-}
+export class BrowseByComponent extends BaseComponent {}

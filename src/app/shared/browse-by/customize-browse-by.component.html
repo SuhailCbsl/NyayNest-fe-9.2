@@ -1,0 +1,290 @@
+<div *ngIf="isCustomCaseBrowse" class="container mt-4">
+  <div class="card shadow-sm border-0">
+    <div class="card-body">
+      <div class="row g-3 align-items-end">
+        <!-- Case Type -->
+        <div class="col-md-4 position-relative">
+          <label class="form-label fw-medium">{{
+            "custom_browse_by_case_type" | translate
+          }}</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="caseType"
+            [placeholder]="'custom_browse_by_case_type_placeholder' | translate"
+            (input)="onCaseTypeInput()"
+            (blur)="clearSuggestionsWithDelay()"
+          />
+
+          <ul *ngIf="caseTypeSuggestions.length" class="suggestion-list">
+            <li
+              *ngFor="let s of caseTypeSuggestions"
+              (mousedown)="selectCaseType(s); $event.preventDefault()"
+            >
+              <strong>{{ s.label }}</strong> ({{ s.count }})
+            </li>
+          </ul>
+        </div>
+
+        <!-- Case No -->
+        <div class="col-md-4 position-relative">
+          <label class="form-label fw-medium">{{
+            "custom_browse_by_case_no" | translate
+          }}</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="caseNo"
+            [placeholder]="'custom_browse_by_case_no_placeholder' | translate"
+            (input)="onCaseNoInput()"
+            (blur)="clearSuggestionsWithDelay()"
+          />
+
+          <ul *ngIf="caseNoSuggestions.length" class="suggestion-list">
+            <li
+              *ngFor="let s of caseNoSuggestions"
+              (mousedown)="selectCaseNo(s); $event.preventDefault()"
+            >
+              <strong>{{ s.label }}</strong> ({{ s.count }})
+            </li>
+          </ul>
+        </div>
+
+        <!-- Case Year -->
+        <div class="col-md-4">
+          <label class="form-label fw-medium">{{
+            "custom_browse_by_case_year" | translate
+          }}</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="caseYear"
+            [placeholder]="'custom_browse_by_case_year_placeholder' | translate"
+          />
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end mt-4 gap-2">
+        <button class="btn btn-outline-secondary" (click)="resetFilters()">
+          {{ "custom_browse_by_reset" | translate }}
+        </button>
+        <button class="btn btn-primary" (click)="searchCases()">
+          {{ "custom_browse_by_search" | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Tags -->
+  <div class="filter-tags" *ngIf="filterTags.length > 0">
+    <span *ngFor="let tag of filterTags; let i = index" class="filter-tag">
+      <span style="color: #174377">{{
+        tag.label === "title"
+          ? ("custom_browse_by_case_no" | translate)
+          : tag.label
+      }}</span>
+      :
+      <span style="color: #f94f00">{{ tag.value }}</span>
+      <span class="close" (click)="removeFilterTag(i)">×</span>
+    </span>
+  </div>
+
+  <!-- ================= RESULTS ================= -->
+  <div class="main-content">
+    <ng-container *ngIf="hasSearched && (resultsRD$ | async) as results">
+      <ng-container *ngIf="results.hasSucceeded && results.payload">
+        <div class="results-header">
+          <h2 class="section-title">
+            {{ "admin_search_section_title" | translate }}
+          </h2>
+          <span class="results-count">
+            {{
+              "admin_search_results_count"
+                | translate: { range: getResultsRange(), total: totalResults }
+            }}
+          </span>
+        </div>
+
+        <ng-template #resultsTemplate>
+          <!-- List View Section -->
+          <div *ngIf="currentView === 'list'">
+            <div *ngFor="let result of results.payload.page">
+              <div class="row case-details">
+                <div *ngIf="showThumbnails" class="col-4 col-md-3">
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    [routerLink]="getItemPageRouteLocal(result)"
+                    class="dont-break-out"
+                  >
+                    <ds-thumbnail
+                      [thumbnail]="result.indexableObject.thumbnail | async"
+                      [limitWidth]="true"
+                      class="thumbnail"
+                    >
+                    </ds-thumbnail>
+                  </a>
+                </div>
+                <div [ngClass]="showThumbnails ? 'col-9' : 'col-md-12'">
+                  <div class="d-flex">
+                    <a
+                      [routerLink]="getItemPageRouteLocal(result)"
+                      target="blank"
+                    >
+                      <span class="custom-badge">
+                        {{ getCaseField(result, "CaseTypeName") }}/{{
+                          getCaseField(result, "title")
+                        }}/{{ getCaseField(result, "CaseYear") }}
+                      </span>
+                    </a>
+                  </div>
+                  <div class="container">
+                    <div class="full-width-row">
+                      <div class="left">
+                        {{ "admin_search_case_nature" | translate }}
+                      </div>
+                      <div class="center">:</div>
+                      <div class="right">
+                        {{ getCaseField(result, "CaseNature") }}
+                      </div>
+                    </div>
+                    <div class="full-width-row">
+                      <div class="left">
+                        {{ "admin_search_case_status" | translate }}
+                      </div>
+                      <div class="center">:</div>
+                      <div class="right">
+                        <strong>{{
+                          getCaseField(result, "CaseStatus")
+                        }}</strong>
+                      </div>
+                    </div>
+                    <div class="full-width-row">
+                      <div class="left">
+                        {{ "admin_search_petitioner" | translate }}
+                      </div>
+                      <div class="center">:</div>
+                      <div class="right">
+                        {{ getCaseField(result, "Petitioner") }}
+                      </div>
+                    </div>
+                    <div class="full-width-row">
+                      <div class="left">
+                        {{ "admin_search_petitioner_advocate" | translate }}
+                      </div>
+                      <div class="center">:</div>
+                      <div class="right">
+                        {{ getCaseField(result, "AdvocateNameofPetitioner") }}
+                      </div>
+                    </div>
+                    <div class="full-width-row">
+                      <div class="left">
+                        {{ "admin_search_respondent" | translate }}
+                      </div>
+                      <div class="center">:</div>
+                      <div class="right">
+                        {{ getCaseField(result, "Respondent") }}
+                      </div>
+                    </div>
+                    <div class="full-width-row">
+                      <div class="left">
+                        {{ "admin_search_respondent_advocate" | translate }}
+                      </div>
+                      <div class="center">:</div>
+                      <div class="right">
+                        {{ getCaseField(result, "AdvocateNameofRespondent") }}
+                      </div>
+                    </div>
+                    <div class="full-width-row">
+                      <div class="left">
+                        {{ "admin_search_judge" | translate }}
+                      </div>
+                      <div class="center">:</div>
+                      <div class="right">
+                        {{ getCaseField(result, "JudgeName") }}
+                      </div>
+                    </div>
+                    <div class="full-width-row">
+                      <div class="left">
+                        {{ "admin_search_judgment" | translate }}
+                      </div>
+                      <div class="center">:</div>
+                      <div class="right">
+                        {{ getCaseField(result, "Judgement") }}
+                      </div>
+                    </div>
+                    <div *ngIf="state === 'Delhi'" class="full-width-row">
+                      <div class="left">
+                        {{ "admin_search_migrated" | translate }}
+                      </div>
+                      <div class="center">:</div>
+                      <div class="right">
+                        {{ getCaseField(result, "Migrated") }}
+                      </div>
+                    </div>
+                    <div *ngIf="state === 'Delhi'" class="full-width-row">
+                      <div class="left">
+                        {{ "admin_search_tiff_location" | translate }}
+                      </div>
+                      <div class="center">:</div>
+                      <div class="right">
+                        {{ getCaseField(result, "TiffLocation") }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+
+        <ng-container
+          *ngIf="results && results.payload.page.length > 0; else noResults"
+        >
+          <ng-container *ngTemplateOutlet="resultsTemplate"></ng-container>
+        </ng-container>
+        <ng-template #noResults>
+          <div class="no-results">
+            {{ "admin_search_no_results" | translate }}
+          </div>
+        </ng-template>
+      </ng-container>
+      <ng-container *ngIf="hasSearched && results.isLoading">{{
+        "admin_search_loading" | translate
+      }}</ng-container>
+      <ng-container *ngIf="results.hasFailed">
+        {{ "admin_search_error" | translate }}
+      </ng-container>
+    </ng-container>
+  </div>
+  <ng-container
+    *ngIf="
+      hasSearched && (resultsRD$ | async) as results;
+      else initialOrLoading
+    "
+  >
+    <div
+      class="pagination-wrapper my-3 d-flex justify-content-center"
+      *ngIf="results.hasSucceeded && !results.hasFailed"
+    >
+      <ngb-pagination
+        [collectionSize]="totalResults"
+        [pageSize]="resultsPerPage"
+        [(page)]="currentPage"
+        [maxSize]="3"
+        [boundaryLinks]="true"
+        (pageChange)="onPageChange($event)"
+      >
+      </ngb-pagination>
+    </div>
+  </ng-container>
+  <ng-template #initialOrLoading>
+    <ng-container *ngIf="loading">
+      <div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+          <span class="sr-only">{{ "admin_search_loading" | translate }}</span>
+        </div>
+      </div>
+    </ng-container>
+  </ng-template>
+</div>

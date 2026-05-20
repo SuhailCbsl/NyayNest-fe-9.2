@@ -41,11 +41,9 @@
           type="button"
           class="white-search-btn search-type-btn"
           [label]="searchButtonLabel"
+          icon="pi pi-filter"
           (click)="op.toggle($event)"
-        >
-          <i class="pi pi-filter"></i>
-          <!-- <span>Search Type</span> -->
-        </button>
+        ></button>
 
         <p-popover #op [dismissable]="true" [appendTo]="'body'">
           <ng-template pTemplate="content">
@@ -55,7 +53,12 @@
                 [class.active]="searchType === 'normal'"
                 (click)="selectSearchType('normal'); op.hide()"
               >
-                Normal
+                <span>Normal Search</span>
+                <i
+                  class="pi pi-info-circle info-icon"
+                  pTooltip="Exact Search"
+                  tooltipPosition="top"
+                ></i>
               </div>
 
               <div
@@ -63,7 +66,13 @@
                 [class.active]="searchType === 'fuzzy'"
                 (click)="selectSearchType('fuzzy'); op.hide()"
               >
-                Fuzzy Search
+                <span>Fuzzy Search</span>
+                <i
+                  class="pi pi-info-circle info-icon"
+                  pTooltip="Finds similar or misspelled words like 'Jyoti' and 'Jyoty'"
+                  tooltipPosition="top"
+                  appendTo="body"
+                ></i>
               </div>
 
               <div
@@ -71,7 +80,12 @@
                 [class.active]="searchType === 'phonetic'"
                 (click)="selectSearchType('phonetic'); op.hide()"
               >
-                Phonetic Search
+                <span>Phonetic Search</span>
+                <i
+                  class="pi pi-info-circle info-icon"
+                  pTooltip="Finds words that sound similar like 'Sara' and 'Sarah'"
+                  tooltipPosition="top"
+                ></i>
               </div>
             </div>
           </ng-template>

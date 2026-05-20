@@ -95,43 +95,76 @@
 }
 
 .search-type-btn {
-  min-width: 160px;
+  min-width: 150px;
+  width: auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 0 16px;
+  gap: 6px;
+  padding: 0 14px;
   height: 40px;
-  border: 1px solid #174377;
-  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
   background: #fff;
-  color: #174377;
+  color: #374151;
   font-weight: 600;
   cursor: pointer;
   box-shadow: none;
 }
 
 .search-type-btn:hover {
-  background: #f5f9ff;
+  background: #f8fafc;
 }
 
 .search-type-btn .pi {
-  color: #174377;
+  color: #0d6efd;
+}
+
+.search-type-btn .p-button-icon-left {
+  margin-right: 6px !important;
+}
+
+.search-type-btn .p-button-text,
+.search-type-btn .p-button-label {
+  padding: 0 !important;
 }
 
 .search-type-btn.p-button {
-  border: 1px solid #174377 !important;
-  color: #174377;
+  border: 1px solid #d1d5db !important;
+  color: #374151 !important;
 
   &:hover {
-    border-color: #174377 !important;
-    background: #f5f5f5; // optional
+    border-color: #d1d5db !important;
+    background: #f8fafc !important;
   }
 
   &:focus {
-    border-color: #174377 !important;
+    border-color: #d1d5db !important;
     box-shadow: none !important;
   }
+}
+
+:host ::ng-deep .p-popover .search-option span {
+  flex: 1;
+}
+
+.search-option.active {
+  color: #1f2937 !important;
+}
+
+:host ::ng-deep .p-tooltip.search-type-tooltip {
+  background: #fff !important;
+  border: 1px solid rgba(0, 0, 0, 0.12) !important;
+  color: #000 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important;
+  padding: 8px 10px !important;
+  opacity: 1 !important;
+}
+
+:host ::ng-deep .p-tooltip.search-type-tooltip .p-tooltip-text {
+  color: #000 !important;
+  opacity: 1 !important;
 }
 
 /* 🔹 ROW 2: Single row with equal-width controls */
@@ -383,24 +416,9 @@
   margin-left: 10px;
 }
 
-:host ::ng-deep .p-popover,
-:host ::ng-deep .p-popover-panel,
 :host ::ng-deep .p-popover-content {
-  margin-top: 5px;
-  min-width: 160px;
-  background-color: #fff !important;
-  border-color: #d9d9d9 !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
-  border-radius: 10px !important;
-}
-
-:host ::ng-deep .p-popover-panel {
-  padding: 0 !important;
-}
-
-:host ::ng-deep .p-popover-content {
-  padding: 10px !important;
-  background: aliceblue !important;
+  background: #ffffff !important;
+  padding: 8px 0 !important;
 }
 
 .filter-control:focus,
@@ -410,23 +428,29 @@
 }
 
 .search-option {
-  padding: 8px 12px;
+  padding: 10px 16px;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 10px;
+  transition: background-color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .search-option:hover {
-  background: #f1f3f5;
+  background: #f1f5f9;
 }
 
 .search-option.active {
-  background: #e3f2fd;
+  background: #dbeafe !important;
+  // color: #1d4ed8 !important;
   font-weight: 600;
 }
 
 .popver-coverage {
-  background-color: floralwhite;
-  padding: 10px;
+  background-color: #fff;
+  padding: 0;
 }
 
 .suggestion-list {
@@ -468,10 +492,6 @@
 
 .suggestion-list li.active {
   background: #e3f2fd;
-}
-
-:host ::ng-deep .white-search-btn .pi {
-  color: #6b7280 !important;
 }
 
 // .p-datepicker-panel {
@@ -588,4 +608,139 @@
       background: rgba(230, 81, 0, 0.2);
     }
   }
+}
+::ng-deep i.info-icon {
+  color: #0d6efd !important;
+}
+
+::ng-deep i.info-icon::before {
+  color: #0d6efd !important;
+}
+
+/* PRIME POPOVER ROOT */
+::ng-deep .p-popover {
+  background: #ffffff !important;
+  border: 1px solid #dbe1ea !important;
+  border-radius: 12px !important;
+
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.16) !important;
+
+  overflow: hidden !important;
+
+  min-width: 240px !important;
+
+  padding: 0 !important;
+}
+
+/* INNER CONTENT */
+::ng-deep .p-popover-content {
+  background: #ffffff !important;
+  // padding: 6px !important;
+  margin: 0 !important;
+}
+
+/* REMOVE TRANSPARENT LAYER */
+::ng-deep .p-popover::before,
+::ng-deep .p-popover::after {
+  background: #ffffff !important;
+}
+
+/* OPTIONS */
+.search-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 12px 14px;
+
+  border-radius: 8px;
+
+  background: #ffffff !important;
+
+  transition: background 0.2s ease;
+}
+
+/* HOVER */
+.search-option:hover {
+  background: #f3f6fb !important;
+}
+
+/* ACTIVE */
+.search-option.active {
+  background: #dbeafe !important;
+  font-weight: 600;
+}
+
+/* TEXT */
+.search-option span {
+  color: #1f2937 !important;
+}
+
+/* INFO ICON */
+::ng-deep i.info-icon,
+::ng-deep i.info-icon::before {
+  color: #0d6efd !important;
+}
+/* =========================
+   PRIME NG TOOLTIP
+   MATCH V7.6.3 LOOK
+========================= */
+
+::ng-deep .p-tooltip {
+  opacity: 1 !important;
+}
+
+/* TOOLTIP CONTAINER */
+::ng-deep .p-tooltip .p-tooltip-text {
+  background: rgba(52, 58, 64, 0.96) !important;
+  color: #ffffff !important;
+
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  line-height: 1.35 !important;
+
+  padding: 10px 14px !important;
+
+  border-radius: 6px !important;
+
+  box-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.18),
+    0 2px 6px rgba(0, 0, 0, 0.12) !important;
+
+  white-space: nowrap !important;
+
+  letter-spacing: 0.1px;
+}
+
+/* TOOLTIP ARROW BASE */
+::ng-deep .p-tooltip .p-tooltip-arrow {
+  width: 0 !important;
+  height: 0 !important;
+  border-style: solid !important;
+}
+
+/* TOP */
+::ng-deep .p-tooltip.p-tooltip-top .p-tooltip-arrow {
+  border-width: 8px 8px 0 8px !important;
+  border-color: rgba(52, 58, 64, 0.96) transparent transparent transparent !important;
+
+  bottom: -1px !important;
+}
+
+/* BOTTOM */
+::ng-deep .p-tooltip.p-tooltip-bottom .p-tooltip-arrow {
+  border-width: 0 8px 8px 8px !important;
+  border-color: transparent transparent rgba(52, 58, 64, 0.96) transparent !important;
+}
+
+/* LEFT */
+::ng-deep .p-tooltip.p-tooltip-left .p-tooltip-arrow {
+  border-width: 8px 0 8px 8px !important;
+  border-color: transparent transparent transparent rgba(52, 58, 64, 0.96) !important;
+}
+
+/* RIGHT */
+::ng-deep .p-tooltip.p-tooltip-right .p-tooltip-arrow {
+  border-width: 8px 8px 8px 0 !important;
+  border-color: transparent rgba(52, 58, 64, 0.96) transparent transparent !important;
 }

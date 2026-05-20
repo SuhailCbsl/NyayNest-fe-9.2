@@ -45,6 +45,7 @@ import { currentPath } from '../utils/route.utils';
 import { ScopeSelectorModalComponent } from './scope-selector-modal/scope-selector-modal.component';
 import { ButtonModule } from 'primeng/button';
 import { Popover, PopoverModule } from 'primeng/popover';
+import { TooltipModule } from 'primeng/tooltip';
 import { NgbDateDdMmYyyyParserFormatter } from 'src/app/report/audit-trail-report/ngb-date-formatter';
 import { SearchFilterConfig } from '../search/models/search-filter-config.model';
 import { RemoteData } from 'src/app/core/data/remote-data';
@@ -76,6 +77,7 @@ interface FilterTag {
     TranslateModule,
     ButtonModule,
     PopoverModule,
+    TooltipModule,
     NgbDatepickerModule,
     DatePickerModule,
   ],

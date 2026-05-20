@@ -9,6 +9,7 @@ import {
 import { TranslateModule } from '@ngx-translate/core';
 import { ButtonModule } from 'primeng/button';
 import { PopoverModule } from 'primeng/popover';
+import { TooltipModule } from 'primeng/tooltip';
 
 import { SearchFormComponent as BaseComponent } from '../../../../../app/shared/search-form/search-form.component';
 import { BrowserOnlyPipe } from '../../../../../app/shared/utils/browser-only.pipe';
@@ -31,6 +32,7 @@ import { DatePickerModule } from 'primeng/datepicker';
     TranslateModule,
     ButtonModule,
     PopoverModule,
+    TooltipModule,
     NgbDatepickerModule,
     DatePickerModule,
     JsonPipe,

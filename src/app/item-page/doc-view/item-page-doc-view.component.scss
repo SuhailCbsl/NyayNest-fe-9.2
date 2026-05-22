@@ -1,30 +1,48 @@
+// :host ::ng-deep #docViewerContainer .js-summary-button {
+//   display: none !important;
+// }
+// :host ::ng-deep #docViewerContainer #generateSummaryButton {
+//   display: none !important;
+// }
+// :host ::ng-deep #docViewerContainer .mic-group {
+//   display: none !important;
+// }
+// :host ::ng-deep #docViewerContainer .tool img[alt="Share Note Button"] {
+//   display: none !important;
+// }
+// :host ::ng-deep .header-navbar-wrapper {
+//   display: none !important;
+// }
 :host {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: #fff;
-    z-index: 9999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #fff;
+  z-index: 9999;
+  overflow: hidden;
 }
 
 /* remove any inherited spacing */
 body,
 html {
-    margin: 10% !important;
-    padding: 0;
+  margin: 10% !important;
+  padding: 0;
 }
 
 /* viewer container */
 #docViewerContainer {
-    // width: 100vw !important;
-    height: 100vh !important;
-    margin-left: 3.5% !important;
+  // width: 100vw !important;
+  height: 100vh !important;
+  margin-left: 3.5% !important;
+  //   margin-right: 38px !important;
+  padding-right: 3% !important;
 }
 
 /* PDF.js */
 #outerContainer,
 #viewerContainer,
 #viewer {
-    height: 100% !important;
+  height: 100% !important;
 }

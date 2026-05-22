@@ -2,8 +2,9 @@
   @if (item$ | async; as item) {
     @if (metadataEntries$ | async; as metadataEntries) {
       @if (classifiedBitstreams$ | async; as classifiedBitstreams) {
-        @if (classifiedBitstreams?.Master?.[0]?.url; as fileUrl) {
-          @if (editLink$ | async; as editLink) {
+        @if (classifiedBitstreams.Master?.[0]?.url) {
+          @if (heading$ | async; as heading) {
+            <!-- @if (editLink$ | async; as editLink) { -->
             <div
               id="docViewerContainer"
               data-show-accordion="true"
@@ -12,40 +13,21 @@
               [attr.data-case-guid]="item.uuid"
               data-show-back-button="false"
               data-back-url="dummy_url"
-              data-show-edit-item-button="true"
               [attr.data-annotation-base-url]="
                 buildAnnotationBaseURLWithUser() | async
               "
               [attr.data-anno-get]="buildAnnotationUrl('load') | async"
               [attr.data-anno-post]="buildAnnotationUrl('save') | async"
-              [attr.data-heading]="(heading$ | async) || ''"
-              [attr.data-url]="fileUrl"
+              [attr.data-heading]="heading"
+              [attr.data-url]="classifiedBitstreams.Master[0].url"
               [attr.data-documents]="classifiedBitstreams | json"
               [attr.data-metadata]="metadataEntries | json"
-              [attr.data-edit-link]="editLink"
               [attr.data-document-summary]="summary | json"
               [attr.data-generate-summary-url]="
                 buildGenerateSummaryUrl() | async
               "
             ></div>
-          } @else {
-            <div
-              id="docViewerContainer"
-              data-show-accordion="true"
-              [attr.data-user-name]="dsoNameService.getName(user$ | async)"
-              data-case-id="1"
-              [attr.data-case-guid]="item.uuid"
-              data-show-back-button="false"
-              data-back-url="dummy_url"
-              data-show-edit-item-button="false"
-              data-annotation-base-url="/annotation-proxy/api"
-              [attr.data-anno-get]="buildAnnotationUrl('load') | async"
-              [attr.data-anno-post]="buildAnnotationUrl('save') | async"
-              [attr.data-heading]="(heading$ | async) || ''"
-              [attr.data-url]="fileUrl$"
-              [attr.data-documents]="classifiedBitstreams | json"
-              [attr.data-metadata]="metadataEntries | json"
-            ></div>
+            <!-- } -->
           }
         }
       }

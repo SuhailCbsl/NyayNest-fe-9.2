@@ -11,13 +11,19 @@ import { MetadataFieldSelectorComponent } from '../../../../../app/dso-shared/ds
 import { AlertComponent } from '../../../../../app/shared/alert/alert.component';
 import { BtnDisabledDirective } from '../../../../../app/shared/btn-disabled.directive';
 import { ThemedLoadingComponent } from '../../../../../app/shared/loading/themed-loading.component';
+import { RemovePrefixPipe } from '../../../../../app/shared/utils/remove-prefix.pipe';
+import { HumanizeSimplePipe } from '../../../../../app/shared/utils/humanize-simple.pipe';
+import { MetadataPopupComponent } from 'src/app/dso-shared/dso-edit-metadata/metadata-popup/metadata-popup.component';
 
 @Component({
   selector: 'ds-themed-dso-edit-metadata',
   // styleUrls: ['./dso-edit-metadata.component.scss'],
-  styleUrls: ['../../../../../app/dso-shared/dso-edit-metadata/dso-edit-metadata.component.scss'],
+  styleUrls: [
+    '../../../../../app/dso-shared/dso-edit-metadata/dso-edit-metadata.component.scss',
+  ],
   // templateUrl: './dso-edit-metadata.component.html',
-  templateUrl: '../../../../../app/dso-shared/dso-edit-metadata/dso-edit-metadata.component.html',
+  templateUrl:
+    '../../../../../app/dso-shared/dso-edit-metadata/dso-edit-metadata.component.html',
   imports: [
     AlertComponent,
     AsyncPipe,
@@ -29,7 +35,9 @@ import { ThemedLoadingComponent } from '../../../../../app/shared/loading/themed
     MetadataFieldSelectorComponent,
     ThemedLoadingComponent,
     TranslateModule,
+    RemovePrefixPipe,
+    HumanizeSimplePipe,
+    MetadataPopupComponent,
   ],
 })
-export class DsoEditMetadataComponent extends BaseComponent {
-}
+export class DsoEditMetadataComponent extends BaseComponent {}

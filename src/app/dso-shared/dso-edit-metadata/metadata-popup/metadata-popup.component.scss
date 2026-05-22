@@ -1,0 +1,140 @@
+/* BACKDROP */
+.cnr-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 20000;
+  opacity: 0;
+  animation: cnr-backdrop-fade-in 180ms ease-out forwards;
+}
+
+/* When modal open disable page scroll */
+body.cnr-modal-open {
+  overflow: hidden; /* prevents page scrolling on open */
+  touch-action: none; /* improves mobile behavior */
+}
+
+/* MODAL WRAPPER - fixed so it never scrolls with page */
+.cnr-modal {
+  position: fixed;
+  inset: 0; /* full viewport */
+  z-index: 21000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  pointer-events: none; /* disable pointer on wrapper; enabled on .cnr-modal-box */
+
+  /* start small + transparent, animate in */
+  opacity: 0;
+  transform: scale(0.94) translateY(-6px);
+  animation: cnr-modal-pop-in 180ms ease-out forwards;
+}
+
+/* make the modal-box pointer-interactive */
+.cnr-modal-box {
+  pointer-events: auto;
+  width: 100%;
+  max-width: 700px;
+  background: #fff;
+  border-radius: 8px;
+  /* keep modal bounded within viewport */
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+
+  /* center using transform for consistent vertical centering */
+  position: relative;
+  top: 0;
+}
+
+/* Header / body / footer layout using flex so body can overflow internally */
+.cnr-modal-header {
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.close-btn {
+  position: absolute;
+  right: 1rem;
+  top: 0.8rem;
+  font-size: 26px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.cnr-modal-body {
+  padding: 1rem;
+  overflow-y: auto; /* internal scroll if content too tall */
+  -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+  flex: 1 1 auto; /* body expands to fill available vertical space */
+  min-height: 0; /* allow flex children to shrink properly */
+}
+
+.cnr-modal-footer {
+  padding: 0.8rem 1rem;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.8rem;
+  flex: 0 0 auto;
+}
+
+/* Inputs full width inside modal */
+.cnr-modal .form-select,
+.cnr-modal .form-control {
+  width: 100%;
+  min-width: 0;
+  display: block;
+}
+
+/* Responsiveness: for very small screens, make the modal nearly full-screen */
+@media (max-width: 480px) {
+  .cnr-modal {
+    padding: 0.5rem;
+  }
+  .cnr-modal-box {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 6px;
+    max-height: 100vh;
+    height: 100vh; /* take full viewport on very small screens */
+    display: flex;
+    flex-direction: column;
+  }
+  .cnr-modal-body {
+    padding: 0.75rem;
+  }
+}
+
+/* ANIMATIONS */
+@keyframes cnr-backdrop-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cnr-modal-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* validation styles */
+input.ng-invalid.ng-touched,
+select.ng-invalid.ng-touched {
+  border: 1px solid #dc3545 !important;
+}

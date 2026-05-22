@@ -1,9 +1,13 @@
 .lbl-cell {
   min-width: var(--ds-dso-edit-field-width);
   max-width: var(--ds-dso-edit-field-width);
+
   background-color: var(--bs-gray-100);
+
   font-weight: bold;
+
   padding: 1rem;
+
   border: 1px solid var(--bs-gray-200);
 
   &.ds-success {
@@ -18,4 +22,121 @@
 
 .reset-order-button:hover {
   cursor: pointer;
+}
+
+/* =========================================
+   RIGHT SIDE WRAPPER
+========================================= */
+
+.position-relative {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* =========================================
+   PARTY CUSTOM BLOCK
+========================================= */
+
+.template-row {
+  width: 100%;
+
+  background: rgb(15, 27, 40);
+
+  border-top: 1px solid #d6d6d6;
+
+  margin-top: -1px;
+
+  overflow: hidden;
+}
+
+/* =========================================
+   EACH PARTY ROW
+========================================= */
+
+.split-row-wrapper {
+  width: 100%;
+
+  border-bottom: 1px solid #d6d6d6;
+
+  background: #ffffff;
+}
+
+/* =========================================
+   PARTY VALUE
+========================================= */
+
+.split-value {
+  padding: 12px 16px;
+
+  min-height: 48px;
+
+  display: flex;
+
+  align-items: center;
+
+  font-size: 15px;
+
+  font-weight: 500;
+
+  color: #212529;
+
+  background: #ffffff;
+}
+
+/* =========================================
+   MANAGE BUTTON CONTAINER
+========================================= */
+
+.manage-btn-wrapper {
+  padding: 12px 16px;
+
+  background: white;
+
+  display: flex;
+
+  align-items: center;
+}
+
+/* =========================================
+   MANAGE BUTTON
+========================================= */
+
+.manage-btn {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  padding: 6px 14px;
+}
+
+/* =========================================
+   REMOVE DOUBLE BORDER
+========================================= */
+
+:host ::ng-deep ds-dso-edit-metadata-field-values {
+  border-bottom: none !important;
+}
+
+/* =========================================
+   OPTIONAL:
+   MATCH DSPACE 7 LOOK
+========================================= */
+
+.template-row .btn-success {
+  background-color: #6b8e23 !important;
+
+  border-color: #6b8e23 !important;
+}
+
+.template-row .btn-success:hover {
+  background-color: #5d7d1f !important;
+
+  border-color: #5d7d1f !important;
 }

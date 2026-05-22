@@ -4,16 +4,8 @@ import {
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
 import { AsyncPipe } from '@angular/common';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-} from '@angular/core';
-import {
-  BehaviorSubject,
-  Observable,
-} from 'rxjs';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 import { Context } from '../../../core/shared/context.model';
 import { DSpaceObject } from '../../../core/shared/dspace-object.model';
@@ -86,6 +78,15 @@ export class DsoEditMetadataFieldValuesComponent {
   public readonly Context = Context;
 
   /**
+   * Hiding header row of Petitioner and Respondent fields
+   * @author Suhail Akhtar
+   */
+  @Input() hideHeader = false;
+  @Input() allowedValues: string[] = [];
+  isAllowedToAddValues(mdField: string): boolean {
+    return this.allowedValues.includes(mdField);
+  }
+  /**
    * Drop a value into a new position
    * Update the form's value array for the current field to match the dropped position
    * Update the values their place property to match the new order
@@ -98,10 +99,12 @@ export class DsoEditMetadataFieldValuesComponent {
     // Move the value within its field
     moveItemInArray(this.form.fields[this.mdField], dragIndex, dropIndex);
     // Update all the values in this field their place property
-    this.form.fields[this.mdField].forEach((value: DsoEditMetadataValue, index: number) => {
-      value.newValue.place = index;
-      value.confirmChanges();
-    });
+    this.form.fields[this.mdField].forEach(
+      (value: DsoEditMetadataValue, index: number) => {
+        value.newValue.place = index;
+        value.confirmChanges();
+      },
+    );
     // Update the form statuses
     this.form.resetReinstatable();
     this.valueSaved.emit();

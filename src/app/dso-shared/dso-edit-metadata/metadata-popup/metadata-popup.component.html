@@ -1,0 +1,126 @@
+<!-- metadata-popup.component.html -->
+<div *ngIf="show">
+  <!-- BACKDROP -->
+  <div
+    class="cnr-backdrop"
+    (click)="close()"
+    style="
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1050;
+    "
+  ></div>
+
+  <!-- MODAL CENTERED -->
+  <div
+    class="cnr-modal"
+    style="
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1060;
+    "
+  >
+    <div
+      class="cnr-modal-box cnr-popup-animate"
+      (click)="$event.stopPropagation()"
+      style="
+        width: 90%;
+        max-width: 800px;
+        background: #fff;
+        border-radius: 6px;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+      "
+    >
+      <div
+        class="cnr-modal-header"
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1rem;
+          border-bottom: 1px solid #eee;
+        "
+      >
+        <h3 style="margin: 0">
+          Manage {{ fieldKey | removePrefix | humanizeSimple }}
+        </h3>
+        <button class="close-btn" (click)="close()" aria-label="Close">
+          ×
+        </button>
+      </div>
+
+      <!-- BODY (your existing content) -->
+      <div class="cnr-modal-body" style="padding: 1rem">
+        <form [formGroup]="form">
+          <div class="mb-3">
+            <label>Add New</label>
+            <input
+              class="form-control"
+              formControlName="newEntry"
+              placeholder="Enter new value"
+            />
+          </div>
+
+          <button type="button" class="btn btn-success btn-sm" (click)="add()">
+            Add
+          </button>
+        </form>
+
+        <hr />
+
+        <div *ngFor="let v of values; let i = index" class="d-flex mb-2">
+          <ng-container *ngIf="editIndex === i; else viewMode">
+            <input
+              class="form-control me-2"
+              [(ngModel)]="editValue"
+              name="editValue{{ i }}"
+            />
+            <button
+              class="btn btn-primary btn-sm me-1 mr-1 ml-1"
+              (click)="saveEdit(i)"
+            >
+              Save
+            </button>
+            <button
+              class="btn btn-secondary btn-sm me-1 mr-1 ml-1"
+              (click)="cancelEdit()"
+            >
+              Cancel
+            </button>
+          </ng-container>
+
+          <ng-template #viewMode>
+            <input class="form-control me-2" [value]="v" readonly />
+            <button
+              class="btn btn-outline-primary btn-sm me-1 ml-1 mr-1"
+              (click)="startEdit(i)"
+            >
+              <i class="fas fa-edit"></i>
+            </button>
+            <button
+              class="btn btn-outline-danger btn-sm ml-1 mr-1"
+              (click)="delete(i)"
+            >
+              <i class="fas fa-trash"></i>
+            </button>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div
+        class="cnr-modal-footer"
+        style="padding: 1rem; border-top: 1px solid #eee; text-align: right"
+      >
+        <button class="btn btn-primary" (click)="saveAndClose()">
+          Save Changes
+        </button>
+        <button class="btn btn-secondary me-2" (click)="close()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

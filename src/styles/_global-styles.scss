@@ -607,3 +607,12 @@ ngb-tooltip-window {
   // We use underline to discern link from text as we can't make color lighter on a white bg
   text-decoration: underline;
 }
+// color for "Metadata", "Bitstream", "Relationships" etc. sections in DSO edit page
+.nav-tabs .nav-link {
+  color: #207698 !important;
+}
+
+.nav-tabs .nav-link:hover,
+.nav-tabs .nav-link.active {
+  color: #495057 !important;
+}

@@ -9,13 +9,23 @@
 // All SASS variables from the base theme are also included here. Do not use the '!default' flag
 // here if you want to override them.
 
-
 /*** FONT FAMILIES ***/
 
-@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;1,200;1,300;1,400;1,600;1,700;1,800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;1,200;1,300;1,400;1,600;1,700;1,800&display=swap");
 
-$font-family-sans-serif: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-
+$font-family-sans-serif:
+  "Nunito",
+  -apple-system,
+  BlinkMacSystemFont,
+  "Segoe UI",
+  Roboto,
+  "Helvetica Neue",
+  Arial,
+  sans-serif,
+  "Apple Color Emoji",
+  "Segoe UI Emoji",
+  "Segoe UI Symbol",
+  "Noto Color Emoji";
 
 /*** SEMANTIC COLOR SCHEME ***/
 
@@ -45,40 +55,38 @@ $font-family-sans-serif: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI"
 //$cyan:    #17a2b8 !default;
 
 // Override semantic colors here
-$primary:   #43515f;  // Gray
-$secondary: #495057;  // As Bootstrap $gray-700
-$success:   #92c642;  // Lime
-$info:      #1e6f90;  // Light blue
-$warning:   #ec9433;  // Orange
-$danger:    #cf4444;  // Red
-$light:     #f8f9fa;  // As Bootstrap $gray-100
-$dark:      #43515f;  // Dark blue
+$primary: #43515f; // Gray
+$secondary: #495057; // As Bootstrap $gray-700
+$success: #92c642; // Lime
+$info: #207698; // Light blue
+$warning: #ec9433; // Orange
+$danger: #cf4444; // Red
+$light: #f8f9fa; // As Bootstrap $gray-100
+$dark: #43515f; // Dark blue
 
 // Add new semantic colors here (you don't need to add existing semantic colors)
-$theme-custom-semantic-colors: (
-);
+$theme-custom-semantic-colors: ();
 
 /*** OTHER BOOTSTRAP VARIABLES ***/
 
 $min-contrast-ratio: 2.06 !default;
 
-$body-color: #343a40;       // As Bootstrap $gray-800
+$body-color: #343a40; // As Bootstrap $gray-800
 
-$link-color: #1e6f90;       // Blue green, as DSpace $info
+$link-color: #1e6f90; // Blue green, as DSpace $info
 $link-decoration: none;
 $link-hover-color: darken($link-color, 15%);
 $link-hover-decoration: underline;
 
-$table-accent-bg: #f8f9fa;  // As Bootstrap $gray-100
-$table-hover-bg: #ced4da;   // As Bootstrap $gray-400
+$table-accent-bg: #f8f9fa; // As Bootstrap $gray-100
+$table-hover-bg: #ced4da; // As Bootstrap $gray-400
 
 $navbar-dark-color: #fff;
 
-
 /*** CUSTOM DSPACE VARIABLES ***/
 
-$ds-home-news-link-color: #D2FC93;
+$ds-home-news-link-color: #d2fc93;
 $ds-header-navbar-border-bottom-color: #92c642;
 
-$ds-breadcrumb-link-color: #154E66 !default;
-$ds-breadcrumb-link-active-color: #040D11 !default;
+$ds-breadcrumb-link-color: #154e66 !default;
+$ds-breadcrumb-link-active-color: #040d11 !default;

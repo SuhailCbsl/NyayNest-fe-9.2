@@ -33,16 +33,16 @@ export function getItemEditVersionhistoryRoute(item: Item) {
 }
 
 export function getEntityPageRoute(entityType: string, itemId: string) {
-  // if (isNotEmpty(entityType)) {
-  //   return new URLCombiner(
-  //     '/entities',
-  //     encodeURIComponent(entityType.toLowerCase()),
-  //     itemId,
-  //   ).toString();
-  // } else {
-  //   return new URLCombiner(getItemModuleRoute(), itemId).toString();
-  // }
-  return new URLCombiner(getItemModuleRoute(), itemId, 'doc-view').toString();
+  if (isNotEmpty(entityType)) {
+    return new URLCombiner(
+      '/entities',
+      encodeURIComponent(entityType.toLowerCase()),
+      itemId,
+    ).toString();
+  } else {
+    return new URLCombiner(getItemModuleRoute(), itemId).toString();
+  }
+  // return new URLCombiner(getItemModuleRoute(), itemId, 'doc-view').toString();
 }
 
 export function getEntityEditRoute(entityType: string, itemId: string) {

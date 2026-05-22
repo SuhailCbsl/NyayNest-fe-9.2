@@ -1,1 +1,45 @@
+.space-children-mr a {
+  margin-right: 15px; /* Adjust as needed */
+}
 
+a {
+  height: 35px;
+  gap: 15px;
+  border-radius: 5px;
+  border: 1.5px solid #174377;
+  background: rgba(255, 255, 255, 0);
+
+  display: inline-flex; /* enables flex layout */
+  align-items: center; /* vertical centering */
+  justify-content: center; /* horizontal centering */
+  text-align: center;
+}
+
+span {
+  color: #174377;
+  // font-family: Outfit;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.btn-dlt {
+  border: 1.5px solid #f00;
+}
+
+.txt-dlt {
+  color: #f00;
+}
+
+// hover
+.move-link:hover,
+.private-link:hover,
+.edit-link:hover,
+.withdraw-link:hover {
+  background-color: rgb(209, 229, 255) !important;
+}
+
+.delete-link:hover {
+  background-color: rgb(255, 219, 220) !important;
+}

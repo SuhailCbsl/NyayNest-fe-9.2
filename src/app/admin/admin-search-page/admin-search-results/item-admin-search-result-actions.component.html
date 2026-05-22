@@ -1,52 +1,232 @@
 <div class="space-children-mr my-1">
-  <a [ngClass]="{'btn-sm': small}" class="btn btn-secondary move-link" [routerLink]="[getMoveRoute()]" [title]="'admin.search.item.move' | translate">
-    <i class="fa fa-arrow-circle-right"></i>@if (!small) {
-    <span class="d-none d-sm-inline"> {{"admin.search.item.move" | translate}}</span>
+  <!-- Move -->
+  <a
+    [ngClass]="{ 'btn-sm': small }"
+    class="btn btn-secondary move-link custom-button"
+    [routerLink]="[getMoveRoute()]"
+    [title]="'admin.search.item.move' | translate"
+  >
+    <!-- <i class="fa fa-arrow-circle-right"></i> -->
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+    >
+      <path
+        d="M1.66699 9.99999V5.79145C1.66699 5.05601 1.66699 4.68828 1.72478 4.38198C1.97919 3.03358 3.03392 1.97886 4.38232 1.72445C4.68862 1.66666 5.05634 1.66666 5.79178 1.66666C6.11401 1.66666 6.27513 1.66666 6.42997 1.68114C7.09753 1.74356 7.73076 2.00586 8.24694 2.43375C8.36666 2.533 8.48058 2.64693 8.70841 2.87478L9.16699 3.33332C9.84683 4.01314 10.1867 4.35305 10.5937 4.57951C10.8173 4.70391 11.0546 4.80216 11.3007 4.87231C11.7486 4.99999 12.2292 4.99999 13.1907 4.99999H13.5021C15.6957 4.99999 16.7925 4.99999 17.5055 5.64121C17.5711 5.70019 17.6335 5.76261 17.6924 5.82818C18.3337 6.54111 18.3337 7.63794 18.3337 9.83157V11.6667C18.3337 14.8093 18.3337 16.3807 17.3573 17.357C16.3811 18.3333 14.8097 18.3333 11.667 18.3333H8.33366C5.19096 18.3333 3.61962 18.3333 2.6433 17.357C2.09898 16.8127 1.85813 16.0834 1.75157 15"
+        stroke="#174377"
+        stroke-width="1.25"
+        stroke-linecap="round"
+      />
+      <path
+        d="M1.66699 12.5C7.0367 12.5 5.46395 12.5 10.8337 12.5M10.8337 12.5L7.39616 10M10.8337 12.5L7.39616 15"
+        stroke="#174377"
+        stroke-width="1.25"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+    @if (!small) {
+      <span class="d-none d-sm-inline">
+        {{ "admin.search.item.move" | translate }}</span
+      >
+    }
+  </a>
+
+  <!-- Hide -->
+  @if (item && item.isDiscoverable) {
+    <a
+      [ngClass]="{ 'btn-sm': small }"
+      class="btn btn-secondary private-link custom-button"
+      [routerLink]="[getPrivateRoute()]"
+      [title]="'admin.search.item.make-private' | translate"
+    >
+      <!-- <i class="fa fa-eye-slash"></i> -->
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="23"
+        height="20"
+        viewBox="0 0 23 20"
+        fill="none"
+      >
+        <path
+          d="M2.46848 1.55774L19.9107 19M16.0952 15.4635C14.6207 16.2577 12.9541 16.8196 11.1896 16.8196C7.3407 16.8196 3.958 14.1465 2.01816 12.218C1.50612 11.709 1.25014 11.4545 1.08718 10.9549C0.970957 10.5986 0.970925 9.95901 1.08718 9.60265C1.25019 9.10315 1.5067 8.84805 2.01976 8.33808C2.99748 7.36624 4.34148 6.20565 5.92674 5.29339M19.3657 13.1497C19.7287 12.8303 20.0613 12.5162 20.3597 12.2196L20.3628 12.2163C20.8737 11.7085 21.1298 11.4539 21.2925 10.9554C21.4087 10.5991 21.4085 9.95923 21.2923 9.60298C21.1294 9.10358 20.8731 8.84827 20.3614 8.33961C18.4215 6.41113 15.0385 3.73802 11.1896 3.73802C10.8217 3.73802 10.458 3.76245 10.0995 3.80831M12.6318 11.9141C12.2474 12.2533 11.7425 12.4591 11.1896 12.4591C9.98545 12.4591 9.00933 11.483 9.00933 10.2789C9.00933 9.69073 9.24219 9.15722 9.6208 8.76498"
+          stroke="#174377"
+          stroke-width="1.29913"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      @if (!small) {
+        <span class="d-none d-sm-inline">
+          {{ "admin.search.item.make-private" | translate }}</span
+        >
+      }
+    </a>
   }
-</a>
 
-@if (item && item.isDiscoverable) {
-  <a [ngClass]="{'btn-sm': small}" class="btn btn-secondary private-link" [routerLink]="[getPrivateRoute()]" [title]="'admin.search.item.make-private' | translate">
-    <i class="fa fa-eye-slash"></i>@if (!small) {
-    <span class="d-none d-sm-inline"> {{"admin.search.item.make-private" | translate}}</span>
+  @if (item && !item.isDiscoverable) {
+    <a
+      [ngClass]="{ 'btn-sm': small }"
+      class="btn btn-secondary public-link custom-button"
+      [routerLink]="[getPublicRoute()]"
+      [title]="'admin.search.item.make-public' | translate"
+    >
+      <i class="fa fa-eye"></i>
+      @if (!small) {
+        <span class="d-none d-sm-inline">
+          {{ "admin.search.item.make-public" | translate }}</span
+        >
+      }
+    </a>
   }
-</a>
-}
 
-@if (item && !item.isDiscoverable) {
-  <a [ngClass]="{'btn-sm': small}" class="btn btn-secondary public-link" [routerLink]="[getPublicRoute()]" [title]="'admin.search.item.make-public' | translate">
-    <i class="fa fa-eye"></i>@if (!small) {
-    <span class="d-none d-sm-inline"> {{"admin.search.item.make-public" | translate}}</span>
+  <!-- edit -->
+  <a
+    [ngClass]="{ 'btn-sm': small }"
+    class="btn btn-secondary edit-link custom-button"
+    [routerLink]="[getEditRoute()]"
+    [title]="'admin.search.item.edit' | translate"
+  >
+    <!-- <i class="fa fa-edit"></i> -->
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="19"
+      height="18"
+      viewBox="0 0 19 18"
+      fill="none"
+    >
+      <path
+        d="M17.3059 11.5647V15.1882C17.3059 15.6687 17.115 16.1295 16.7752 16.4693C16.4355 16.8091 15.9746 17 15.4941 17H2.81177C2.33126 17 1.87043 16.8091 1.53065 16.4693C1.19088 16.1295 1 15.6687 1 15.1882V2.50583C1 2.02532 1.19088 1.56449 1.53065 1.22472C1.87043 0.884943 2.33126 0.694061 2.81177 0.694061H6.4353"
+        stroke="#174377"
+        stroke-width="1.25765"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M9.07647 13.3834L17.6824 4.68697L13.8777 0.882263L5.27177 9.48815L5 13.5646L9.07647 13.3834Z"
+        stroke="#174377"
+        stroke-width="1.25765"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+    @if (!small) {
+      <span class="d-none d-sm-inline">
+        {{ "admin.search.item.edit" | translate }}</span
+      >
+    }
+  </a>
+
+  @if (item && !item.isWithdrawn) {
+    <a
+      [ngClass]="{ 'btn-sm': small }"
+      class="btn btn-secondary withdraw-link custom-button"
+      [routerLink]="[getWithdrawRoute()]"
+      [title]="'admin.search.item.withdraw' | translate"
+    >
+      <!-- <i class="fa fa-ban"></i> -->
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="19"
+        height="20"
+        viewBox="0 0 19 20"
+        fill="none"
+      >
+        <path
+          d="M15.5265 14.2105H12.1054L12.9476 13.5788C13.1802 13.4046 13.2272 13.0746 13.0527 12.842C12.8787 12.6105 12.5493 12.5624 12.3159 12.7369L9.64941 14.7368L12.3159 16.7367C12.4068 16.8052 12.5175 16.8422 12.6313 16.8421C12.7914 16.8421 12.9494 16.7694 13.0527 16.6316C13.2272 16.399 13.1802 16.0691 12.9476 15.8948L12.1054 15.2632H15.5265C16.5422 15.2632 17.3686 16.0896 17.3686 17.1053C17.3686 18.1209 16.5422 18.9474 15.5265 18.9474H11.0529C10.7622 18.9474 10.5265 19.183 10.5265 19.4737C10.5265 19.7643 10.7622 20 11.0529 20H15.5265C17.1227 20 18.4213 18.7015 18.4213 17.1053C18.4213 15.5091 17.1227 14.2105 15.5265 14.2105Z"
+          fill="#174377"
+        />
+        <path
+          d="M1.05263 18.421V1.57895C1.05263 1.28881 1.28881 1.05263 1.57895 1.05263H15.2632C15.5533 1.05263 15.7895 1.28881 15.7895 1.57895V11.579H16.8421V1.57895C16.8421 0.708277 16.1338 0 15.2632 0H1.57895C0.708277 0 0 0.708252 0 1.57895V18.421C0 19.2917 0.708252 20 1.57895 20H7.89475V18.9474H1.57895C1.28881 18.9474 1.05263 18.7112 1.05263 18.421Z"
+          fill="#174377"
+        />
+        <path
+          d="M2.63184 4.2105H9.47393V5.26313H2.63184V4.2105ZM12.6318 3.68417H14.7371V5.78943H12.6318V3.68417ZM2.63184 9.47366H14.7371V10.5263H2.63184V9.47366ZM2.63184 14.7368H8.4213V15.7894H2.63184V14.7368Z"
+          fill="#174377"
+        />
+      </svg>
+      @if (!small) {
+        <span class="d-none d-sm-inline">
+          {{ "admin.search.item.withdraw" | translate }}</span
+        >
+      }
+    </a>
   }
-</a>
-}
 
-<a [ngClass]="{'btn-sm': small}" class="btn btn-secondary edit-link" [routerLink]="[getEditRoute()]" [title]="'admin.search.item.edit' | translate">
-  <i class="fa fa-edit"></i>@if (!small) {
-  <span class="d-none d-sm-inline"> {{"admin.search.item.edit" | translate}}</span>
-}
-</a>
-
-@if (item && !item.isWithdrawn) {
-  <a [ngClass]="{'btn-sm': small}" class="btn btn-warning t withdraw-link" [routerLink]="[getWithdrawRoute()]" [title]="'admin.search.item.withdraw' | translate">
-    <i class="fa fa-ban"></i>@if (!small) {
-    <span class="d-none d-sm-inline"> {{"admin.search.item.withdraw" | translate}}</span>
+  @if (item && item.isWithdrawn) {
+    <a
+      [ngClass]="{ 'btn-sm': small }"
+      class="btn btn-warning reinstate-link custom-button"
+      [routerLink]="[getReinstateRoute()]"
+      [title]="'admin.search.item.reinstate' | translate"
+    >
+      <i class="fa fa-undo"></i>
+      @if (!small) {
+        <span class="d-none d-sm-inline">
+          {{ "admin.search.item.reinstate" | translate }}</span
+        >
+      }
+    </a>
   }
-</a>
-}
-
-@if (item && item.isWithdrawn) {
-  <a [ngClass]="{'btn-sm': small}" class="btn btn-warning reinstate-link" [routerLink]="[getReinstateRoute()]" [title]="'admin.search.item.reinstate' | translate">
-    <i class="fa fa-undo"></i>@if (!small) {
-    <span class="d-none d-sm-inline"> {{"admin.search.item.reinstate" | translate}}</span>
-  }
-</a>
-}
-
-<a [ngClass]="{'btn-sm': small}" class="btn btn-danger delete-link" [routerLink]="[getDeleteRoute()]" [title]="'admin.search.item.delete' | translate">
-  <i class="fa fa-trash"></i>@if (!small) {
-  <span class="d-none d-sm-inline"> {{"admin.search.item.delete" | translate}}</span>
-}
-</a>
+  <!-- Delete -->
+  <a
+    [ngClass]="{ 'btn-sm': small }"
+    class="btn btn-dlt delete-link custom-button-delete"
+    [routerLink]="[getDeleteRoute()]"
+    [title]="'admin.search.item.delete' | translate"
+  >
+    <!-- <i class="fa fa-trash"></i> -->
+    <svg
+      style="width: 16.618px; height: 18.696px"
+      xmlns="http://www.w3.org/2000/svg"
+      width="19"
+      height="21"
+      viewBox="0 0 19 21"
+      fill="none"
+    >
+      <path
+        d="M7.23242 10.6521V15.8453"
+        stroke="#FF0000"
+        stroke-width="1.36279"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M11.3867 10.6521V15.8453"
+        stroke="#FF0000"
+        stroke-width="1.36279"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M1 5.45883H17.6185"
+        stroke="#FF0000"
+        stroke-width="1.36279"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M3.07715 8.57477V16.884C3.07715 18.605 4.47222 20 6.19311 20H12.425C14.146 20 15.541 18.605 15.541 16.884V8.57477"
+        stroke="#FF0000"
+        stroke-width="1.36279"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M6.19336 3.38148C6.19336 2.23421 7.1234 1.30417 8.27067 1.30417H10.348C11.4953 1.30417 12.4253 2.23421 12.4253 3.38148V5.45879H6.19336V3.38148Z"
+        stroke="#FF0000"
+        stroke-width="1.36279"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+    @if (!small) {
+      <span class="d-none txt-dlt d-sm-inline">
+        {{ "admin.search.item.delete" | translate }}</span
+      >
+    }
+  </a>
 </div>
-

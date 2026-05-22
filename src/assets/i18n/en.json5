@@ -759,7 +759,7 @@
 
   "admin.search.item.edit": "Edit",
 
-  "admin.search.item.make-private": "Make non-discoverable",
+  "admin.search.item.make-private": "Hide",
 
   "admin.search.item.make-public": "Make discoverable",
 

@@ -279,10 +279,11 @@
 
         <!-- Case List -->
         <div class="case-list" *ngIf="activeTab === 'Criminal'">
-          <span *ngIf="filteredCriminalCaseList.length == 0"
-            >No criminal case data is available for
-            {{ selectedTab == "high" ? state : selectedDistrict }}.</span
-          >
+          <span *ngIf="filteredCriminalCaseList.length == 0">
+            {{ "dashboard.no_criminal_case_data" | translate }}
+            <!-- for
+            {{ selectedTab == "high" ? state : selectedDistrict }}. -->
+          </span>
           <div
             class="case-item"
             *ngFor="let item of filteredCriminalCaseList; let i = index"
@@ -293,9 +294,10 @@
           </div>
         </div>
         <div class="case-list" *ngIf="activeTab === 'Civil'">
-          <span *ngIf="filteredCivilCaseList.length == 0"
-            >No civil case data is available for
-            {{ selectedTab == "high" ? state : selectedDistrict }}.
+          <span *ngIf="filteredCivilCaseList.length == 0">
+            {{ "dashboard.no_civil_case_data" | translate }}
+            <!-- for
+            {{ selectedTab == "high" ? state : selectedDistrict }}. -->
           </span>
           <div
             class="case-item"
@@ -310,9 +312,10 @@
           class="case-list"
           *ngIf="state === 'Delhi' && activeTab === 'Session'"
         >
-          <span *ngIf="filteredSessionCaseList.length == 0"
-            >No Session case data is available for
-            {{ selectedTab == "high" ? state : selectedDistrict }}.
+          <span *ngIf="filteredSessionCaseList.length == 0">
+            {{ "dashboard.no_session_case_data" | translate }}
+            <!-- for
+            {{ selectedTab == "high" ? state : selectedDistrict }}. -->
           </span>
           <div
             class="case-item"

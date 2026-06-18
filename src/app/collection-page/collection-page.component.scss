@@ -1,0 +1,47 @@
+.community-action-buttons {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.action-btn {
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 10px;
+
+  background: #102a43;
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+  i {
+    font-size: 15px;
+  }
+
+  &:hover {
+    background: #1f4f82;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+.recent-loader {
+  min-height: 250px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

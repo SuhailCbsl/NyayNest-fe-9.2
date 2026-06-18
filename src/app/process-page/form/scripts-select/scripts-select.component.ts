@@ -8,26 +8,13 @@ import {
   Optional,
   Output,
 } from '@angular/core';
-import {
-  ControlContainer,
-  FormsModule,
-  NgForm,
-} from '@angular/forms';
-import {
-  ActivatedRoute,
-  Router,
-} from '@angular/router';
+import { ControlContainer, FormsModule, NgForm } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-import {
-  BehaviorSubject,
-  Subscription,
-} from 'rxjs';
-import {
-  map,
-  tap,
-} from 'rxjs/operators';
+import { BehaviorSubject, Subscription } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 
 import { FindListOptions } from '../../../core/data/find-list-options.model';
 import { PaginatedList } from '../../../core/data/paginated-list.model';
@@ -50,9 +37,13 @@ const SCRIPT_QUERY_PARAMETER = 'script';
   selector: 'ds-scripts-select',
   templateUrl: './scripts-select.component.html',
   styleUrls: ['./scripts-select.component.scss'],
-  viewProviders: [{ provide: ControlContainer,
-    useFactory: controlContainerFactory,
-    deps: [[new Optional(), NgForm]] }],
+  viewProviders: [
+    {
+      provide: ControlContainer,
+      useFactory: controlContainerFactory,
+      deps: [[new Optional(), NgForm]],
+    },
+  ],
   imports: [
     AsyncPipe,
     FormsModule,
@@ -88,8 +79,7 @@ export class ScriptsSelectComponent implements OnInit, OnDestroy {
     private scriptService: ScriptDataService,
     private router: Router,
     private route: ActivatedRoute,
-  ) {
-  }
+  ) {}
 
   /**
    * Sets all available scripts
@@ -103,26 +93,39 @@ export class ScriptsSelectComponent implements OnInit, OnDestroy {
    * Load the scripts and check if the route contains a script
    */
   loadScripts() {
-    if (this.isLoading$.value) {return;}
+    if (this.isLoading$.value) {
+      return;
+    }
     this.isLoading$.next(true);
 
-    this.subscription = this.scriptService.findAll(this.scriptOptions).pipe(
-      getFirstCompletedRemoteData(),
-      getRemoteDataPayload(),
-      tap((paginatedList: PaginatedList<Script>) => {
-        this._isLastPage = paginatedList?.pageInfo?.currentPage >= paginatedList?.pageInfo?.totalPages;
-      }),
-      map((paginatedList: PaginatedList<Script>) => paginatedList.page),
-    ).subscribe((newScripts: Script[]) => {
-      this.scripts = [...this.scripts, ...newScripts];
-      this.isLoading$.next(false);
+    this.subscription = this.scriptService
+      .findAll(this.scriptOptions)
+      .pipe(
+        getFirstCompletedRemoteData(),
+        getRemoteDataPayload(),
+        tap((paginatedList: PaginatedList<Script>) => {
+          console.log(paginatedList);
+          this._isLastPage =
+            paginatedList?.pageInfo?.currentPage >=
+            paginatedList?.pageInfo?.totalPages;
+        }),
+        map((paginatedList: PaginatedList<Script>) => {
+          console.log('page: ', paginatedList?.page);
+          return paginatedList.page;
+        }),
+      )
+      .subscribe((newScripts: Script[]) => {
+        this.scripts = [...this.scripts, ...newScripts];
+        this.isLoading$.next(false);
 
-      const param = this.route.snapshot.queryParams[SCRIPT_QUERY_PARAMETER];
-      if (hasValue(param)) {
-        this._selectedScript = this.scripts.find((script) => script.id === param);
-        this.select.emit(this._selectedScript);
-      }
-    });
+        const param = this.route.snapshot.queryParams[SCRIPT_QUERY_PARAMETER];
+        if (hasValue(param)) {
+          this._selectedScript = this.scripts.find(
+            (script) => script.id === param,
+          );
+          this.select.emit(this._selectedScript);
+        }
+      });
   }
 
   /**
@@ -130,7 +133,10 @@ export class ScriptsSelectComponent implements OnInit, OnDestroy {
    * @param event The scroll event
    */
   onScroll(event: any) {
-    if (event.target.scrollTop + event.target.clientHeight >= event.target.scrollHeight) {
+    if (
+      event.target.scrollTop + event.target.clientHeight >=
+      event.target.scrollHeight
+    ) {
       if (!this.isLoading$.value && !this._isLastPage) {
         this.scriptOptions.currentPage++;
         this.loadScripts();
@@ -150,11 +156,9 @@ export class ScriptsSelectComponent implements OnInit, OnDestroy {
    * @param value The identifier of the script
    */
   set selectedScript(value: string) {
-    this.router.navigate([],
-      {
-        queryParams: { [SCRIPT_QUERY_PARAMETER]: value },
-      },
-    );
+    this.router.navigate([], {
+      queryParams: { [SCRIPT_QUERY_PARAMETER]: value },
+    });
   }
 
   selectScript(script: Script) {

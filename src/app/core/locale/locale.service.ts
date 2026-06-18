@@ -1,29 +1,11 @@
-import {
-  DOCUMENT,
-  Inject,
-  Injectable,
-  OnDestroy,
-} from '@angular/core';
+import { DOCUMENT, Inject, Injectable, OnDestroy } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import {
-  combineLatest,
-  Observable,
-  of,
-  Subscription,
-} from 'rxjs';
-import {
-  map,
-  mergeMap,
-  take,
-} from 'rxjs/operators';
+import { combineLatest, Observable, of, Subscription } from 'rxjs';
+import { map, mergeMap, take } from 'rxjs/operators';
 
 import { LangConfig } from '../../../config/lang-config.interface';
 import { environment } from '../../../environments/environment';
-import {
-  hasValue,
-  isEmpty,
-  isNotEmpty,
-} from '../../shared/empty.util';
+import { hasValue, isEmpty, isNotEmpty } from '../../shared/empty.util';
 import { AuthService } from '../auth/auth.service';
 import { CookieService } from '../services/cookie.service';
 import { RouteService } from '../services/route.service';
@@ -40,7 +22,7 @@ export const LANG_COOKIE = 'dsLanguage';
 export enum LANG_ORIGIN {
   UI,
   EPERSON,
-  BROWSER
+  BROWSER,
 }
 
 /**
@@ -48,7 +30,6 @@ export enum LANG_ORIGIN {
  */
 @Injectable()
 export class LocaleService implements OnDestroy {
-
   /**
    * Eperson language metadata
    */
@@ -63,8 +44,7 @@ export class LocaleService implements OnDestroy {
     protected authService: AuthService,
     protected routeService: RouteService,
     @Inject(DOCUMENT) protected document: any,
-  ) {
-  }
+  ) {}
 
   /**
    * Get the language currently used
@@ -74,18 +54,30 @@ export class LocaleService implements OnDestroy {
   getCurrentLanguageCode(): Observable<string> {
     // Attempt to get the language from a cookie
     const lang = this.getLanguageCodeFromCookie();
-    if (isEmpty(lang) || environment.languages.find((langConfig: LangConfig) => langConfig.code === lang && langConfig.active) === undefined) {
+    if (
+      isEmpty(lang) ||
+      environment.languages.find(
+        (langConfig: LangConfig) =>
+          langConfig.code === lang && langConfig.active,
+      ) === undefined
+    ) {
       // Attempt to get the browser language from the user
-      return this.getLanguageCodeList()
-        .pipe(
-          map(browserLangs => {
-            return browserLangs
-              .map(browserLang => browserLang.split(';')[0])
-              .find(browserLang =>
-                this.translate.getLangs().some(userLang => userLang.toLowerCase() === browserLang.toLowerCase()),
-              ) || environment.fallbackLanguage;
-          }),
-        );
+      return this.getLanguageCodeList().pipe(
+        map((browserLangs) => {
+          return (
+            browserLangs
+              .map((browserLang) => browserLang.split(';')[0])
+              .find((browserLang) =>
+                this.translate
+                  .getLangs()
+                  .some(
+                    (userLang) =>
+                      userLang.toLowerCase() === browserLang.toLowerCase(),
+                  ),
+              ) || environment.fallbackLanguage
+          );
+        }),
+      );
     }
     return of(lang);
   }
@@ -109,12 +101,17 @@ export class LocaleService implements OnDestroy {
             take(1),
             map((eperson) => {
               const languages: string[] = [];
-              const ePersonLang = eperson.firstMetadataValue(this.EPERSON_LANG_METADATA);
+              const ePersonLang = eperson.firstMetadataValue(
+                this.EPERSON_LANG_METADATA,
+              );
               if (ePersonLang) {
-                languages.push(...this.setQuality(
-                  [ePersonLang],
-                  LANG_ORIGIN.EPERSON,
-                  !isEmpty(this.translate.getCurrentLang())));
+                languages.push(
+                  ...this.setQuality(
+                    [ePersonLang],
+                    LANG_ORIGIN.EPERSON,
+                    !isEmpty(this.translate.getCurrentLang()),
+                  ),
+                );
               }
               return languages;
             }),
@@ -127,16 +124,21 @@ export class LocaleService implements OnDestroy {
               languages.push(...epersonLang);
             }
             if (this.translate.currentLang) {
-              languages.push(...this.setQuality(
-                [this.translate.getCurrentLang()],
-                LANG_ORIGIN.UI,
-                false));
+              languages.push(
+                ...this.setQuality(
+                  [this.translate.getCurrentLang()],
+                  LANG_ORIGIN.UI,
+                  false,
+                ),
+              );
             }
             if (navigator.languages) {
-              languages.push(...this.setQuality(
-                Object.assign([], navigator.languages),
-                LANG_ORIGIN.BROWSER,
-                !isEmpty(this.translate.getCurrentLang())),
+              languages.push(
+                ...this.setQuality(
+                  Object.assign([], navigator.languages),
+                  LANG_ORIGIN.BROWSER,
+                  !isEmpty(this.translate.getCurrentLang()),
+                ),
               );
             }
             return languages;
@@ -160,7 +162,14 @@ export class LocaleService implements OnDestroy {
    *  The language to save
    */
   saveLanguageCodeToCookie(lang: string): void {
-    this.cookie.set(LANG_COOKIE, lang);
+    const isHttps = location.protocol === 'https:';
+    console.log('saving', lang);
+    this.cookie.set(LANG_COOKIE, lang, {
+      secure: isHttps,
+      sameSite: 'Lax',
+      path: '/',
+    });
+    console.log('after set', this.cookie.get(LANG_COOKIE));
   }
 
   /**
@@ -171,11 +180,13 @@ export class LocaleService implements OnDestroy {
    */
   setCurrentLanguageCode(lang?: string): void {
     if (isEmpty(lang)) {
-      this.subs.push(this.getCurrentLanguageCode().subscribe(curLang => {
-        lang = curLang;
-        this.translate.use(lang);
-        this.document.documentElement.lang = lang;
-      }));
+      this.subs.push(
+        this.getCurrentLanguageCode().subscribe((curLang) => {
+          lang = curLang;
+          this.translate.use(lang);
+          this.document.documentElement.lang = lang;
+        }),
+      );
     } else {
       this.saveLanguageCodeToCookie(lang);
       this.translate.use(lang);
@@ -191,23 +202,31 @@ export class LocaleService implements OnDestroy {
    * @param origin origin of language list (UI, EPERSON, BROWSER)
    * @param hasOther true if contains other language, false otherwise
    */
-  setQuality(languages: string[], origin: LANG_ORIGIN, hasOther: boolean): string[] {
+  setQuality(
+    languages: string[],
+    origin: LANG_ORIGIN,
+    hasOther: boolean,
+  ): string[] {
     const langWithPrior = [];
     let idx = 0;
     const v = languages.length > 10 ? languages.length : 10;
     let divisor: number;
     switch (origin) {
       case LANG_ORIGIN.EPERSON:
-        divisor = 2; break;
+        divisor = 2;
+        break;
       case LANG_ORIGIN.BROWSER:
-        divisor = (hasOther ? 10 : 1); break;
+        divisor = hasOther ? 10 : 1;
+        break;
       default:
         divisor = 1;
     }
-    languages.forEach( (lang) => {
+    languages.forEach((lang) => {
       let value = lang + ';q=';
       let quality = (v - idx++) / v;
-      quality = ((languages.length > 10) ? quality.toFixed(2) : quality) as number;
+      quality = (
+        languages.length > 10 ? quality.toFixed(2) : quality
+      ) as number;
       value += quality / divisor;
       langWithPrior.push(value);
     });
@@ -218,12 +237,16 @@ export class LocaleService implements OnDestroy {
    * Refresh route navigated
    */
   public refreshAfterChangeLanguage() {
-    this.routeService.getCurrentUrl().pipe(take(1)).subscribe((currentURL) => {
-      // Hard redirect to the reload page with a unique number behind it
-      // so that all state is definitely lost
-      this._window.nativeWindow.location.href = `reload/${new Date().getTime()}?redirect=` + encodeURIComponent(currentURL);
-    });
-
+    this.routeService
+      .getCurrentUrl()
+      .pipe(take(1))
+      .subscribe((currentURL) => {
+        // Hard redirect to the reload page with a unique number behind it
+        // so that all state is definitely lost
+        this._window.nativeWindow.location.href =
+          `reload/${new Date().getTime()}?redirect=` +
+          encodeURIComponent(currentURL);
+      });
   }
 
   ngOnDestroy(): void {
@@ -231,5 +254,4 @@ export class LocaleService implements OnDestroy {
       .filter((sub) => hasValue(sub))
       .forEach((sub) => sub.unsubscribe());
   }
-
 }

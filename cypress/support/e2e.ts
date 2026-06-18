@@ -72,7 +72,7 @@ beforeEach(() => {
 
 // NOTE: FALLBACK_TEST_REST_BASE_URL is only used if Cypress cannot read the REST API BaseURL
 // from the Angular UI's config.json. See 'before()' above.
-const FALLBACK_TEST_REST_BASE_URL = 'http://localhost:8081/server';
+const FALLBACK_TEST_REST_BASE_URL = 'http://localhost:8083/server';
 const FALLBACK_TEST_REST_DOMAIN = 'localhost';
 
 // USEFUL REGEX for testing

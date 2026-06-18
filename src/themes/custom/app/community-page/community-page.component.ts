@@ -1,12 +1,6 @@
 import { AsyncPipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-} from '@angular/core';
-import {
-  RouterModule,
-  RouterOutlet,
-} from '@angular/router';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RouterModule, RouterOutlet } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CommunityPageComponent as BaseComponent } from '../../../../app/community-page/community-page.component';
@@ -20,6 +14,9 @@ import { DsoEditMenuComponent } from '../../../../app/shared/dso-page/dso-edit-m
 import { ErrorComponent } from '../../../../app/shared/error/error.component';
 import { ThemedLoadingComponent } from '../../../../app/shared/loading/themed-loading.component';
 import { VarDirective } from '../../../../app/shared/utils/var.directive';
+import { ObjectCollectionComponent } from 'src/app/shared/object-collection/object-collection.component';
+import { CommunityPageSubCommunityListComponent } from '../../../../app/community-page/sections/sub-com-col-section/sub-community-list/community-page-sub-community-list.component';
+import { CommunityPageSubCollectionListComponent } from '../../../../app/community-page/sections/sub-com-col-section/sub-collection-list/community-page-sub-collection-list.component';
 
 @Component({
   selector: 'ds-themed-community-page',
@@ -36,6 +33,9 @@ import { VarDirective } from '../../../../app/shared/utils/var.directive';
     DsoEditMenuComponent,
     ErrorComponent,
     RouterModule,
+    ObjectCollectionComponent,
+    CommunityPageSubCollectionListComponent,
+    CommunityPageSubCommunityListComponent,
     RouterOutlet,
     ThemedComcolPageBrowseByComponent,
     ThemedComcolPageContentComponent,
@@ -45,5 +45,4 @@ import { VarDirective } from '../../../../app/shared/utils/var.directive';
     VarDirective,
   ],
 })
-export class CommunityPageComponent extends BaseComponent {
-}
+export class CommunityPageComponent extends BaseComponent {}

@@ -22,7 +22,7 @@ export class ReportMenuProvider extends AbstractExpandableMenuProvider {
   getTopSection(): Observable<PartialMenuSection> {
     return this.authService.isAuthorized(FeatureID.AdministratorOf).pipe(
       map((isAdmin: boolean) => ({
-        visible: isAdmin,
+        visible: true,
         model: {
           type: MenuItemType.TEXT,
           text: 'menu.section.reports',
@@ -38,10 +38,9 @@ export class ReportMenuProvider extends AbstractExpandableMenuProvider {
   getSubSections(): Observable<PartialMenuSection[]> {
     return this.authService.isAuthorized(FeatureID.AdministratorOf).pipe(
       map((isAdmin: boolean) => {
-        const visible = isAdmin;
         return [
           {
-            visible,
+            visible: true,
             model: {
               type: MenuItemType.LINK,
               text: 'menu.section.reports.audittrail',
@@ -50,7 +49,7 @@ export class ReportMenuProvider extends AbstractExpandableMenuProvider {
             icon: 'history',
           },
           {
-            visible,
+            visible: true,
             model: {
               type: MenuItemType.LINK,
               text: 'menu.section.reports.data-upload',
@@ -59,7 +58,7 @@ export class ReportMenuProvider extends AbstractExpandableMenuProvider {
             icon: 'upload',
           },
           {
-            visible,
+            visible: true,
             model: {
               type: MenuItemType.LINK,
               text: 'menu.section.reports.datatrend',

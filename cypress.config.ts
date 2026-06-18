@@ -37,7 +37,7 @@ export default defineConfig({
     DSPACE_TEST_SUBMIT_USER_UUID: '914955b1-cf2e-4884-8af7-a166aa24cf73',
     DSPACE_TEST_SUBMIT_USER_PASSWORD: 'dspace',
     // Administrator users group
-    DSPACE_ADMINISTRATOR_GROUP: 'e59f5659-bff9-451e-b28f-439e7bd467e4'
+    DSPACE_ADMINISTRATOR_GROUP: 'e59f5659-bff9-451e-b28f-439e7bd467e4',
   },
   e2e: {
     // Setup our plugins for e2e tests
@@ -47,6 +47,6 @@ export default defineConfig({
     // This is the base URL that Cypress will run all tests against
     // It can be overridden via the CYPRESS_BASE_URL environment variable
     // (By default we set this to a value which should work in most development environments)
-    baseUrl: 'http://localhost:4000',
+    baseUrl: 'http://localhost:4001',
   },
 });

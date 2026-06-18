@@ -38,6 +38,7 @@ import { ListableObject } from './shared/listable-object.model';
  * Component that can render a list of listable objects in different view modes
  */
 @Component({
+  standalone: true,
   selector: 'ds-viewable-collection',
   styleUrls: ['./object-collection.component.scss'],
   templateUrl: './object-collection.component.html',

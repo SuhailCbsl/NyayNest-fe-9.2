@@ -1,0 +1,578 @@
+﻿﻿<div class="archival-container">
+  <div class="archival-card">
+    <!-- Header with Icon -->
+    <div class="card-header">
+      <div class="header-left">
+        <div class="header-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 20 20"
+            fill="none"
+          >
+            <path
+              d="M17.5003 2.5H2.50033C2.04009 2.5 1.66699 2.8731 1.66699 3.33333V5.83333C1.66699 6.29357 2.04009 6.66667 2.50033 6.66667H17.5003C17.9606 6.66667 18.3337 6.29357 18.3337 5.83333V3.33333C18.3337 2.8731 17.9606 2.5 17.5003 2.5Z"
+              stroke="white"
+              stroke-width="1.66667"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M3.33301 6.66675V15.8334C3.33301 16.2754 3.5086 16.6994 3.82116 17.0119C4.13372 17.3245 4.55765 17.5001 4.99967 17.5001H14.9997C15.4417 17.5001 15.8656 17.3245 16.1782 17.0119C16.4907 16.6994 16.6663 16.2754 16.6663 15.8334V6.66675"
+              stroke="white"
+              stroke-width="1.66667"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M8.33301 10H11.6663"
+              stroke="white"
+              stroke-width="1.66667"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+        <div>
+          <h2 class="title">{{ "long-term-archival.title" | translate }}</h2>
+          <p class="subtitle">
+            {{ "long-term-archival.subtitle" | translate }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="main-content">
+      <!-- Left Section: Filter Criteria -->
+      <div class="left-section">
+        <h3 class="section-title">
+          {{ "long-term-archival.filter-title" | translate }}
+        </h3>
+
+        <form [formGroup]="archiveForm" (ngSubmit)="getCaseCount()">
+          <div class="filter-group">
+            <label class="label">{{
+              "long-term-archival.filter-type" | translate
+            }}</label>
+            <select formControlName="filterBy" class="form-control">
+              <option value="">
+                {{ "long-term-archival.select-filter" | translate }}
+              </option>
+              <option *ngFor="let f of filters" [value]="f.key">
+                {{ f.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="filter-group" *ngIf="selectedFilter">
+            <label class="label">{{ selectedFilterLabel }}</label>
+            <ng-container [ngSwitch]="selectedFilter">
+              <select
+                *ngSwitchCase="'CaseTypeName'"
+                class="form-control"
+                formControlName="CaseTypeName"
+              >
+                <option value="">
+                  {{ "long-term-archival.select-option" | translate }}
+                </option>
+                <option
+                  *ngFor="let option of filterOptions.CaseTypeName"
+                  [value]="option"
+                >
+                  {{ option }}
+                </option>
+              </select>
+
+              <!-- <select *ngSwitchCase="'caseYear'" class="form-control" formControlName="caseYear">
+                <option value="">Select</option>
+                <option *ngFor="let y of caseYears" [value]="y">{{ y }}</option>
+              </select> -->
+
+              <div *ngSwitchCase="'CaseYear'" class="year-range-container">
+                <!-- FROM YEAR -->
+                <div class="year-field">
+                  <div
+                    class="year-input-box"
+                    (click)="toggleYearDropdown('from', $event)"
+                  >
+                    <i class="pi pi-calendar"></i>
+                    <span>{{ caseYearFrom || "From Year" }}</span>
+                    <i class="pi pi-chevron-down arrow"></i>
+                  </div>
+
+                  <div
+                    *ngIf="showFromDropdown"
+                    class="year-dropdown"
+                    (click)="$event.stopPropagation()"
+                  >
+                    <!-- Search -->
+                    <input
+                      type="text"
+                      class="year-search"
+                      [placeholder]="
+                        'long-term-archival.search-year' | translate
+                      "
+                      [(ngModel)]="fromSearchText"
+                      [ngModelOptions]="{ standalone: true }"
+                      (input)="filterYears('from')"
+                    />
+                    <div class="year-list">
+                      <div
+                        *ngIf="filteredFromYears.length > 0; else noFromData"
+                      >
+                        <div
+                          *ngFor="
+                            let y of filteredFromYears;
+                            trackBy: trackByYear
+                          "
+                          (click)="selectYear(y, 'from', $event)"
+                          class="year-item"
+                        >
+                          {{ y }}
+                        </div>
+                      </div>
+                      <!--  No data template -->
+                      <ng-template #noFromData>
+                        <div class="no-data">
+                          {{ "long-term-archival.no-year-found" | translate }}
+                        </div>
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+
+                <span class="range-separator">to</span>
+                <!-- TO YEAR -->
+                <div class="year-field">
+                  <div
+                    class="year-input-box"
+                    (click)="toggleYearDropdown('to', $event)"
+                  >
+                    <i class="pi pi-calendar"></i>
+                    <span>{{ caseYearTo || "To Year" }}</span>
+                    <i class="pi pi-chevron-down arrow"></i>
+                  </div>
+                  <div
+                    *ngIf="showToDropdown"
+                    class="year-dropdown"
+                    (click)="$event.stopPropagation()"
+                  >
+                    <!-- Search -->
+                    <input
+                      type="text"
+                      class="year-search"
+                      [placeholder]="
+                        'long-term-archival.search-year' | translate
+                      "
+                      [(ngModel)]="toSearchText"
+                      [ngModelOptions]="{ standalone: true }"
+                      (input)="filterYears('to')"
+                    />
+                    <div class="year-list">
+                      <div *ngIf="filteredToYears.length > 0; else noToData">
+                        <div
+                          *ngFor="
+                            let y of filteredToYears;
+                            trackBy: trackByYear
+                          "
+                          (click)="selectYear(y, 'to', $event)"
+                          class="year-item"
+                        >
+                          {{ y }}
+                        </div>
+                      </div>
+                      <ng-template #noToData>
+                        <div class="no-data">
+                          {{ "long-term-archival.no-year-found" | translate }}
+                        </div>
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <select
+                *ngSwitchCase="'CaseNature'"
+                class="form-control"
+                formControlName="CaseNature"
+              >
+                <option value="">
+                  {{ "long-term-archival.select-option" | translate }}
+                </option>
+                <option
+                  *ngFor="let option of filterOptions.CaseNature"
+                  [value]="option"
+                >
+                  {{ option }}
+                </option>
+              </select>
+
+              <select
+                *ngSwitchCase="'CaseStatus'"
+                class="form-control"
+                formControlName="CaseStatus"
+              >
+                <option value="">
+                  {{ "long-term-archival.select-option" | translate }}
+                </option>
+                <option
+                  *ngFor="let option of filterOptions.CaseStatus"
+                  [value]="option"
+                >
+                  {{ option }}
+                </option>
+              </select>
+
+              <!-- Judgment Date (FROM - TO) -->
+              <div *ngSwitchCase="'orderJudgementDate'" class="date-range">
+                <!-- FROM -->
+                <div class="date-field">
+                  <i class="pi pi-calendar"></i>
+                  <input
+                    type="text"
+                    [placeholder]="'long-term-archival.from-date' | translate"
+                    ngbDatepicker
+                    #fromJudgment="ngbDatepicker"
+                    formControlName="judgmentFrom"
+                    class="date-input"
+                    [minDate]="minDate"
+                    [maxDate]="maxDate"
+                    (click)="fromJudgment.toggle()"
+                    (dateSelect)="onJudgmentDateSelect(fromJudgment, 'from')"
+                    readonly
+                  />
+                </div>
+
+                <span class="range-separator">{{
+                  "long-term-archival.to" | translate
+                }}</span>
+
+                <!-- TO -->
+                <div class="date-field">
+                  <i class="pi pi-calendar"></i>
+                  <input
+                    type="text"
+                    [placeholder]="'long-term-archival.to-date' | translate"
+                    ngbDatepicker
+                    #toJudgment="ngbDatepicker"
+                    formControlName="judgmentTo"
+                    class="date-input"
+                    [minDate]="minDate"
+                    [maxDate]="maxDate"
+                    (click)="toJudgment.toggle()"
+                    (dateSelect)="onJudgmentDateSelect(toJudgment, 'to')"
+                    readonly
+                  />
+                </div>
+              </div>
+
+              <!-- Last Accessed (FROM - TO) -->
+              <div *ngSwitchCase="'date'" class="date-range">
+                <!-- FROM -->
+                <div class="date-field">
+                  <i class="pi pi-calendar"></i>
+                  <input
+                    type="text"
+                    [placeholder]="'long-term-archival.from-date' | translate"
+                    ngbDatepicker
+                    #fromLast="ngbDatepicker"
+                    formControlName="lastAccessedFrom"
+                    class="date-input"
+                    [minDate]="minDate"
+                    [maxDate]="maxDate"
+                    (click)="fromLast.toggle()"
+                    (dateSelect)="onLastDateSelect(fromLast, 'from')"
+                    readonly
+                  />
+                </div>
+
+                <span class="range-separator">{{
+                  "long-term-archival.to" | translate
+                }}</span>
+
+                <!-- TO -->
+                <div class="date-field">
+                  <i class="pi pi-calendar"></i>
+                  <input
+                    type="text"
+                    [placeholder]="'long-term-archival.to-date' | translate"
+                    ngbDatepicker
+                    #toLast="ngbDatepicker"
+                    formControlName="lastAccessedTo"
+                    class="date-input"
+                    [minDate]="minDate"
+                    [maxDate]="maxDate"
+                    (click)="toLast.toggle()"
+                    (dateSelect)="onLastDateSelect(toLast, 'to')"
+                    readonly
+                  />
+                </div>
+              </div>
+
+              <!-- Judgment Date -->
+              <!-- <div *ngSwitchCase="'orderJudgementDate'" class="date-wrap">
+                <input id="judgmentDate" type="text" placeholder="YYYY/MM/DD" ngbDatepicker #dJudgment="ngbDatepicker"
+                  formControlName="orderJudgementDate" (click)="dJudgment.toggle()" class="form-control" readonly />
+                <span class="calendar-icon"><i class="pi pi-calendar"></i></span>
+              </div> -->
+
+              <!-- <select *ngSwitchCase="'orderJudgementDate'" class="form-control" formControlName="orderJudgementDate">
+                <option value="">Select</option>
+                <option *ngFor="let option of filterOptions.orderJudgementDate" [value]="option">
+                  {{ option }}
+                </option>
+              </select> -->
+
+              <!-- Last Accessed -->
+              <!-- <div *ngSwitchCase="'date'" class="date-wrap">
+                <input id="lastAccessed" type="text" placeholder="YYYY/MM/DD" ngbDatepicker #dLast="ngbDatepicker"
+                  formControlName="date" (click)="dLast.toggle()" class="form-control" readonly />
+                <span class="calendar-icon"><i class="pi pi-calendar"></i></span>
+              </div> -->
+              <!-- <select *ngSwitchCase="'date'" class="form-control" formControlName="date">
+                <option value="">Select</option>
+                <option *ngFor="let option of filterOptions.date" [value]="option">
+                  {{ option }}
+                </option>
+              </select> -->
+            </ng-container>
+          </div>
+          <div class="filter-tags" *ngIf="filterTags.length > 0">
+            <div class="tag" *ngFor="let tag of filterTags; let i = index">
+              <span class="tag-label">{{ tag.label }} :</span>
+              <span class="tag-value">{{ tag.value }}</span>
+
+              <button class="tag-remove" (click)="removeFilterTag(i)">✖</button>
+            </div>
+          </div>
+          <div class="button-row">
+            <!-- <button type="button" class="btn btn-reset" (click)="resetAll()" title="Reset Filters">
+              <i class="fa-solid fa-rotate-right"></i>
+            </button> -->
+
+            <button
+              type="button"
+              class="btn btn-add-filter"
+              (click)="addFilterTag()"
+            >
+              + Add Filter
+            </button>
+
+            <button
+              class="btn btn-search"
+              type="submit"
+              [disabled]="filterTags.length > 0 ? false : true"
+            >
+              <i class="fa-solid fa-magnifying-glass"></i>
+              {{ "long-term-archival.search" | translate }}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Right Section: How Archival Works -->
+      <div class="right-section-box">
+        <div class="right-section-header">
+          <div class="right-header-icon">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+            >
+              <path
+                d="M13.334 2.66675H2.66732C1.93094 2.66675 1.33398 3.2637 1.33398 4.00008V12.0001C1.33398 12.7365 1.93094 13.3334 2.66732 13.3334H13.334C14.0704 13.3334 14.6673 12.7365 14.6673 12.0001V4.00008C14.6673 3.2637 14.0704 2.66675 13.334 2.66675Z"
+                stroke="white"
+                stroke-width="1.33333"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M14.6673 4.66675L8.68732 8.46675C8.4815 8.5957 8.24353 8.66409 8.00065 8.66409C7.75777 8.66409 7.5198 8.5957 7.31398 8.46675L1.33398 4.66675"
+                stroke="white"
+                stroke-width="1.33333"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </div>
+          <div>
+            <h3 class="right-section-title">
+              {{ "long-term-archival.how-archival-works" | translate }}
+            </h3>
+            <p class="right-section-subtitle">
+              {{
+                "long-term-archival.how-archival-works-description" | translate
+              }}
+            </p>
+          </div>
+        </div>
+
+        <div class="steps-container">
+          <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <p>
+                {{ "long-term-archival.step-1-description" | translate }}
+              </p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <p>
+                {{ "long-term-archival.step-2-click" | translate }}
+                <b
+                  >"+
+                  {{ "long-term-archival.step-2-add-filter" | translate }}"</b
+                >
+                {{ "long-term-archival.step-2-last-part" | translate }}
+              </p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <p>{{ "long-term-archival.step-3-description" | translate }}</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <p>
+                <!-- {{ "long-term-archival.step-4-description" | translate }} -->
+                {{ "long-term-archival.step-4-click" | translate }} "{{
+                  "long-term-archival.step-4-search-case-file" | translate
+                }}" {{ "long-term-archival.step-4-last-part" | translate }}
+              </p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-number">5</div>
+            <div class="step-content">
+              <p>
+                {{ "long-term-archival.step-5-description" | translate }}
+              </p>
+            </div>
+          </div>
+
+          <!-- <div class="step">
+            <div class="step-number">6</div>
+            <div class="step-content">
+              <p>Receive an email notification once the archival process is complete</p>
+            </div>
+          </div> -->
+        </div>
+
+        <!-- Warning Note -->
+        <div class="warning-note">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>
+            {{ "long-term-archival.warning-note" | translate }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- POPUP -->
+<div class="archive-modal" *ngIf="showPopup">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="header-left">
+        <div class="modal-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
+            <path
+              d="M21 3H3C2.44772 3 2 3.44772 2 4V7C2 7.55228 2.44772 8 3 8H21C21.5523 8 22 7.55228 22 7V4C22 3.44772 21.5523 3 21 3Z"
+              stroke="#F94F00"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M4 8V19C4 19.5304 4.21071 20.0391 4.58579 20.4142C4.96086 20.7893 5.46957 21 6 21H18C18.5304 21 19.0391 20.7893 19.4142 20.4142C19.7893 20.0391 20 19.5304 20 19V8"
+              stroke="#F94F00"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M10 12H14"
+              stroke="#F94F00"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+        <h3 class="modal-title">
+          {{ "long-term-archival.modal-title" | translate }}
+        </h3>
+      </div>
+      <button
+        class="modal-close"
+        type="button"
+        (click)="showPopup = false"
+        aria-label="Close"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="file-info-box">
+      <p class="file-count">
+        {{ fileCount }} {{ "long-term-archival.files-ready" | translate }}
+      </p>
+      <!-- <p class="filter-info">{{ selectedFilterLabel }}: {{ getSelectedFilterValue() }}</p> -->
+      <div class="selected-filters">
+        <span class="filter-chip" *ngFor="let tag of filterTags">
+          {{ tag.label }}: {{ tag.value }}
+        </span>
+      </div>
+    </div>
+
+    <p class="warning-text">
+      {{ "long-term-archival.warning-text-part-1" | translate }} "{{
+        "long-term-archival.warning-text-part-2" | translate
+      }}", {{ "long-term-archival.warning-text-part-3" | translate }}
+    </p>
+
+    <div class="modal-buttons">
+      <button class="btn-cancel" type="button" (click)="showPopup = false">
+        Cancel
+      </button>
+      <button class="btn-archive" (click)="archiveFiles()">
+        <i class="fa-solid fa-box-archive"></i>
+        {{ "long-term-archival.btn-archive" | translate }}
+      </button>
+    </div>
+  </div>
+</div>
+<div class="loading-overlay" *ngIf="isLoading">
+  <div class="loading-card">
+    <div class="icon-circle">
+      <i class="fa-solid fa-download"></i>
+    </div>
+
+    <h2>{{ "long-term-archival.loading-title" | translate }}</h2>
+    <p>{{ "long-term-archival.loading-text" | translate }}</p>
+
+    <div class="progress-bar">
+      <div class="progress"></div>
+    </div>
+  </div>
+</div>

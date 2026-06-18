@@ -1,7 +1,4 @@
-import {
-  AsyncPipe,
-  isPlatformBrowser,
-} from '@angular/common';
+import { AsyncPipe, isPlatformBrowser } from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -18,19 +15,10 @@ import {
   NavigationStart,
   Router,
 } from '@angular/router';
-import {
-  NgbModal,
-  NgbModalConfig,
-} from '@ng-bootstrap/ng-bootstrap';
-import {
-  select,
-  Store,
-} from '@ngrx/store';
+import { NgbModal, NgbModalConfig } from '@ng-bootstrap/ng-bootstrap';
+import { select, Store } from '@ngrx/store';
 import { TranslateService } from '@ngx-translate/core';
-import {
-  BehaviorSubject,
-  Observable,
-} from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import {
   delay,
   distinctUntilChanged,
@@ -58,10 +46,7 @@ import { ThemeService } from './shared/theme-support/theme.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    AsyncPipe,
-    ThemedRootComponent,
-  ],
+  imports: [AsyncPipe, ThemedRootComponent],
 })
 export class AppComponent implements OnInit, AfterViewInit {
   notificationOptions;
@@ -127,28 +112,41 @@ export class AppComponent implements OnInit, AfterViewInit {
       distinctUntilChanged(),
     );
 
-    this.dispatchWindowSize(this._window.nativeWindow.innerWidth, this._window.nativeWindow.innerHeight);
+    this.dispatchWindowSize(
+      this._window.nativeWindow.innerWidth,
+      this._window.nativeWindow.innerHeight,
+    );
   }
 
   private storeCSSVariables() {
     this.cssService.clearCSSVariables();
-    this.cssService.addCSSVariables(this.cssService.getCSSVariablesFromStylesheets(this.document));
+    this.cssService.addCSSVariables(
+      this.cssService.getCSSVariablesFromStylesheets(this.document),
+    );
   }
 
   ngAfterViewInit() {
-    this.router.events.pipe(
-      // delay(0) to prevent "Expression has changed after it was checked" errors
-      delay(0),
-    ).subscribe((event) => {
-      if (event instanceof NavigationStart) {
-        distinctNext(this.isRouteLoading$, true);
-      } else if (
-        event instanceof NavigationEnd ||
-        event instanceof NavigationCancel
-      ) {
-        distinctNext(this.isRouteLoading$, false);
-      }
-    });
+    this.router.events
+      .pipe(
+        // delay(0) to prevent "Expression has changed after it was checked" errors
+        delay(0),
+      )
+      .subscribe((event) => {
+        if (event instanceof NavigationStart) {
+          distinctNext(this.isRouteLoading$, true);
+        } else if (
+          event instanceof NavigationEnd ||
+          event instanceof NavigationCancel
+        ) {
+          distinctNext(this.isRouteLoading$, false);
+        }
+      });
+
+    if (isPlatformBrowser(this.platformId)) {
+      document
+        .querySelectorAll('[ng-version]')
+        .forEach((el) => el.removeAttribute('ng-version'));
+    }
   }
 
   @HostListener('window:resize', ['$event'])
@@ -157,28 +155,30 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   private dispatchWindowSize(width, height): void {
-    this.store.dispatch(
-      new HostWindowResizeAction(width, height),
-    );
+    this.store.dispatch(new HostWindowResizeAction(width, height));
   }
 
   private trackIdleModal() {
     const isIdle$ = this.authService.isUserIdle();
     const isAuthenticated$ = this.authService.isAuthenticated();
-    isIdle$.pipe(withLatestFrom(isAuthenticated$))
+    isIdle$
+      .pipe(withLatestFrom(isAuthenticated$))
       .subscribe(([userIdle, authenticated]) => {
         if (userIdle && authenticated) {
           if (!this.idleModalOpen) {
-            const modalRef = this.modalService.open(IdleModalComponent, { ariaLabelledBy: 'idle-modal.header' });
-            this.idleModalOpen = true;
-            modalRef.componentInstance.response.pipe(take(1)).subscribe((closed: boolean) => {
-              if (closed) {
-                this.idleModalOpen = false;
-              }
+            const modalRef = this.modalService.open(IdleModalComponent, {
+              ariaLabelledBy: 'idle-modal.header',
             });
+            this.idleModalOpen = true;
+            modalRef.componentInstance.response
+              .pipe(take(1))
+              .subscribe((closed: boolean) => {
+                if (closed) {
+                  this.idleModalOpen = false;
+                }
+              });
           }
         }
       });
   }
-
 }

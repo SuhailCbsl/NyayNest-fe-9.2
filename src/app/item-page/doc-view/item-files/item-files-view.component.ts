@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, JsonPipe } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { Bitstream } from 'src/app/core/shared/bitstream.model';
 import { Item } from 'src/app/core/shared/item.model';
@@ -9,7 +9,7 @@ import { ItemFileViewComponent } from '../item-file/item-file-view.component';
   selector: 'item-files-view',
   templateUrl: './item-files-view.component.html',
   styleUrls: ['./item-files-view.component.scss'],
-  imports: [CommonModule, ItemFileViewComponent],
+  imports: [CommonModule, ItemFileViewComponent, JsonPipe],
 })
 export class ItemFilesViewComponent {
   @Input() bitstreams: Bitstream[];

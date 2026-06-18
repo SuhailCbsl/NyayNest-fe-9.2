@@ -9,7 +9,7 @@ RUN apk add --update python3 make g++ && rm -rf /var/cache/apk/*
 
 WORKDIR /app
 ADD . /app/
-EXPOSE 4000
+EXPOSE 4001
 
 RUN npm install
 

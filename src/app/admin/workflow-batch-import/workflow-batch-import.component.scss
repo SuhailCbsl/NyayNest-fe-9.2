@@ -1,0 +1,33 @@
+.card {
+    border-radius: 12px;
+}
+
+.form-label {
+    font-weight: 600;
+}
+
+.btn-primary {
+    padding: 8px 20px;
+    font-size: 16px;
+}
+
+.fullscreen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.75);
+    /* dark overlay */
+    backdrop-filter: blur(4px);
+    /* blur background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    /* above everything */
+}
+
+.overlay-content {
+    text-align: center;
+}

@@ -19,6 +19,7 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 
 @Component({
+  standalone: true,
   selector: 'ds-data-upload-report',
   imports: [
     CommonModule,

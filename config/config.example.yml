@@ -7,7 +7,7 @@ debug: false
 ui:
   ssl: false
   host: localhost
-  port: 4000
+  port: 4001
   # NOTE: Space is capitalized because 'namespace' is a reserved string in TypeScript
   nameSpace: /
   # The rateLimiter settings limit each IP to a 'max' of 500 requests per 'windowMs' (1 minute).
@@ -74,7 +74,7 @@ rest:
   nameSpace: /server
   # Provide a different REST url to be used during SSR execution. It must contain the whole url including protocol, server port and
   # server namespace (uncomment to use it).
-  #ssrBaseUrl: http://localhost:8081/server
+  #ssrBaseUrl: http://localhost:8083/server
 
 # Caching settings
 cache:
@@ -112,7 +112,7 @@ cache:
       # copy is automatically refreshed on the next request.
       # NOTE: For the bot cache, this setting may impact how quickly search engine bots will index new content on your site.
       # For example, setting this to one week may mean that search engine bots may not find all new content for one week.
-      timeToLive: 86400000 # 1 day
+      timeToLive: 86400100 # 1 day
       # When set to true, after timeToLive expires, the next request will receive the *cached* page & then re-render the page
       # behind the scenes to update the cache. This ensures users primarily interact with the cache, but may receive stale pages (older than timeToLive).
       # When set to false, after timeToLive expires, the next request will wait on SSR to complete & receive a fresh page (which is then saved to cache).

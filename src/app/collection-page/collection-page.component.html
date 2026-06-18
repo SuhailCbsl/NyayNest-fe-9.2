@@ -1,6 +1,5 @@
 <div class="container">
-  <div class="collection-page"
-    *ngVar="(collectionRD$ | async) as collectionRD">
+  <div class="collection-page" *ngVar="collectionRD$ | async as collectionRD">
     @if (collectionRD?.hasSucceeded) {
       <div @fadeInOut>
         @if (collectionRD?.payload; as collection) {
@@ -9,48 +8,107 @@
               <header class="comcol-header me-auto">
                 <!-- Collection Name -->
                 <ds-comcol-page-header
-                  [name]="dsoNameService.getName(collection)">
+                  [name]="dsoNameService.getName(collection)"
+                >
                 </ds-comcol-page-header>
                 <!-- Collection logo -->
                 @if (logoRD$) {
                   <ds-comcol-page-logo
                     [logo]="(logoRD$ | async)?.payload"
-                    [alternateText]="'collection.logo' | translate">
+                    [alternateText]="'collection.logo' | translate"
+                  >
                   </ds-comcol-page-logo>
                 }
                 <!-- Handle -->
                 <ds-comcol-page-handle
                   [content]="collection.handle"
-                  [title]="'collection.page.handle'">
+                  [title]="'collection.page.handle'"
+                >
                 </ds-comcol-page-handle>
                 <!-- Introductory text -->
                 <ds-comcol-page-content
                   [content]="collection.introductoryText"
-                  [hasInnerHtml]="true">
+                  [hasInnerHtml]="true"
+                >
                 </ds-comcol-page-content>
                 <!-- News -->
-                <ds-comcol-page-content
+                <!-- <ds-comcol-page-content
                   [content]="collection.sidebarText"
                   [hasInnerHtml]="true"
-                  [title]="'collection.page.news'">
-                </ds-comcol-page-content>
+                  [title]="'collection.page.news'"
+                >
+                </ds-comcol-page-content> -->
               </header>
-              <ds-dso-edit-menu></ds-dso-edit-menu>
+              <!-- <ds-dso-edit-menu></ds-dso-edit-menu> -->
+              @if (isCollectionAdmin$ | async) {
+                <div class="community-action-buttons">
+                  <button
+                    class="action-btn"
+                    [routerLink]="['/collections', collection.id, 'edit']"
+                    title="Edit Collection"
+                    aria-label="Edit Collection"
+                  >
+                    <i class="fas fa-pencil-alt"></i>
+                  </button>
+                </div>
+              }
             </div>
+
             <section class="comcol-page-browse-section">
-              <!-- Browse-By Links -->
               <ds-comcol-page-browse-by
                 [id]="collection.id"
-                [contentType]="collection.type">
+                [contentType]="collection.type"
+              >
               </ds-comcol-page-browse-by>
-              <router-outlet></router-outlet>
+
+              @if (!(showRecentSubmissions$ | async)) {
+                <router-outlet></router-outlet>
+              }
             </section>
+
+            <!-- <section class="comcol-page-browse-section">
+
+                <ds-viewable-collection
+                  [objects]="itemsRD$ | async"
+                  [paginationConfig]="paginationConfig"
+                  [sortConfig]="sortConfig"
+                  [hideGear]="true">
+                </ds-viewable-collection>
+
+              </section> -->
+
+            <!-- Recent Submissions -->
+            @if (showRecentSubmissions$ | async) {
+              <section class="comcol-page-recent-section">
+                <ng-container *ngVar="itemRD$ | async as itemRD">
+                  @if (!itemRD) {
+                    <div class="recent-loader">
+                      <div class="spinner-border" role="status"></div>
+                      <div>Loading recent submissions...</div>
+                    </div>
+                  }
+
+                  @if (itemRD?.hasSucceeded) {
+                    <ds-viewable-collection
+                      [config]="paginationConfig"
+                      [sortConfig]="sortConfig"
+                      [objects]="itemRD"
+                      [hideGear]="false"
+                      [showPaginator]="true"
+                      [showThumbnails]="true"
+                    >
+                    </ds-viewable-collection>
+                  }
+                </ng-container>
+              </section>
+            }
             @if (collection.copyrightText) {
               <footer class="border-top my-5 pt-4">
                 <!-- Copyright -->
                 <ds-comcol-page-content
                   [content]="collection.copyrightText"
-                  [hasInnerHtml]="true">
+                  [hasInnerHtml]="true"
+                >
                 </ds-comcol-page-content>
               </footer>
             }
@@ -59,12 +117,10 @@
       </div>
     }
     @if (collectionRD?.hasFailed) {
-      <ds-error
-      message="{{'error.collection' | translate}}"></ds-error>
+      <ds-error message="{{ 'error.collection' | translate }}"></ds-error>
     }
     @if (collectionRD?.isLoading) {
-      <ds-loading
-      message="{{'loading.collection' | translate}}"></ds-loading>
+      <ds-loading message="{{ 'loading.collection' | translate }}"></ds-loading>
     }
   </div>
 </div>

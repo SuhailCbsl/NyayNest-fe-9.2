@@ -104,8 +104,8 @@ From 'DSpace/dspace-angular' clone (build first as needed)
 docker compose -p d8 -f docker/docker-compose.yml up -d
 ```
 
-At this point, you should be able to access the UI from http://localhost:4000,
-and the backend at http://localhost:8081/server/
+At this point, you should be able to access the UI from http://localhost:4001,
+and the backend at http://localhost:8083/server/
 
 ## Run DSpace Angular dist build with DSpace Demo site backend
 

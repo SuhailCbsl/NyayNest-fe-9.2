@@ -15,7 +15,6 @@ import { SearchResultListElementComponent } from '../../../search-result-list-el
 import { ItemAdminSearchResultActionsComponent } from 'src/app/admin/admin-search-page/admin-search-results/item-admin-search-result-actions.component';
 import { ThumbnailComponent } from 'src/themes/custom/app/thumbnail/thumbnail.component';
 
-@listableObjectComponent('PublicationSearchResult', ViewMode.ListElement)
 @listableObjectComponent(ItemSearchResult, ViewMode.ListElement)
 @Component({
   selector: 'ds-item-search-result-list-element',
@@ -34,6 +33,12 @@ export class ItemSearchResultListElementComponent
 
   ngOnInit(): void {
     super.ngOnInit();
+    console.log('CUSTOM COMPONENT LOADED');
+    console.log('Thumbnail=', this.dso?.thumbnail);
+    console.log('dso = ', this.dso);
+    console.log('dso links = ' + this.dso._links);
+    console.log('thumbnail observable', this.dso.thumbnail);
+    console.log('thumbnail link', this.dso._links?.thumbnail);
 
     // thumbnail setting (same as public)
     this.showThumbnails =

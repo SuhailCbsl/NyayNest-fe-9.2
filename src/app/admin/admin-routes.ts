@@ -13,17 +13,22 @@ import {
 } from './admin-routing-paths';
 import { ThemedAdminSearchPageComponent } from './admin-search-page/themed-admin-search-page.component';
 import { ThemedAdminWorkflowPageComponent } from './admin-workflow-page/themed-admin-workflow-page.component';
+import { WorkflowBatchImportComponent } from './workflow-batch-import/workflow-batch-import.component';
 
 export const ROUTES: Route[] = [
   {
     path: NOTIFICATIONS_MODULE_PATH,
-    loadChildren: () => import('./admin-notifications/admin-notifications-routes')
-      .then((m) => m.ROUTES),
+    loadChildren: () =>
+      import('./admin-notifications/admin-notifications-routes').then(
+        (m) => m.ROUTES,
+      ),
   },
   {
     path: REGISTRIES_MODULE_PATH,
-    loadChildren: () => import('./admin-registries/admin-registries-routes')
-      .then((m) => m.ROUTES),
+    loadChildren: () =>
+      import('./admin-registries/admin-registries-routes').then(
+        (m) => m.ROUTES,
+      ),
   },
   {
     path: 'search',
@@ -41,25 +46,61 @@ export const ROUTES: Route[] = [
     path: 'curation-tasks',
     resolve: { breadcrumb: i18nBreadcrumbResolver },
     component: AdminCurationTasksComponent,
-    data: { title: 'admin.curation-tasks.title', breadcrumbKey: 'admin.curation-tasks' },
+    data: {
+      title: 'admin.curation-tasks.title',
+      breadcrumbKey: 'admin.curation-tasks',
+    },
   },
   {
     path: 'metadata-import',
     resolve: { breadcrumb: i18nBreadcrumbResolver },
     component: ThemedMetadataImportPageComponent,
-    data: { title: 'admin.metadata-import.title', breadcrumbKey: 'admin.metadata-import' },
+    data: {
+      title: 'admin.metadata-import.title',
+      breadcrumbKey: 'admin.metadata-import',
+    },
   },
   {
     path: 'batch-import',
     resolve: { breadcrumb: i18nBreadcrumbResolver },
     component: BatchImportPageComponent,
-    data: { title: 'admin.batch-import.title', breadcrumbKey: 'admin.batch-import' },
+    data: {
+      title: 'admin.batch-import.title',
+      breadcrumbKey: 'admin.batch-import',
+    },
+  },
+  {
+    path: 'workflow-import-batch',
+    resolve: { breadcrumb: i18nBreadcrumbResolver },
+    component: WorkflowBatchImportComponent,
+    data: {
+      title: 'admin.workflow-import-batch.title',
+      breadcrumbKey: 'admin.workflow-import-batch',
+    },
   },
   {
     path: 'system-wide-alert',
     resolve: { breadcrumb: i18nBreadcrumbResolver },
-    loadChildren: () => import('../system-wide-alert/system-wide-alert-routes').then((m) => m.ROUTES),
-    data: { title: 'admin.system-wide-alert.title', breadcrumbKey: 'admin.system-wide-alert' },
+    loadChildren: () =>
+      import('../system-wide-alert/system-wide-alert-routes').then(
+        (m) => m.ROUTES,
+      ),
+    data: {
+      title: 'admin.system-wide-alert.title',
+      breadcrumbKey: 'admin.system-wide-alert',
+    },
+  },
+  {
+    path: 'longtermarchival',
+    resolve: { breadcrumb: i18nBreadcrumbResolver },
+    loadChildren: () =>
+      import('../item-page/Long-term-archival/long-term-archival-routing.module').then(
+        (m) => m.LongTermArchivalRoutingModule,
+      ),
+    data: {
+      title: 'admin.longtermarchival.title',
+      breadcrumbKey: 'admin.longtermarchival',
+    },
   },
   {
     path: LDN_PATH,
@@ -67,19 +108,23 @@ export const ROUTES: Route[] = [
       { path: '', pathMatch: 'full', redirectTo: 'services' },
       {
         path: 'services',
-        loadChildren: () => import('./admin-ldn-services/admin-ldn-services-routes')
-          .then((m) => m.ROUTES),
+        loadChildren: () =>
+          import('./admin-ldn-services/admin-ldn-services-routes').then(
+            (m) => m.ROUTES,
+          ),
       },
     ],
   },
   {
     path: REPORTS_MODULE_PATH,
-    loadChildren: () => import('./admin-reports/admin-reports-routes')
-      .then((m) => m.ROUTES),
+    loadChildren: () =>
+      import('./admin-reports/admin-reports-routes').then((m) => m.ROUTES),
   },
   {
     path: NOTIFY_DASHBOARD_MODULE_PATH,
-    loadChildren: () => import('./admin-notify-dashboard/admin-notify-dashboard-routes')
-      .then((m) => m.ROUTES),
+    loadChildren: () =>
+      import('./admin-notify-dashboard/admin-notify-dashboard-routes').then(
+        (m) => m.ROUTES,
+      ),
   },
 ];

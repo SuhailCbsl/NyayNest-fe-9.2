@@ -1,10 +1,4 @@
-
-import {
-  Component,
-  Inject,
-  Injector,
-  OnInit,
-} from '@angular/core';
+import { Component, Inject, Injector, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
@@ -20,6 +14,7 @@ import { MenuSection } from '../../../menu/menu-section.model';
  * Represents a non-expandable section in the dso edit menus
  */
 @Component({
+  standalone: true,
   selector: 'ds-dso-edit-menu-section',
   templateUrl: './dso-edit-menu-section.component.html',
   styleUrls: ['./dso-edit-menu-section.component.scss'],
@@ -30,8 +25,10 @@ import { MenuSection } from '../../../menu/menu-section.model';
     TranslateModule,
   ],
 })
-export class DsoEditMenuSectionComponent extends AbstractMenuSectionComponent implements OnInit {
-
+export class DsoEditMenuSectionComponent
+  extends AbstractMenuSectionComponent
+  implements OnInit
+{
   menuID: MenuID = MenuID.DSO_EDIT;
   itemModel;
   hasLink: boolean;

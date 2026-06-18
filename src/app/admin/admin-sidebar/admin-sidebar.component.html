@@ -26,20 +26,13 @@
       id="sidebar-header-container"
       aria-hidden="true"
     >
-      <div class="sidebar-section-wrapper">
-        <div class="sidebar-fixed-element-wrapper">
-          <img
-            id="admin-sidebar-logo"
-            src="assets/images/NyayNest.png"
-            [alt]="'menu.header.image.logo' | translate"
-            aria-hidden="true"
-          />
-        </div>
-        <div class="sidebar-collapsible-element-outer-wrapper">
-          <div class="sidebar-collapsible-element-inner-wrapper sidebar-item">
-            <h4 class="my-1">{{ "menu.header.admin" | translate }}</h4>
-          </div>
-        </div>
+      <div class="logo-wrapper" [routerLink]="['/dashboard']">
+        <img
+          id="admin-sidebar-logo"
+          src="assets/images/NyayNest.png"
+          [alt]="'menu.header.image.logo' | translate"
+          aria-hidden="true"
+        />
       </div>
     </div>
     <!-- ITEMS -->

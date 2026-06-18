@@ -1,0 +1,429 @@
+<div class="archived-files-page">
+
+    <div class="af-card">
+
+        <!-- HEADER -->
+        <div class="af-card__header">
+
+            <div class="af-card__title-group">
+
+                <div class="af-card__icon">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+
+                        <path
+                            d="M17.5003 2.5H2.50033C2.04009 2.5 1.66699 2.8731 1.66699 3.33333V5.83333C1.66699 6.29357 2.04009 6.66667 2.50033 6.66667H17.5003C17.9606 6.66667 18.3337 6.29357 18.3337 5.83333V3.33333C18.3337 2.8731 17.9606 2.5 17.5003 2.5Z"
+                            stroke="white" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round" />
+
+                        <path
+                            d="M3.33301 6.66675V15.8334C3.33301 16.2754 3.5086 16.6994 3.82116 17.0119C4.13372 17.3245 4.55765 17.5001 4.99967 17.5001H14.9997C15.4417 17.5001 15.8656 17.3245 16.1782 17.0119C16.4907 16.6994 16.6663 16.2754 16.6663 15.8334V6.66675"
+                            stroke="white" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round" />
+
+                        <path d="M8.33301 10H11.6663" stroke="white" stroke-width="1.66667" stroke-linecap="round"
+                            stroke-linejoin="round" />
+
+                    </svg>
+
+                </div>
+
+                <div>
+
+                    <h1 class="af-card__title">
+
+                        All Archived Files
+
+                    </h1>
+
+                    <p class="af-card__subtitle">
+
+                        <ng-container *ngIf="!isLoading; else loadingCount">
+
+                            Total Archived Files: {{ totalElements }}
+
+                        </ng-container>
+
+                        <ng-template #loadingCount>
+
+                            Loading…
+
+                        </ng-template>
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            <button class="af-btn af-btn--restore" [disabled]="selectedIds.size === 0" (click)="restoreSelected()">
+
+                <i class="fas fa-undo-alt"></i>
+
+                <span>
+
+                    Restore Files
+
+                </span>
+
+                <span *ngIf="selectedIds.size > 0" class="af-btn__badge">
+
+                    {{ selectedIds.size }}
+
+                </span>
+
+            </button>
+
+        </div>
+
+        <!-- FILTERS -->
+        <div class="af-card__filters">
+
+            <!-- SEARCH -->
+            <div class="af-search">
+
+                <i class="fas fa-search af-search__icon"></i>
+
+                <input type="text" class="af-search__input" placeholder="Search by Case Number or CNR Number"
+                    [formControl]="searchControl" autocomplete="off" />
+
+                <button *ngIf="searchControl.value" class="af-search__clear" (click)="searchControl.setValue('')"
+                    aria-label="Clear search">
+
+                    <i class="fas fa-times"></i>
+
+                </button>
+
+            </div>
+
+            <!-- DATE FILTER -->
+            <div class="af-date-wrap" #dateFilterWrap>
+
+                <button class="af-date-btn" [class.af-date-btn--active]="hasActiveDateFilter" type="button"
+                    (click)="toggleDateFilter()">
+
+                    <i class="fas fa-filter"></i>
+
+                    <span>
+
+                        Filter by From Date – To Date
+
+                    </span>
+
+                    <i *ngIf="hasActiveDateFilter" class="fas fa-circle af-date-btn__dot">
+
+                    </i>
+
+                </button>
+
+                <!-- DATE PANEL -->
+                <div class="af-date-panel" *ngIf="showDateFilter">
+
+                    <div class="af-date-panel__row">
+
+                        <label class="af-date-panel__label">
+
+                            From Date
+
+                        </label>
+
+                        <input type="date" class="af-date-panel__input" [formControl]="dateFromControl" />
+
+                    </div>
+
+                    <div class="af-date-panel__row">
+
+                        <label class="af-date-panel__label">
+
+                            To Date
+
+                        </label>
+
+                        <input type="date" class="af-date-panel__input" [formControl]="dateToControl" />
+
+                    </div>
+
+                    <div class="af-date-panel__actions">
+
+                        <button type="button" class="af-btn af-btn--sm af-btn--ghost" (click)="clearDateFilter()">
+
+                            Clear
+
+                        </button>
+
+                        <button type="button" class="af-btn af-btn--sm af-btn--primary" (click)="applyDateFilter()">
+
+                            Apply
+
+                        </button>
+
+                    </div>
+
+                    <p *ngIf="dateFilterError" class="af-date-panel__error">{{ dateFilterError }}</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- SELECT BAR -->
+        <!-- SELECT BAR -->
+        <div class="af-select-bar">
+
+            <label class="af-checkbox-label">
+
+                <input type="checkbox" class="af-checkbox" [checked]="allOnPageSelected"
+                    [indeterminate]="someOnPageSelected" (change)="toggleSelectAll()" />
+
+                <span class="af-checkbox-label__text">
+
+                    Select All
+
+                </span>
+
+            </label>
+
+            <span class="af-select-bar__count" *ngIf="selectedIds.size > 0">
+
+                {{ selectedIds.size }} selected
+
+            </span>
+
+        </div>
+
+        <!-- LOADING -->
+        <div *ngIf="isLoading" class="af-skeleton-wrap">
+
+            <div class="af-skeleton-row" *ngFor="let i of [1,2,3,4,5]">
+
+                <div class="af-skeleton af-skeleton--checkbox"></div>
+
+                <div class="af-skeleton af-skeleton--badge"></div>
+
+                <div class="af-skeleton af-skeleton--text"></div>
+
+                <div class="af-skeleton af-skeleton--text af-skeleton--short"></div>
+
+                <div class="af-skeleton af-skeleton--text"></div>
+
+            </div>
+
+        </div>
+
+        <!-- TABLE -->
+        <div *ngIf="!isLoading" class="af-table-wrap">
+
+
+            <!-- TABLE HEADER -->
+            <div class="af-table__head">
+
+                <div class="af-table__cell af-table__cell--check"></div>
+
+                <div class="af-table__cell af-table__cell--type">
+                    Case Type
+                </div>
+
+                <div class="af-table__cell af-table__cell--number">
+                    Case Number
+                </div>
+
+                <div class="af-table__cell af-table__cell--cnr">
+                    CNR Number
+                </div>
+
+                <div class="af-table__cell af-table__cell--year">
+                    Case Year
+                </div>
+
+                <div class="af-table__cell af-table__cell--nature">
+                    Case Nature
+                </div>
+
+                <div class="af-table__cell af-table__cell--status">
+                    Case Status
+                </div>
+
+                <div class="af-table__cell af-table__cell--retain">
+                    Retain
+                </div>
+
+                <div class="af-table__cell af-table__cell--archive">
+                    Archived
+                </div>
+
+                <div class="af-table__cell af-table__cell--date">
+                    Archived Date
+                </div>
+
+            </div>
+
+            <!-- EMPTY -->
+            <div *ngIf="cases.length === 0" class="af-state af-state--empty">
+
+                <i class="fas fa-folder-open af-state__icon"></i>
+
+                <p class="af-state__msg">
+
+                    No archived files found.
+
+                </p>
+
+            </div>
+
+            <!-- ROWS -->
+            <!-- ROWS -->
+            <div class="af-table__row" *ngFor="let case_ of cases; trackBy: trackById">
+
+                <!-- CHECKBOX -->
+                <div class="af-table__cell af-table__cell--check">
+
+                    <input type="checkbox" class="af-checkbox" [checked]="isSelected(case_.itemId)"
+                        (change)="toggleCase(case_.itemId)" />
+
+                </div>
+
+                <!-- CASE TYPE -->
+                <div class="af-table__cell af-table__cell--type">
+
+                    <span class="af-badge">
+
+                        {{ case_.caseType || '—' }}
+
+                    </span>
+
+                </div>
+
+                <!-- CASE NUMBER -->
+                <div class="af-table__cell af-table__cell--number">
+
+                    <strong class="af-case-number">
+
+                        {{ case_.caseNo || '—' }}
+
+                    </strong>
+
+                </div>
+
+                <!-- CNR NUMBER -->
+                <div class="af-table__cell af-table__cell--cnr">
+
+                    {{ case_.cnrNumber || '—' }}
+
+                </div>
+
+                <!-- CASE YEAR -->
+                <div class="af-table__cell af-table__cell--year">
+
+                    {{ case_.case_year || '—' }}
+
+                </div>
+
+                <!-- CASE NATURE -->
+                <div class="af-table__cell af-table__cell--nature">
+
+                    {{ case_.case_nature || '—' }}
+
+                </div>
+
+                <!-- CASE STATUS -->
+                <div class="af-table__cell af-table__cell--status">
+
+                    {{ case_.case_status || '—' }}
+
+                </div>
+
+                <!-- RETAIN -->
+                <div class="af-table__cell af-table__cell--retain">
+
+                    <span class="af-retain" [class.af-retain--yes]="case_.retain" [class.af-retain--no]="!case_.retain">
+
+                        {{ case_.retain ? 'Yes' : 'No' }}
+
+                    </span>
+
+                </div>
+
+                <!-- IS ARCHIVE -->
+                <div class="af-table__cell af-table__cell--archive">
+
+                    <span class="af-archive" [class.af-archive--yes]="case_.isArchive"
+                        [class.af-archive--no]="!case_.isArchive">
+
+                        {{ case_.archive ? 'Yes' : 'No' }}
+
+                    </span>
+
+                </div>
+
+                <!-- ARCHIVE DATE -->
+                <div class="af-table__cell af-table__cell--date">
+
+                    {{ case_.archiveDateTime | date:'dd-MM-yyyy hh:mm a' }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- BOTTOM BAR -->
+        <div class="af-bottom-bar" *ngIf="!isLoading && cases.length > 0">
+
+            <div class="af-bottom-bar__left">
+
+                <span class="af-bottom-bar__label">
+
+                    Rows per page:
+
+                </span>
+
+                <select class="af-bottom-bar__select" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
+
+                    <option [value]="10">10</option>
+
+                    <option [value]="20">20</option>
+
+                    <option [value]="50">50</option>
+
+                    <option [value]="100">100</option>
+
+                </select>
+
+            </div>
+
+            <span class="af-bottom-bar__range">
+
+                Showing {{ cases.length }} records
+
+            </span>
+
+        </div>
+
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="af-pagination-wrap" *ngIf="!isLoading && totalElements > 0">
+
+        <ngb-pagination [collectionSize]="totalElements" [(page)]="currentPage" [pageSize]="pageSize" [maxSize]="5"
+            [boundaryLinks]="true" [rotate]="true" [ellipses]="true" (pageChange)="onPageChange($event)">
+
+        </ngb-pagination>
+
+    </div>
+
+</div>
+<div class="loading-overlay" *ngIf="isLoadingShow">
+    <div class="loading-card">
+
+        <div class="icon-circle">
+            <i class="fa-solid fa-download"></i>
+        </div>
+
+        <h2>Restoring Files</h2>
+        <p>Please wait while we restore the selected cases...</p>
+
+        <div class="progress-bar">
+            <div class="progress"></div>
+        </div>
+
+    </div>
+</div>

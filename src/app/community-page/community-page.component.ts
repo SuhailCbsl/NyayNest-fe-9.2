@@ -1,9 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import {
   ActivatedRoute,
   Router,
@@ -12,11 +8,7 @@ import {
 } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { Observable } from 'rxjs';
-import {
-  filter,
-  map,
-  mergeMap,
-} from 'rxjs/operators';
+import { filter, map, mergeMap } from 'rxjs/operators';
 
 import { AuthService } from '../core/auth/auth.service';
 import { DSONameService } from '../core/breadcrumbs/dso-name.service';
@@ -39,6 +31,9 @@ import { ErrorComponent } from '../shared/error/error.component';
 import { ThemedLoadingComponent } from '../shared/loading/themed-loading.component';
 import { VarDirective } from '../shared/utils/var.directive';
 import { getCommunityPageRoute } from './community-page-routing-paths';
+import { ObjectCollectionComponent } from '../shared/object-collection/object-collection.component';
+import { CommunityPageSubCommunityListComponent } from './sections/sub-com-col-section/sub-community-list/community-page-sub-community-list.component';
+import { CommunityPageSubCollectionListComponent } from './sections/sub-com-col-section/sub-collection-list/community-page-sub-collection-list.component';
 
 @Component({
   selector: 'ds-base-community-page',
@@ -55,11 +50,14 @@ import { getCommunityPageRoute } from './community-page-routing-paths';
     RouterModule,
     RouterOutlet,
     ThemedComcolPageBrowseByComponent,
+    ObjectCollectionComponent,
+    CommunityPageSubCommunityListComponent,
     ThemedComcolPageContentComponent,
     ThemedComcolPageHandleComponent,
     ThemedLoadingComponent,
     TranslateModule,
     VarDirective,
+    CommunityPageSubCollectionListComponent,
   ],
 })
 /**
@@ -92,9 +90,7 @@ export class CommunityPageComponent implements OnInit {
     private authService: AuthService,
     private authorizationDataService: AuthorizationDataService,
     public dsoNameService: DSONameService,
-  ) {
-
-  }
+  ) {}
 
   ngOnInit(): void {
     this.communityRD$ = this.route.data.pipe(
@@ -104,11 +100,14 @@ export class CommunityPageComponent implements OnInit {
     this.logoRD$ = this.communityRD$.pipe(
       map((rd: RemoteData<Community>) => rd.payload),
       filter((community: Community) => hasValue(community)),
-      mergeMap((community: Community) => community.logo));
+      mergeMap((community: Community) => community.logo),
+    );
     this.communityPageRoute$ = this.communityRD$.pipe(
       getAllSucceededRemoteDataPayload(),
       map((community) => getCommunityPageRoute(community.id)),
     );
-    this.isCommunityAdmin$ = this.authorizationDataService.isAuthorized(FeatureID.IsCommunityAdmin);
+    this.isCommunityAdmin$ = this.authorizationDataService.isAuthorized(
+      FeatureID.IsCommunityAdmin,
+    );
   }
 }

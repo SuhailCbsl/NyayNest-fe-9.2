@@ -1,8 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  Observable,
-  of,
-} from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 
 import { CollectionDataService } from '../data/collection-data.service';
@@ -13,22 +10,20 @@ import { RoleType } from './role-types';
  */
 @Injectable({ providedIn: 'root' })
 export class RoleService {
-
   /**
    * Initialize instance variables
    *
    * @param {CollectionDataService} collectionService
    */
-  constructor(private collectionService: CollectionDataService) {
-  }
+  constructor(private collectionService: CollectionDataService) {}
 
   /**
    * Check if current user is a submitter
    */
   isSubmitter(): Observable<boolean> {
-    return this.collectionService.hasAuthorizedCollection().pipe(
-      distinctUntilChanged(),
-    );
+    return this.collectionService
+      .hasAuthorizedCollection()
+      .pipe(distinctUntilChanged());
   }
 
   /**
@@ -36,7 +31,7 @@ export class RoleService {
    */
   isController(): Observable<boolean> {
     // TODO find a way to check if user is a controller
-    return of(true);
+    return of(false);
   }
 
   /**

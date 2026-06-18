@@ -4,7 +4,6 @@
       @if (classifiedBitstreams$ | async; as classifiedBitstreams) {
         @if (classifiedBitstreams.Master?.[0]?.url) {
           @if (heading$ | async; as heading) {
-            <!-- @if (editLink$ | async; as editLink) { -->
             <div
               id="docViewerContainer"
               data-show-accordion="true"
@@ -26,8 +25,11 @@
               [attr.data-generate-summary-url]="
                 buildGenerateSummaryUrl() | async
               "
+              [attr.data-show-edit-item-button]="
+                (editLink$ | async) ? 'true' : 'false'
+              "
+              [attr.data-edit-link]="(editLink$ | async) || null"
             ></div>
-            <!-- } -->
           }
         }
       }

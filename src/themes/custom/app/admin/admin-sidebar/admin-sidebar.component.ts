@@ -1,21 +1,21 @@
-import {
-  AsyncPipe,
-  NgClass,
-  NgComponentOutlet,
-} from '@angular/common';
+import { AsyncPipe, NgClass, NgComponentOutlet } from '@angular/common';
 import { Component } from '@angular/core';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { AdminSidebarComponent as BaseComponent } from '../../../../../app/admin/admin-sidebar/admin-sidebar.component';
 import { BrowserOnlyPipe } from '../../../../../app/shared/utils/browser-only.pipe';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'ds-themed-admin-sidebar',
   // templateUrl: './admin-sidebar.component.html',
-  templateUrl: '../../../../../app/admin/admin-sidebar/admin-sidebar.component.html',
+  templateUrl:
+    '../../../../../app/admin/admin-sidebar/admin-sidebar.component.html',
   // styleUrls: ['./admin-sidebar.component.scss']
-  styleUrls: ['../../../../../app/admin/admin-sidebar/admin-sidebar.component.scss'],
+  styleUrls: [
+    '../../../../../app/admin/admin-sidebar/admin-sidebar.component.scss',
+  ],
   imports: [
     AsyncPipe,
     BrowserOnlyPipe,
@@ -23,7 +23,7 @@ import { BrowserOnlyPipe } from '../../../../../app/shared/utils/browser-only.pi
     NgClass,
     NgComponentOutlet,
     TranslatePipe,
+    RouterModule,
   ],
 })
-export class AdminSidebarComponent extends BaseComponent {
-}
+export class AdminSidebarComponent extends BaseComponent {}

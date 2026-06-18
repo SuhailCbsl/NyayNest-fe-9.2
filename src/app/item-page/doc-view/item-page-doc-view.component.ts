@@ -1,38 +1,53 @@
-import { CommonModule, JsonPipe } from '@angular/common';
-import { HttpClient, HttpXsrfTokenExtractor } from '@angular/common/http';
-import { Component, Inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import {
-  BehaviorSubject,
-  Observable,
-  combineLatest,
-  filter,
-  map,
-  switchMap,
-} from 'rxjs';
-import { AuthService } from 'src/app/core/auth/auth.service';
-import { DSONameService } from 'src/app/core/breadcrumbs/dso-name.service';
-import { BitstreamDataService } from 'src/app/core/data/bitstream-data.service';
-import { ItemDataService } from 'src/app/core/data/item-data.service';
-import { PaginatedList } from 'src/app/core/data/paginated-list.model';
-import { RemoteData } from 'src/app/core/data/remote-data';
-import { EPerson } from 'src/app/core/eperson/models/eperson.model';
-import { Bitstream } from 'src/app/core/shared/bitstream.model';
-import { Item } from 'src/app/core/shared/item.model';
-import { getFirstCompletedRemoteData } from 'src/app/core/shared/operators';
-import { hasValue } from 'src/app/shared/empty.util';
-import { MenuID } from 'src/app/shared/menu/menu-id.model';
-import { MenuSection } from 'src/app/shared/menu/menu-section.model';
-import { MenuService } from 'src/app/shared/menu/menu.service';
-import { NotificationsService } from 'src/app/shared/notifications/notifications.service';
-import { APP_CONFIG, AppConfig } from 'src/config/app-config.interface';
-
+// Type for simplified metadata entry
 type MetadataEntry = {
   name: string;
   value: string;
 };
 
+// Function to transform item.metadata to desired array and extract heading string
+function extractMetadataEntries(metadata: any): {
+  entries: MetadataEntry[];
+  heading: string;
+} {
+  if (!metadata || typeof metadata !== 'object')
+    return { entries: [], heading: '' };
+  const unsorted: { [key: string]: MetadataEntry } = {};
+  let caseTypeName = '';
+  let title = '';
+  let caseYear = '';
+  for (const key of Object.keys(metadata)) {
+    // Remove 'dc.' prefix if present
+    let name = key.startsWith('dc.') ? key.substring(3) : key;
+    const values = metadata[key];
+    // Only include if FIELD_MAP has a mapping for this key (case-insensitive)
+    const upperName = name.toUpperCase();
+    if (!FIELD_MAP[upperName]) {
+      continue;
+    }
+    const mappedName = FIELD_MAP[upperName];
+    if (
+      Array.isArray(values) &&
+      values.length > 0 &&
+      values[0].value !== undefined
+    ) {
+      unsorted[upperName] = { name: mappedName, value: values[0].value };
+      if (name === 'CaseTypeName') caseTypeName = values[0].value;
+      if (name === 'title') title = values[0].value;
+      if (name === 'CaseYear') caseYear = values[0].value;
+    }
+  }
+  // Sort according to FIELD_MAP order
+  const result: MetadataEntry[] = [];
+  for (const fieldKey of Object.keys(FIELD_MAP)) {
+    if (unsorted[fieldKey]) {
+      result.push(unsorted[fieldKey]);
+    }
+  }
+  const heading = [caseTypeName, title, caseYear].filter(Boolean).join('/');
+  return { entries: result, heading };
+}
+import { Component, Inject, OnDestroy, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 // Types for classified bitstream result
 type ResultEntry = {
   name: string;
@@ -44,25 +59,183 @@ type ResultEntry = {
 type Result = {
   [key: string]: ResultEntry[];
 };
+// Function to classify bitstreams into a grouped object
+function classifyBitstreams(
+  bitstreams: Bitstream[],
+  item: Item,
+  summaryResult?: any,
+): Result {
+  const result: Result = {};
+  const allowedKeys = ['A', 'B', 'C', 'D', 'Master'];
+  // Helper to determine if a value is a non-empty string
+  const hasNonEmpty = (val: any) =>
+    typeof val === 'string' && val.trim().length > 0;
+  for (const bitstream of bitstreams) {
+    const originalName = (bitstream as any).name || (bitstream as any)._name;
+    const url = bitstream._links.content.href;
+    if (!originalName) continue;
+    const parts = originalName.split('_');
+    let key: string;
+    let trimmedName = '';
+    if (parts.length < 2) {
+      key = 'Other';
+      trimmedName = originalName.replace(/\.[^/.]+$/, '');
+    } else {
+      key = parts[1];
+      if (key.endsWith('.pdf')) {
+        key = key.replace(/\.pdf$/i, '');
+      }
+      if (parts.length >= 3) {
+        trimmedName = parts[2].replace(/\.[^/.]+$/, '');
+      } else if (parts.length === 2) {
+        trimmedName = parts[1].replace(/\.[^/.]+$/, '');
+      }
+    }
+    const groupKey = allowedKeys.includes(key) ? key : 'Other';
+    let entry: ResultEntry & {
+      isMaster?: boolean;
+      isJudgement?: boolean;
+      isSummaryGenerated?: boolean;
+    } = {
+      name: trimmedName,
+      url,
+      filename: originalName,
+      fileuuid: bitstream.uuid,
+    };
+    // For master bitstream, set isSummaryGenerated based on summaryResult.masterSummary
+    if (groupKey === 'Master') {
+      entry.isMaster = true;
+      entry.isSummaryGenerated =
+        typeof summaryResult?.masterSummary === 'string' &&
+        summaryResult.masterSummary.trim().length > 0;
+    }
+    // For judgement bitstream, set isSummaryGenerated based on summaryResult.judgementSummary
+    const judgementRegex = /judgement|order/i;
+    if (judgementRegex.test(originalName)) {
+      entry.isJudgement = true;
+      entry.isSummaryGenerated =
+        typeof summaryResult?.judgementSummary === 'string' &&
+        summaryResult.judgementSummary.trim().length > 0;
+    }
+    if (!result[groupKey]) {
+      result[groupKey] = [];
+    }
+    result[groupKey].push(entry);
+  }
+  // If 'Master' key exists, ensure 'Other' also contains its entries with isMaster: true
+  if (result['Master']) {
+    if (!result['Other']) {
+      result['Other'] = [];
+    }
+    result['Other'].push(
+      ...result['Master'].map((entry) => ({ ...entry, isMaster: true })),
+    );
+  }
+  // For any entry whose filename contains 'judgement' or 'order', add isJudgement: true (if not already set)
+  const judgementRegex = /judgement|order/i;
+  for (const sectionKey of Object.keys(result)) {
+    result[sectionKey] = result[sectionKey].map((entry) => {
+      if (judgementRegex.test(entry.filename)) {
+        return {
+          ...entry,
+          isJudgement: true,
+          isSummaryGenerated: summaryResult
+            ? hasNonEmpty(summaryResult.judgementSummary)
+            : false,
+        };
+      }
+      return entry;
+    });
+  }
+  // Sort the result keys in the order A, B, C, D, Other
+  const orderedKeys = ['A', 'B', 'C', 'D', 'Other'];
+  const sortedResult: Result = {};
+  for (const key of orderedKeys) {
+    if (result[key]) {
+      // Sort entries in each section lexicographically by filename
+      sortedResult[key] = result[key]
+        .slice()
+        .sort((a, b) => a.filename.localeCompare(b.filename));
+    }
+  }
+  // If there are any other keys not in the list, append them at the end
+  for (const key of Object.keys(result)) {
+    if (!orderedKeys.includes(key)) {
+      sortedResult[key] = result[key]
+        .slice()
+        .sort((a, b) => a.filename.localeCompare(b.filename));
+    }
+  }
+  return sortedResult;
+}
+import { ActivatedRoute } from '@angular/router';
+import { filter, map, Observable, combineLatest } from 'rxjs';
+import { ItemDataService } from 'src/app/core/data/item-data.service';
+import { RemoteData } from 'src/app/core/data/remote-data';
+import { Item } from 'src/app/core/shared/item.model';
+import { BehaviorSubject } from 'rxjs';
+import { Bitstream } from 'src/app/core/shared/bitstream.model';
+import { BitstreamDataService } from 'src/app/core/data/bitstream-data.service';
+import { AppConfig, APP_CONFIG } from 'src/config/app-config.interface';
+import {
+  getFirstCompletedRemoteData,
+  getAllCompletedRemoteData,
+} from 'src/app/core/shared/operators';
+import { PaginatedList } from 'src/app/core/data/paginated-list.model';
+import { NotificationsService } from 'src/app/shared/notifications/notifications.service';
+import { TranslateService } from '@ngx-translate/core';
+import { hasValue } from 'src/app/shared/empty.util';
+import { MenuService } from 'src/app/shared/menu/menu.service';
+import { MenuID } from 'src/app/shared/menu/menu-id.model';
+import { MenuSection } from 'src/app/shared/menu/menu-section.model';
+import { AuthService } from 'src/app/core/auth/auth.service';
+import { HttpXsrfTokenExtractor } from '@angular/common/http';
+import { EPerson } from 'src/app/core/eperson/models/eperson.model';
+import { DSONameService } from 'src/app/core/breadcrumbs/dso-name.service';
+import { HttpClient } from '@angular/common/http';
+import { th } from 'date-fns/locale';
+import { AsyncAction } from 'rxjs/internal/scheduler/AsyncAction';
+import { AsyncPipe, CommonModule, JsonPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
+  selector: 'item-page-doc-view',
   standalone: true,
-  selector: 'ds-item-page-doc-view',
-  imports: [CommonModule, JsonPipe],
+  imports: [AsyncPipe, JsonPipe, FormsModule, CommonModule],
   templateUrl: './item-page-doc-view.component.html',
-  styleUrl: './item-page-doc-view.component.scss',
+  styleUrls: ['./item-page-doc-view.component.scss'],
 })
 export class ItemPageDocViewComponent {
-  // Sort the result keys in the order A, B, C, D, Other
-  orderedKeys = ['A', 'B', 'C', 'D', 'Other'];
-  sortedResult: Result = {};
+  /**
+   * Returns the annotation base URL with the current user's uuid appended (if available).
+   * Usage: call this method and subscribe to the returned Observable<string>.
+   */
+  buildAnnotationBaseURLWithUser(): Observable<string> {
+    return this.user$.pipe(
+      map((user) => {
+        if (user && user.uuid) {
+          return this.appConfig.rest.baseUrl + '/api/user/' + user.uuid;
+        } else {
+          return this.appConfig.rest.baseUrl + '/api/user/anonymous';
+        }
+      }),
+    );
+  }
+  buildAnnotationBaseURL(): string {
+    return this.appConfig.rest.baseUrl + '/api';
+  }
   /**
    * The authenticated user.
    * @type {Observable<EPerson>}
    */
   public user$: Observable<EPerson>;
+
+  // inside your component class
+  private _annotationUrlCache = new Map<string, Observable<string>>();
+
   // Observable of classified bitstreams as JSON
   classifiedBitstreams$: Observable<Result>;
+
   // Observable of simplified metadata entries
   metadataEntries$: Observable<MetadataEntry[]>;
   // Observable for heading string
@@ -94,8 +267,6 @@ export class ItemPageDocViewComponent {
   // Add this property to your component class:
   editLink$: Observable<string>;
 
-  fileUrl$: Observable<string | undefined>;
-
   private summaryResult: any = null;
   public summary: { master_summary?: string; judgement_summary?: string } = {};
 
@@ -111,19 +282,32 @@ export class ItemPageDocViewComponent {
     private menuService: MenuService,
     @Inject(APP_CONFIG) protected appConfig: AppConfig,
     private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
     this.pageSize = 1000;
   }
 
   ngOnInit(): void {
+    // const script = document.createElement('script');
+    // script.src = 'assets/doc-viewer/js/app.js';
+    // script.type = 'module';
+    // script.onload = () => {
+    //     // You can now use global functions/classes from the bundle
+    //     // e.g., window.DocViewer.renderFile(...)
+    // };
+    // document.body.appendChild(script);
+
+    // set user
     this.user$ = this.authService.getAuthenticatedUserFromStore();
     const token = this.tokenExtractor.getToken() as string;
     console.log('Extracted XSRF token in component:', token);
     this.sections = this.menuService.getMenuTopSections(this.menuID);
 
-    setTimeout(() => {
-      this.menuService.collapseMenu(MenuID.PUBLIC);
-    }, 1000);
+    if (this.isBrowser) {
+      setTimeout(() => {
+        this.menuService.collapseMenu(MenuID.PUBLIC);
+      }, 1000);
+    }
 
     this.itemRD$ = this.route.data.pipe(
       map((data) => data.dso as RemoteData<Item>),
@@ -141,58 +325,102 @@ export class ItemPageDocViewComponent {
       this.getNextPage(item);
       // Summary for item
       // this.fetchOrGenerateSummary(item.uuid, true, true);
-      this.fileUrl$ = this.bitstreams$.pipe(
+      // this.http
+      //   .get(this.appConfig.rest.baseUrl + '/api/summary', {
+      //     params: { itemUUID: item.uuid },
+      //   })
+      //   .subscribe({
+      //     next: (resp) => {
+      //       console.log('Summary API response:', resp);
+      //       this.summaryResult = resp;
+      //       const r: any = resp;
+      //       this.summary = {
+      //         master_summary: r && r.masterSummary ? r.masterSummary : '',
+      //         judgement_summary:
+      //           r && r.judgementSummary ? r.judgementSummary : '',
+      //       };
+      //       // Re-emit bitstreams to trigger re-grouping with new summaryResult
+      //       if (this.bitstreams$) {
+      //         this.bitstreams$.next(this.bitstreams$.getValue());
+      //       }
+      //     },
+      //     error: (err) => {
+      //       console.error('Summary API error:', err);
+      //       this.summaryResult = null;
+      //       this.summary = {};
+      //     },
+      //   });
+      // Create classifiedBitstreams$ as a derived observable from bitstreams$
+      this.classifiedBitstreams$ = (
+        this.bitstreams$ as Observable<Bitstream[]>
+      ).pipe(
         map((bitstreams) =>
-          bitstreams.find((b) => b.name?.toLowerCase().includes('master')),
+          classifyBitstreams(bitstreams, item, this.summaryResult),
         ),
-        map((master) => master?._links?.content?.href),
       );
-      this.http
-        .get(this.appConfig.rest.baseUrl + '/api/summary', {
-          params: { itemUUID: item.uuid },
-        })
-        .subscribe({
-          next: (resp) => {
-            console.log('Summary API response:', resp);
-            this.summaryResult = resp;
-            const r: any = resp;
-            this.summary = {
-              master_summary: r && r.masterSummary ? r.masterSummary : '',
-              judgement_summary:
-                r && r.judgementSummary ? r.judgementSummary : '',
-            };
-            // Re-emit bitstreams to trigger re-grouping with new summaryResult
-            if (this.bitstreams$) {
-              this.bitstreams$.next(this.bitstreams$.getValue());
-            }
-          },
-          error: (err) => {
-            console.error('Summary API error:', err);
-            this.summaryResult = null;
-            this.summary = {};
-          },
-        });
       // Create metadataInfo$ as a derived observable from item$
       const metadataInfo$ = this.item$.pipe(
-        map((item) => this.extractMetadataEntries(item)),
+        map((item) => extractMetadataEntries(item.metadata)),
       );
       this.metadataEntries$ = metadataInfo$.pipe(map((info) => info.entries));
-      debugger;
       this.heading$ = metadataInfo$.pipe(map((info) => info.heading));
+    });
 
-      this.classifiedBitstreams$ = this.bitstreams$.pipe(
-        map((bitstreams) =>
-          this.classifyBitstreams(bitstreams, item, this.summaryResult),
+    // Call renderMasterFile only after both classifiedBitstreams$ and metadataEntries$ have emitted
+    combineLatest([
+      this.classifiedBitstreams$.pipe(
+        filter(
+          (classified) => !!classified.Master && classified.Master.length > 0,
         ),
-      );
+      ),
+      this.metadataEntries$.pipe(
+        filter(
+          (metadataEntries) => metadataEntries && metadataEntries.length > 0,
+        ),
+      ),
+    ]).subscribe(() => {
+      if (!this.isBrowser) {
+        return;
+      }
+      // Load the script if not already loaded
+      if (!document.getElementById('doc-viewer-script')) {
+        const script = document.createElement('script');
+        script.id = 'doc-viewer-script';
+        script.src = 'assets/doc-viewer/js/app.js';
+        script.type = 'module';
+        // script.onload = () => {
+        //   // alert('loaded')
+        //   // if (
+        //   //   window['DocViewer'] &&
+        //   //   typeof window['DocViewer'].renderMasterFile === 'function'
+        //   // ) {
+        //   //   window['DocViewer'].renderMasterFile();
+        //   // }
+        // };
+        document.body.appendChild(script);
 
-      combineLatest([
-        this.classifiedBitstreams$.pipe(
-          filter((c) => !!c.Master && c.Master.length > 0),
-        ),
-      ]).subscribe(() => {
-        this.loadViewer();
-      });
+        window.addEventListener(
+          'docViewerClassReady',
+          () => {
+            window['DocViewerInstance'] = new window['DocViewer']({
+              viewerOptions: { closeToolbarOnClickOutside: true },
+            });
+            window['DocViewerInstance'].renderMasterDocumentFile();
+          },
+          { once: true },
+        );
+        document.addEventListener('docViewerInitialized', function () {
+          window['DocViewerInstance'].renderMasterDocumentFile();
+        });
+      } else {
+        // alert('sss');
+        // Script already loaded, just call the function
+        // if (window['DocViewer'] && typeof window['DocViewer'].renderMasterFile === 'function') {
+        setTimeout(() => {
+          window['DocViewerInstance'].renderMasterDocumentFile();
+        }, 1000); // Adding a delay to ensure the script is fully loaded
+        // }
+      }
     });
 
     this.item$.subscribe((item) => {
@@ -226,51 +454,14 @@ export class ItemPageDocViewComponent {
     );
   }
 
-  loadViewer(): void {
-    if (document.getElementById('doc-viewer-script')) return;
-
-    const script = document.createElement('script');
-    script.id = 'doc-viewer-script';
-    script.type = 'module';
-    script.src = 'assets/doc-viewer/js/viewer-app.js';
-
-    script.onload = () => {
-      console.log('Viewer loaded');
-
-      setTimeout(() => {
-        this.forceViewerInit();
-      }, 300);
-    };
-
-    document.body.appendChild(script);
-  }
-
-  private forceViewerInit(): void {
-    const container = document.getElementById('docViewerContainer');
-
-    if (!container) {
-      console.error('Container not found');
-      return;
-    }
-
-    const outer = document.getElementById('outerContainer');
-    if (outer) {
-      outer.style.display = 'block';
-    }
-
-    setTimeout(() => {
-      const master = document.querySelector(
-        '.file-select.selected',
-      ) as HTMLElement;
-      master?.click();
-    }, 200);
-  }
-
   ngOnDestroy(): void {
     this.removeViewerStyles();
   }
 
   private removeViewerStyles(): void {
+    if (!this.isBrowser) {
+      return;
+    }
     const links = document.querySelectorAll<HTMLLinkElement>(
       'link[rel="stylesheet"]',
     );
@@ -280,142 +471,6 @@ export class ItemPageDocViewComponent {
         link.remove();
       }
     });
-  }
-
-  // Function to transform item.metadata to desired array and extract heading string
-  extractMetadataEntries(item: Item): {
-    entries: MetadataEntry[];
-    heading: string;
-  } {
-    const metadata = item.metadata;
-    if (!metadata || typeof metadata !== 'object')
-      return { entries: [], heading: '' };
-    const unsorted: { [key: string]: MetadataEntry } = {};
-    let caseTypeName = '';
-    let title = '';
-    let caseYear = '';
-    for (const key of Object.keys(metadata)) {
-      // Remove 'dc.' prefix if present
-      let name = key.startsWith('dc.') ? key.substring(3) : key;
-      const values = metadata[key];
-      // Only include if FIELD_MAP has a mapping for this key (case-insensitive)
-      const upperName = name.toUpperCase();
-      if (!FIELD_MAP[upperName]) {
-        continue;
-      }
-      const mappedName = FIELD_MAP[upperName];
-      if (
-        Array.isArray(values) &&
-        values.length > 0 &&
-        values[0].value !== undefined
-      ) {
-        unsorted[upperName] = { name: mappedName, value: values[0].value };
-        if (name === 'CaseTypeName') caseTypeName = values[0].value;
-        if (name === 'title') title = values[0].value;
-        if (name === 'CaseYear') caseYear = values[0].value;
-      }
-    }
-    // Sort according to FIELD_MAP order
-    const result: MetadataEntry[] = [];
-    for (const fieldKey of Object.keys(FIELD_MAP)) {
-      if (unsorted[fieldKey]) {
-        result.push(unsorted[fieldKey]);
-      }
-    }
-    const heading = [caseTypeName, title, caseYear]
-      .filter((v) => v && v.trim() !== '')
-      .join('/');
-    return { entries: result, heading };
-  }
-  // Function to classify bitstreams into a grouped object
-  classifyBitstreams(
-    bitstreams: Bitstream[],
-    item: Item,
-    summaryResult?: any,
-  ): Result {
-    const result: Result = {};
-    const allowedKeys = ['A', 'B', 'C', 'D', 'Master'];
-    // Helper to determine if a value is a non-empty string
-    const hasNonEmpty = (val: any) =>
-      typeof val === 'string' && val.trim().length > 0;
-    for (const bitstream of bitstreams) {
-      const originalName = (bitstream as any).name || (bitstream as any)._name;
-      const url = bitstream._links.content.href;
-      if (!originalName) continue;
-      const parts = originalName.split('_');
-      let key: string;
-      let trimmedName = '';
-      if (parts.length < 2) {
-        key = 'Other';
-        trimmedName = originalName.replace(/\.[^/.]+$/, '');
-      } else {
-        key = parts[1];
-        if (key.endsWith('.pdf')) {
-          key = key.replace(/\.pdf$/i, '');
-        }
-        if (parts.length >= 3) {
-          trimmedName = parts[2].replace(/\.[^/.]+$/, '');
-        } else if (parts.length === 2) {
-          trimmedName = parts[1].replace(/\.[^/.]+$/, '');
-        }
-      }
-      const groupKey = allowedKeys.includes(key) ? key : 'Other';
-      let entry: ResultEntry & {
-        isMaster?: boolean;
-        isJudgement?: boolean;
-        isSummaryGenerated?: boolean;
-      } = {
-        name: trimmedName,
-        url,
-        filename: originalName,
-        fileuuid: bitstream.uuid,
-      };
-      // For master bitstream, set isSummaryGenerated based on summaryResult.masterSummary
-      if (groupKey === 'Master') {
-        entry.isMaster = true;
-        entry.isSummaryGenerated =
-          typeof summaryResult?.masterSummary === 'string' &&
-          summaryResult.masterSummary.trim().length > 0;
-      }
-      // For judgement bitstream, set isSummaryGenerated based on summaryResult.judgementSummary
-      const judgementRegex = /judgement|order/i;
-      if (judgementRegex.test(originalName)) {
-        entry.isJudgement = true;
-        entry.isSummaryGenerated =
-          typeof summaryResult?.judgementSummary === 'string' &&
-          summaryResult.judgementSummary.trim().length > 0;
-      }
-      if (!result[groupKey]) {
-        result[groupKey] = [];
-      }
-      result[groupKey].push(entry);
-    }
-    // If 'Master' key exists, ensure 'Other' also contains its entries with isMaster: true
-    if (result['Master']) {
-      if (!result['Other']) {
-        result['Other'] = [];
-      }
-      result['Other'].push(
-        ...result['Master'].map((entry) => ({ ...entry, isMaster: true })),
-      );
-    }
-    // For any entry whose filename contains 'judgement' or 'order', add isJudgement: true (if not already set)
-    const judgementRegex = /judgement|order/i;
-    for (const sectionKey of Object.keys(result)) {
-      result[sectionKey] = result[sectionKey].map((entry) => {
-        if (judgementRegex.test(entry.filename)) {
-          return {
-            ...entry,
-            isJudgement: true,
-            isSummaryGenerated: summaryResult
-              ? hasNonEmpty(summaryResult.judgementSummary)
-              : false,
-          };
-        }
-        return entry;
-      });
-    }
-    return result;
   }
 
   buildAnnotationUrl(action: string): Observable<string> {
@@ -432,21 +487,6 @@ export class ItemPageDocViewComponent {
           this.appConfig.rest.baseUrl +
           `/api/user/${userId}/case/${itemUuid}/annotations/${action}/${masterUuid}`
         );
-      }),
-    );
-  }
-  /**
-   * Returns the annotation base URL with the current user's uuid appended (if available).
-   * Usage: call this method and subscribe to the returned Observable<string>.
-   */
-  buildAnnotationBaseURLWithUser(): Observable<string> {
-    return this.user$.pipe(
-      map((user) => {
-        if (user && user.uuid) {
-          return this.appConfig.rest.baseUrl + '/api/user/' + user.uuid;
-        } else {
-          return this.appConfig.rest.baseUrl + '/api/user/anonymous';
-        }
       }),
     );
   }
@@ -520,6 +560,8 @@ export class ItemPageDocViewComponent {
           master_summary: resp?.masterSummary || '',
           judgement_summary: resp?.judgementSummary || '',
         };
+
+        // Force re-evaluation of classifiedBitstreams
         if (this.bitstreams$) {
           this.bitstreams$.next(this.bitstreams$.getValue());
         }
@@ -531,7 +573,12 @@ export class ItemPageDocViewComponent {
       },
     });
   }
+
+  private get isBrowser(): boolean {
+    return isPlatformBrowser(this.platformId);
+  }
 }
+
 // Auto-generated mapping from uppercase to lowercase for all provided fields
 export const FIELD_MAP: { [key: string]: string } = {
   CNRNO: 'CNR No',

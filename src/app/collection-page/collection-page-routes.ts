@@ -58,8 +58,10 @@ export const ROUTES: Route[] = [
     children: [
       {
         path: COLLECTION_EDIT_PATH,
-        loadChildren: () => import('./edit-collection-page/edit-collection-page-routes')
-          .then((m) => m.ROUTES),
+        loadChildren: () =>
+          import('./edit-collection-page/edit-collection-page-routes').then(
+            (m) => m.ROUTES,
+          ),
         canActivate: [collectionPageAdministratorGuard],
       },
       {
@@ -76,7 +78,10 @@ export const ROUTES: Route[] = [
           item: itemTemplatePageResolver,
           breadcrumb: i18nBreadcrumbResolver,
         },
-        data: { title: 'collection.edit.template.title', breadcrumbKey: 'collection.edit.template' },
+        data: {
+          title: 'collection.edit.template.title',
+          breadcrumbKey: 'collection.edit.template',
+        },
       },
       {
         path: '',
@@ -88,8 +93,13 @@ export const ROUTES: Route[] = [
           {
             path: '',
             pathMatch: 'full',
-            component: ComcolSearchSectionComponent,
+            redirectTo: 'search',
           },
+          // {
+          //   path: 'recent-submissions',
+          //   pathMatch: 'full',
+          //   component: ThemedCollectionPageComponent,
+          // },
           {
             path: 'search',
             pathMatch: 'full',

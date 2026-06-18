@@ -1,16 +1,10 @@
-import { AsyncPipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-} from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { AsyncPipe, JsonPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RouterModule, RouterOutlet } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { CollectionPageComponent as BaseComponent } from '../../../../app/collection-page/collection-page.component';
-import {
-  fadeIn,
-  fadeInOut,
-} from '../../../../app/shared/animations/fade';
+import { fadeIn, fadeInOut } from '../../../../app/shared/animations/fade';
 import { ThemedComcolPageBrowseByComponent } from '../../../../app/shared/comcol/comcol-page-browse-by/themed-comcol-page-browse-by.component';
 import { ThemedComcolPageContentComponent } from '../../../../app/shared/comcol/comcol-page-content/themed-comcol-page-content.component';
 import { ThemedComcolPageHandleComponent } from '../../../../app/shared/comcol/comcol-page-handle/themed-comcol-page-handle.component';
@@ -20,6 +14,7 @@ import { DsoEditMenuComponent } from '../../../../app/shared/dso-page/dso-edit-m
 import { ErrorComponent } from '../../../../app/shared/error/error.component';
 import { ThemedLoadingComponent } from '../../../../app/shared/loading/themed-loading.component';
 import { VarDirective } from '../../../../app/shared/utils/var.directive';
+import { ObjectCollectionComponent } from 'src/app/shared/object-collection/object-collection.component';
 
 @Component({
   selector: 'ds-themed-collection-page',
@@ -28,16 +23,15 @@ import { VarDirective } from '../../../../app/shared/utils/var.directive';
   // styleUrls: ['./collection-page.component.scss']
   styleUrls: ['../../../../app/collection-page/collection-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [
-    fadeIn,
-    fadeInOut,
-  ],
+  animations: [fadeIn, fadeInOut],
   imports: [
-    AsyncPipe,
+  AsyncPipe,
+  JsonPipe,
     ComcolPageHeaderComponent,
     ComcolPageLogoComponent,
     DsoEditMenuComponent,
     ErrorComponent,
+    RouterModule,
     RouterOutlet,
     ThemedComcolPageBrowseByComponent,
     ThemedComcolPageContentComponent,
@@ -45,7 +39,7 @@ import { VarDirective } from '../../../../app/shared/utils/var.directive';
     ThemedLoadingComponent,
     TranslateModule,
     VarDirective,
+    ObjectCollectionComponent,
   ],
 })
-export class CollectionPageComponent extends BaseComponent {
-}
+export class CollectionPageComponent extends BaseComponent {}

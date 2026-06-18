@@ -53,10 +53,10 @@
                 [class.active]="searchType === 'normal'"
                 (click)="selectSearchType('normal'); op.hide()"
               >
-                <span>Normal Search</span>
+                <span>{{ "admin.search.normal" | translate }}</span>
                 <i
                   class="pi pi-info-circle info-icon"
-                  pTooltip="Exact Search"
+                  pTooltip="{{ 'admin.search.normal_tooltip' | translate }}"
                   tooltipPosition="top"
                 ></i>
               </div>
@@ -66,10 +66,10 @@
                 [class.active]="searchType === 'fuzzy'"
                 (click)="selectSearchType('fuzzy'); op.hide()"
               >
-                <span>Fuzzy Search</span>
+                <span> {{ "admin.search.fuzzy" | translate }}</span>
                 <i
                   class="pi pi-info-circle info-icon"
-                  pTooltip="Finds similar or misspelled words like 'Jyoti' and 'Jyoty'"
+                  pTooltip="{{ 'admin.search.fuzzy_tooltip' | translate }}"
                   tooltipPosition="top"
                   appendTo="body"
                 ></i>
@@ -80,10 +80,10 @@
                 [class.active]="searchType === 'phonetic'"
                 (click)="selectSearchType('phonetic'); op.hide()"
               >
-                <span>Phonetic Search</span>
+                <span>{{ "admin.search.phonetic" | translate }}</span>
                 <i
                   class="pi pi-info-circle info-icon"
-                  pTooltip="Finds words that sound similar like 'Sara' and 'Sarah'"
+                  pTooltip="{{ 'admin.search.phonetic_tooltip' | translate }}"
                   tooltipPosition="top"
                 ></i>
               </div>
@@ -102,7 +102,7 @@
             id="fromDate"
             #fromNativeInput
             type="text"
-            placeholder="From Date"
+            [placeholder]="'admin.search.from_date' | translate"
             ngbDatepicker
             #dFrom="ngbDatepicker"
             [(ngModel)]="fromDateModel"
@@ -131,7 +131,7 @@
             #toNativeInput
             id="toDate"
             type="text"
-            placeholder="To Date"
+            [placeholder]="'admin.search.to_date' | translate"
             ngbDatepicker
             #dTo="ngbDatepicker"
             [(ngModel)]="toDateModel"
@@ -175,7 +175,7 @@
         name="searchCaseBy"
         (change)="onSearchCaseByChange($event.target.value)"
       >
-        <option value="">Search Case By</option>
+        <option value="">{{ "admin_search_case_by" | translate }}</option>
         <option
           *ngFor="let filter of availableFilters"
           [value]="filter.name"
@@ -195,7 +195,7 @@
             <input
               type="text"
               class="metadata-input"
-              placeholder="Search Metadata"
+              [placeholder]="'admin_search_metadata' | translate"
               name="searchMetadata"
               [(ngModel)]="searchMetadata"
               (input)="onMetadataInputChange()"
@@ -328,11 +328,25 @@
         name="sortBy"
         (change)="onSortChange()"
       >
-        <option value="" disabled hidden>Sort By</option>
-        <option value="dc.title">Case Number</option>
-        <option value="dc.CaseYear">Case Year</option>
-        <option value="dc.CaseStatus">Case Status</option>
-        <option value="dc.Petitioner">Petitioner Name</option>
+        <!-- <option value="dc.date.accessioned" disabled selected>
+          {{ "admin_search_sort_by" | translate }}
+        </option> -->
+        <option value="" disabled hidden>
+          {{ "admin_search_sort_by" | translate }}
+        </option>
+
+        <option value="dc.title">
+          {{ "admin_search_case_number" | translate }}
+        </option>
+        <option value="dc.CaseYear">
+          {{ "admin_search_case_year" | translate }}
+        </option>
+        <option value="dc.CaseStatus">
+          {{ "admin_search_case_status" | translate }}
+        </option>
+        <option value="dc.Petitioner">
+          {{ "admin_search_petitioner_name" | translate }}
+        </option>
       </select>
 
       <!-- Sort Order -->
@@ -342,10 +356,16 @@
         name="sortOrder"
         (change)="onSortOrderChange()"
       >
-        <option value="asc" disabled selected hidden>Sort Order</option>
+        <option value="asc" disabled selected hidden>
+          {{ "admin_search_sort_order" | translate }}
+        </option>
 
-        <option value="asc">Ascending</option>
-        <option value="desc">Descending</option>
+        <option value="asc">
+          {{ "admin_search_sort_order_ascending" | translate }}
+        </option>
+        <option value="desc">
+          {{ "admin_search_sort_order_descending" | translate }}
+        </option>
       </select>
 
       <!-- Results Per Page -->

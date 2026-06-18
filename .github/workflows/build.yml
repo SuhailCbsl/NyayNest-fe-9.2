@@ -18,17 +18,17 @@ jobs:
       # Direct that step to utilize a DSpace REST service that has been started in docker.
       # NOTE: These settings should be kept in sync with those in [src]/docker/docker-compose-ci.yml
       DSPACE_REST_HOST: 127.0.0.1
-      DSPACE_REST_PORT: 8081
+      DSPACE_REST_PORT: 8083
       DSPACE_REST_NAMESPACE: "/server"
       DSPACE_REST_SSL: false
       # Spin up UI on 127.0.0.1 to avoid host resolution issues in e2e tests with Node 20+
       DSPACE_UI_HOST: 127.0.0.1
-      DSPACE_UI_PORT: 4000
+      DSPACE_UI_PORT: 4001
       # Ensure all SSR caching is disabled in test environment
       DSPACE_CACHE_SERVERSIDE_BOTCACHE_MAX: 0
       DSPACE_CACHE_SERVERSIDE_ANONYMOUSCACHE_MAX: 0
       # Tell Cypress to run e2e tests using the same UI URL
-      CYPRESS_BASE_URL: http://127.0.0.1:4000
+      CYPRESS_BASE_URL: http://127.0.0.1:4001
       # Disable the cookie consent banner in e2e tests to avoid errors because of elements hidden by it
       DSPACE_INFO_ENABLECOOKIECONSENTPOPUP: false
       # When Chrome version is specified, we pin to a specific version of Chrome
@@ -148,7 +148,7 @@ jobs:
           start: npm run serve:ssr
           # Wait for backend & frontend to be available
           # NOTE: We use the 'sites' REST endpoint to also ensure the database is ready
-          wait-on: http://127.0.0.1:8081/server/api/core/sites, http://127.0.0.1:4000
+          wait-on: http://127.0.0.1:8083/server/api/core/sites, http://127.0.0.1:4001
           # Wait for 2 mins max for everything to respond
           wait-on-timeout: 120
 
@@ -172,7 +172,7 @@ jobs:
 
       - name: Stop app (in case it stays up after e2e tests)
         run: |
-          app_pid=$(lsof -t -i:4000)
+          app_pid=$(lsof -t -i:4001)
           if [[ ! -z $app_pid ]]; then
             echo "App was still up! (PID: $app_pid)"
             kill -9 $app_pid
@@ -183,7 +183,7 @@ jobs:
         run: |
           nohup npm run serve:ssr &
           printf 'Waiting for app to start'
-          until curl --output /dev/null --silent --head --fail http://127.0.0.1:4000/home; do
+          until curl --output /dev/null --silent --head --fail http://127.0.0.1:4001/home; do
             printf '.'
             sleep 2
           done
@@ -194,7 +194,7 @@ jobs:
       # This step also prints entire HTML of homepage for easier debugging if grep fails.
       - name: Verify SSR (server-side rendering) on Homepage
         run: |
-          result=$(wget -O- -q http://127.0.0.1:4000/home)
+          result=$(wget -O- -q http://127.0.0.1:4001/home)
           echo "$result"
           echo "$result" | grep -oE "<meta name=\"title\" [^>]*>" | grep DSpace
 
@@ -202,7 +202,7 @@ jobs:
       # If it does, then SSR is working.
       - name: Verify SSR on a Community page
         run: |
-          result=$(wget -O- -q http://127.0.0.1:4000/communities/0958c910-2037-42a9-81c7-dca80e3892b4)
+          result=$(wget -O- -q http://127.0.0.1:4001/communities/0958c910-2037-42a9-81c7-dca80e3892b4)
           echo "$result"
           echo "$result" | grep -oE "<h1 [^>]*>[^><]*</h1>" | grep Publications
 
@@ -210,7 +210,7 @@ jobs:
       # If it does, then SSR is working.
       - name: Verify SSR on a Collection page
         run: |
-          result=$(wget -O- -q http://127.0.0.1:4000/collections/282164f5-d325-4740-8dd1-fa4d6d3e7200)
+          result=$(wget -O- -q http://127.0.0.1:4001/collections/282164f5-d325-4740-8dd1-fa4d6d3e7200)
           echo "$result"
           echo "$result" | grep -oE "<h1 [^>]*>[^><]*</h1>" | grep Articles
 
@@ -218,7 +218,7 @@ jobs:
       # the title of this publication. If it does, then SSR is working.
       - name: Verify SSR on a Publication page
         run: |
-          result=$(wget -O- -q http://127.0.0.1:4000/entities/publication/6160810f-1e53-40db-81ef-f6621a727398)
+          result=$(wget -O- -q http://127.0.0.1:4001/entities/publication/6160810f-1e53-40db-81ef-f6621a727398)
           echo "$result"
           echo "$result" | grep -oE "<meta name=\"title\" [^>]*>" | grep "An Economic Model of Mortality Salience"
 
@@ -226,7 +226,7 @@ jobs:
       # the name of the person. If it does, then SSR is working.
       - name: Verify SSR on a Person page
         run: |
-          result=$(wget -O- -q http://127.0.0.1:4000/entities/person/b1b2c768-bda1-448a-a073-fc541e8b24d9)
+          result=$(wget -O- -q http://127.0.0.1:4001/entities/person/b1b2c768-bda1-448a-a073-fc541e8b24d9)
           echo "$result"
           echo "$result" | grep -oE "<meta name=\"title\" [^>]*>" | grep "Simmons, Cameron"
 
@@ -234,7 +234,7 @@ jobs:
       # the name of the project. If it does, then SSR is working.
       - name: Verify SSR on a Project page
         run: |
-          result=$(wget -O- -q http://127.0.0.1:4000/entities/project/46ccb608-a74c-4bf6-bc7a-e29cc7defea9)
+          result=$(wget -O- -q http://127.0.0.1:4001/entities/project/46ccb608-a74c-4bf6-bc7a-e29cc7defea9)
           echo "$result"
           echo "$result" | grep -oE "<meta name=\"title\" [^>]*>" | grep "University Research Fellowship"
 
@@ -242,7 +242,7 @@ jobs:
       # the name of the orgunit. If it does, then SSR is working.
       - name: Verify SSR on an OrgUnit page
         run: |
-          result=$(wget -O- -q http://127.0.0.1:4000/entities/orgunit/9851674d-bd9a-467b-8d84-068deb568ccf)
+          result=$(wget -O- -q http://127.0.0.1:4001/entities/orgunit/9851674d-bd9a-467b-8d84-068deb568ccf)
           echo "$result"
           echo "$result" | grep -oE "<meta name=\"title\" [^>]*>" | grep "Law and Development"
 
@@ -250,7 +250,7 @@ jobs:
       # the name of the journal. If it does, then SSR is working.
       - name: Verify SSR on a Journal page
         run: |
-          result=$(wget -O- -q http://127.0.0.1:4000/entities/journal/d4af6c3e-53d0-4757-81eb-566f3b45d63a)
+          result=$(wget -O- -q http://127.0.0.1:4001/entities/journal/d4af6c3e-53d0-4757-81eb-566f3b45d63a)
           echo "$result"
           echo "$result" | grep -oE "<meta name=\"title\" [^>]*>" | grep "Environmental &amp; Architectural Phenomenology"
 
@@ -258,7 +258,7 @@ jobs:
       # the name of the volume. If it does, then SSR is working.
       - name: Verify SSR on a Journal Volume page
         run: |
-          result=$(wget -O- -q http://127.0.0.1:4000/entities/journalvolume/07c6249f-4bf7-494d-9ce3-6ffdb2aed538)
+          result=$(wget -O- -q http://127.0.0.1:4001/entities/journalvolume/07c6249f-4bf7-494d-9ce3-6ffdb2aed538)
           echo "$result"
           echo "$result" | grep -oE "<meta name=\"title\" [^>]*>" | grep "Environmental &amp; Architectural Phenomenology Volume 28 (2017)"
 
@@ -266,7 +266,7 @@ jobs:
       # the name of the issue. If it does, then SSR is working.
       - name: Verify SSR on a Journal Issue page
         run: |
-          result=$(wget -O- -q http://127.0.0.1:4000/entities/journalissue/44c29473-5de2-48fa-b005-e5029aa1a50b)
+          result=$(wget -O- -q http://127.0.0.1:4001/entities/journalissue/44c29473-5de2-48fa-b005-e5029aa1a50b)
           echo "$result"
           echo "$result" | grep -oE "<meta name=\"title\" [^>]*>" | grep "Environmental &amp; Architectural Phenomenology Vol. 28, No. 1"
 
@@ -274,35 +274,35 @@ jobs:
       # Note: /handle/123456789/260 is the same test Publication used by our e2e tests
       - name: Verify 301 redirect from '/handle' URLs
         run: |
-          result=$(wget --server-response --quiet http://127.0.0.1:4000/handle/123456789/260 2>&1 | head -1 | awk '{print $2}')
+          result=$(wget --server-response --quiet http://127.0.0.1:4001/handle/123456789/260 2>&1 | head -1 | awk '{print $2}')
           echo "$result"
           [[ "$result" -eq "301" ]]
 
       # Verify 403 error code behavior
       - name: Verify 403 error code from '/403'
         run: |
-          result=$(wget --server-response --quiet http://127.0.0.1:4000/403 2>&1 | head -1 | awk '{print $2}')
+          result=$(wget --server-response --quiet http://127.0.0.1:4001/403 2>&1 | head -1 | awk '{print $2}')
           echo "$result"
           [[ "$result" -eq "403" ]]
 
       # Verify 404 error code behavior
       - name: Verify 404 error code from '/404' and on invalid pages
         run: |
-          result=$(wget --server-response --quiet http://127.0.0.1:4000/404 2>&1 | head -1 | awk '{print $2}')
+          result=$(wget --server-response --quiet http://127.0.0.1:4001/404 2>&1 | head -1 | awk '{print $2}')
           echo "$result"
-          result2=$(wget --server-response --quiet http://127.0.0.1:4000/invalidurl 2>&1 | head -1 | awk '{print $2}')
+          result2=$(wget --server-response --quiet http://127.0.0.1:4001/invalidurl 2>&1 | head -1 | awk '{print $2}')
           echo "$result2"
           [[ "$result" -eq "404" && "$result2" -eq "404" ]]
 
       # Verify 500 error code behavior
       - name: Verify 500 error code from '/500'
         run: |
-          result=$(wget --server-response --quiet http://127.0.0.1:4000/500 2>&1 | head -1 | awk '{print $2}')
+          result=$(wget --server-response --quiet http://127.0.0.1:4001/500 2>&1 | head -1 | awk '{print $2}')
           echo "$result"
           [[ "$result" -eq "500" ]]
 
       - name: Stop running app
-        run: kill -9 $(lsof -t -i:4000)
+        run: kill -9 $(lsof -t -i:4001)
 
       - name: Shutdown Docker containers
         run: docker compose -f ./docker/docker-compose-ci.yml down

@@ -11,29 +11,24 @@ import { MenuRoute } from './shared/menu/menu-route.model';
 import { AccessControlMenuProvider } from './shared/menu/providers/access-control.menu';
 import { AdminSearchMenuProvider } from './shared/menu/providers/admin-search.menu';
 import { BrowseMenuProvider } from './shared/menu/providers/browse.menu';
-import { CoarNotifyMenuProvider } from './shared/menu/providers/coar-notify.menu';
 import { SubscribeMenuProvider } from './shared/menu/providers/comcol-subscribe.menu';
 import { CommunityListMenuProvider } from './shared/menu/providers/community-list.menu';
 import { CreateReportMenuProvider } from './shared/menu/providers/create-report.menu';
-import { CurationMenuProvider } from './shared/menu/providers/curation.menu';
 import { DSpaceObjectEditMenuProvider } from './shared/menu/providers/dso-edit.menu';
 import { DsoOptionMenuProvider } from './shared/menu/providers/dso-option.menu';
 import { EditMenuProvider } from './shared/menu/providers/edit.menu';
-import { ExportMenuProvider } from './shared/menu/providers/export.menu';
-import { HealthMenuProvider } from './shared/menu/providers/health.menu';
 import { ImportMenuProvider } from './shared/menu/providers/import.menu';
 import { ClaimMenuProvider } from './shared/menu/providers/item-claim.menu';
 import { OrcidMenuProvider } from './shared/menu/providers/item-orcid.menu';
 import { VersioningMenuProvider } from './shared/menu/providers/item-versioning.menu';
 import { NewMenuProvider } from './shared/menu/providers/new.menu';
-import { NotificationsMenuProvider } from './shared/menu/providers/notifications.menu';
 import { ProcessesMenuProvider } from './shared/menu/providers/processes.menu';
 import { RegistriesMenuProvider } from './shared/menu/providers/registries.menu';
 import { StatisticsMenuProvider } from './shared/menu/providers/statistics.menu';
-import { SystemWideAlertMenuProvider } from './shared/menu/providers/system-wide-alert.menu';
 import { WithdrawnReinstateItemMenuProvider } from './shared/menu/providers/withdrawn-reinstate-item.menu';
-import { WorkflowMenuProvider } from './shared/menu/providers/workflow.menu';
 import { ReportMenuProvider } from './report/report-menu.provider';
+import { ArchiveMenuProvider } from './item-page/Long-term-archival/archive.menu';
+import { WorkflowMenuProvider } from './shared/menu/providers/workflow.menu';
 
 /**
  * Represents and builds the menu structure for the three available menus (public navbar, admin sidebar and the dso edit
@@ -63,6 +58,7 @@ export const MENUS = buildMenuStructure({
     ImportMenuProvider,
     // ExportMenuProvider,
     ReportMenuProvider,
+    ArchiveMenuProvider,
     // NotificationsMenuProvider,
     AccessControlMenuProvider,
     AdminSearchMenuProvider,

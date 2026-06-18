@@ -1,7 +1,18 @@
-<ds-search
+<!-- <ds-search
   [configuration]="(comcol$ | async)?.type"
   [showSidebar]="showSidebar$ | async"
   [showScopeSelector]="false"
   [hideScopeInUrl]="true"
-  [scope]="(comcol$ | async)?.id">
-</ds-search>
+  [scope]="(comcol$ | async)?.id"
+>
+</ds-search> -->
+@if (comcol$ | async; as comcol) {
+  <ds-search
+    [configuration]="comcol.type"
+    [showSidebar]="showSidebar$ | async"
+    [showScopeSelector]="false"
+    [hideScopeInUrl]="true"
+    [scope]="comcol.id"
+  >
+  </ds-search>
+}

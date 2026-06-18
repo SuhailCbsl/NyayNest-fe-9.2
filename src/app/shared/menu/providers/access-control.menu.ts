@@ -27,7 +27,6 @@ import { AbstractExpandableMenuProvider } from './helper-providers/expandable-me
  */
 @Injectable()
 export class AccessControlMenuProvider extends AbstractExpandableMenuProvider {
-
   constructor(
     protected authorizationService: AuthorizationDataService,
     protected scriptDataService: ScriptDataService,
@@ -70,14 +69,14 @@ export class AccessControlMenuProvider extends AbstractExpandableMenuProvider {
               link: '/access-control/groups',
             },
           },
-          {
-            visible: isSiteAdmin,
-            model: {
-              type: MenuItemType.LINK,
-              text: 'menu.section.access_control_bulk',
-              link: '/access-control/bulk-access',
-            },
-          },
+          // {
+          //   visible: isSiteAdmin,
+          //   model: {
+          //     type: MenuItemType.LINK,
+          //     text: 'menu.section.access_control_bulk',
+          //     link: '/access-control/bulk-access',
+          //   },
+          // },
         ];
       }),
     );

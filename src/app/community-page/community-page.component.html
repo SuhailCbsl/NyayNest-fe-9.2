@@ -1,4 +1,4 @@
-<div class="container" *ngVar="(communityRD$ | async) as communityRD">
+<div class="container" *ngVar="communityRD$ | async as communityRD">
   @if (communityRD?.hasSucceeded) {
     <div class="community-page" @fadeInOut>
       @if (communityRD?.payload; as communityPayload) {
@@ -6,35 +6,76 @@
           <div class="d-flex flex-row border-bottom mb-4 pb-4">
             <header class="comcol-header me-auto">
               <!-- Community name -->
-              <ds-comcol-page-header [name]="dsoNameService.getName(communityPayload)"></ds-comcol-page-header>
+              <ds-comcol-page-header
+                [name]="dsoNameService.getName(communityPayload)"
+              ></ds-comcol-page-header>
               <!-- Community logo -->
               @if (logoRD$) {
-                <ds-comcol-page-logo [logo]="(logoRD$ | async)?.payload" [alternateText]="'community.logo' | translate">
+                <ds-comcol-page-logo
+                  [logo]="(logoRD$ | async)?.payload"
+                  [alternateText]="'community.logo' | translate"
+                >
                 </ds-comcol-page-logo>
               }
               <!-- Handle -->
-              <ds-comcol-page-handle [content]="communityPayload.handle" [title]="'community.page.handle'">
+              <ds-comcol-page-handle
+                [content]="communityPayload.handle"
+                [title]="'community.page.handle'"
+              >
               </ds-comcol-page-handle>
               <!-- Introductory text -->
-              <ds-comcol-page-content [content]="communityPayload.introductoryText" [hasInnerHtml]="true">
+              <ds-comcol-page-content
+                [content]="communityPayload.introductoryText"
+                [hasInnerHtml]="true"
+              >
               </ds-comcol-page-content>
               <!-- News -->
-              <ds-comcol-page-content [content]="communityPayload.sidebarText" [hasInnerHtml]="true"
+              <!-- <ds-comcol-page-content [content]="communityPayload.sidebarText" [hasInnerHtml]="true"
                 [title]="'community.page.news'">
-              </ds-comcol-page-content>
+              </ds-comcol-page-content> -->
             </header>
-            <ds-dso-edit-menu></ds-dso-edit-menu>
+            <!-- <ds-dso-edit-menu></ds-dso-edit-menu> -->
+            @if (isCommunityAdmin$ | async) {
+              <div class="community-action-buttons">
+                <button
+                  class="action-btn"
+                  [routerLink]="['/communities', communityPayload.id, 'edit']"
+                  title="Edit Community"
+                  aria-label="Edit Community"
+                >
+                  <i class="fas fa-pencil-alt"></i>
+                </button>
+              </div>
+            }
           </div>
+          <!-- 
+<section class="comcol-page-browse-section">
+  <ds-comcol-page-browse-by
+    [id]="communityPayload.id"
+    [contentType]="communityPayload.type"
+  >
+  </ds-comcol-page-browse-by>
+  <router-outlet></router-outlet>
+</section> 
+-->
           <section class="comcol-page-browse-section">
-            <!-- Browse-By Links -->
-            <ds-comcol-page-browse-by [id]="communityPayload.id" [contentType]="communityPayload.type">
-            </ds-comcol-page-browse-by>
-            <router-outlet></router-outlet>
+            <ds-base-community-page-sub-community-list
+              [community]="communityPayload"
+            >
+            </ds-base-community-page-sub-community-list>
+            <!-- Collections -->
+            <ds-base-community-page-sub-collection-list
+              [community]="communityPayload"
+            >
+            </ds-base-community-page-sub-collection-list>
           </section>
-          @if (communityPayload.copyrightText) {
+          @if (communityPayload.copyrightsText) {
             <footer class="border-top my-5 pt-4">
               <!-- Copyright -->
-              <ds-comcol-page-content [content]="communityPayload.copyrightText" [hasInnerHtml]="true">
+              <ds-comcol-page-content
+                [content]="communityPayload.copyrightText"
+                [hasInnerHtml]="true"
+              >
               </ds-comcol-page-content>
             </footer>
           }
@@ -44,9 +85,9 @@
   }
 
   @if (communityRD?.hasFailed) {
-    <ds-error message="{{'error.community' | translate}}"></ds-error>
+    <ds-error message="{{ 'error.community' | translate }}"></ds-error>
   }
   @if (communityRD?.isLoading) {
-    <ds-loading message="{{'loading.community' | translate}}"></ds-loading>
+    <ds-loading message="{{ 'loading.community' | translate }}"></ds-loading>
   }
 </div>

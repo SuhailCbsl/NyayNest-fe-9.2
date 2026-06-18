@@ -7,6 +7,7 @@ import { CollectionPageComponent } from './collection-page.component';
  * Themed wrapper for CollectionPageComponent
  */
 @Component({
+  standalone: true,
   selector: 'ds-collection-page',
   templateUrl: '../shared/theme-support/themed.component.html',
 })
@@ -16,11 +17,12 @@ export class ThemedCollectionPageComponent extends ThemedComponent<CollectionPag
   }
 
   protected importThemedComponent(themeName: string): Promise<any> {
-    return import(`../../themes/${themeName}/app/collection-page/collection-page.component`);
+    return import(
+      `../../themes/${themeName}/app/collection-page/collection-page.component`
+    );
   }
 
   protected importUnthemedComponent(): Promise<any> {
     return import(`./collection-page.component`);
   }
-
 }

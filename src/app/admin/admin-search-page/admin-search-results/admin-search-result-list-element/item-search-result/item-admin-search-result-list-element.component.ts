@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 
 import { Context } from '../../../../../core/shared/context.model';
 import { Item } from '../../../../../core/shared/item.model';
@@ -10,6 +10,13 @@ import { ItemAdminSearchResultActionsComponent } from '../../item-admin-search-r
 import { ThemedThumbnailComponent } from 'src/app/thumbnail/themed-thumbnail.component';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { Observable } from 'rxjs';
+import { TruncatableService } from 'src/app/shared/truncatable/truncatable.service';
+import { DSONameService } from 'src/app/core/breadcrumbs/dso-name.service';
+import { APP_CONFIG, AppConfig } from 'src/config/app-config.interface';
+import { AuthService } from 'src/app/core/auth/auth.service';
+import { AuthorizationDataService } from 'src/app/core/data/feature-authorization/authorization-data.service';
+import { FeatureID } from 'src/app/core/data/feature-authorization/feature-id';
 
 @listableObjectComponent(
   ItemSearchResult,
@@ -35,6 +42,16 @@ export class ItemAdminSearchResultListElementComponent
   implements OnInit
 {
   itemPageRoute: string;
+  isAdmin$: Observable<boolean>;
+
+  constructor(
+    private tructableService: TruncatableService,
+    public dsoNameService: DSONameService,
+    protected authService: AuthorizationDataService,
+    @Inject(APP_CONFIG) protected appConfig?: AppConfig,
+  ) {
+    super(tructableService, dsoNameService, appConfig);
+  }
 
   ngOnInit(): void {
     super.ngOnInit();
@@ -45,6 +62,7 @@ export class ItemAdminSearchResultListElementComponent
 
     // route for item click
     this.itemPageRoute = `/items/${this.dso.uuid}/doc-view`;
+    this.isAdmin$ = this.authService.isAuthorized(FeatureID.AdministratorOf);
   }
 
   highlight(field: string): string {

@@ -1,24 +1,9 @@
-import {
-  AsyncPipe,
-  NgClass,
-} from '@angular/common';
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-} from '@angular/core';
-import {
-  RouterLink,
-  RouterLinkActive,
-} from '@angular/router';
-import {
-  select,
-  Store,
-} from '@ngrx/store';
+import { AsyncPipe, NgClass } from '@angular/common';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { select, Store } from '@ngrx/store';
 import { TranslateModule } from '@ngx-translate/core';
-import { Observable } from 'rxjs';
+import { combineLatest, map, Observable } from 'rxjs';
 
 import { AppState } from '../../../app.reducer';
 import {
@@ -32,6 +17,8 @@ import { EPerson } from '../../../core/eperson/models/eperson.model';
 import { MYDSPACE_ROUTE } from '../../../my-dspace-page/my-dspace-page.component';
 import { ThemedLoadingComponent } from '../../loading/themed-loading.component';
 import { LogOutComponent } from '../../log-out/log-out.component';
+import { RoleService } from '../../../core/roles/role.service';
+import { MyDSpaceConfigurationService } from 'src/app/my-dspace-page/my-dspace-configuration.service';
 
 /**
  * This component represents the user nav menu.
@@ -51,7 +38,6 @@ import { LogOutComponent } from '../../log-out/log-out.component';
   ],
 })
 export class UserMenuComponent implements OnInit {
-
   /**
    * The input flag to show user details in navbar expandable menu
    */
@@ -79,6 +65,7 @@ export class UserMenuComponent implements OnInit {
    * @type {string}
    */
   public mydspaceRoute = MYDSPACE_ROUTE;
+  public workflowConfiguration$: Observable<string>;
 
   /**
    * The profile page route
@@ -94,20 +81,34 @@ export class UserMenuComponent implements OnInit {
     protected store: Store<AppState>,
     protected authService: AuthService,
     public dsoNameService: DSONameService,
-  ) {
-  }
+  ) {}
 
   /**
    * Initialize all instance variables
    */
   ngOnInit(): void {
-
     // set loading
     this.loading$ = this.store.pipe(select(isAuthenticationLoading));
 
     // set user
     this.user$ = this.authService.getAuthenticatedUserFromStore();
 
+    // set workflow user
+    // this.workflowConfiguration$ = combineLatest([
+    //   this.roleService.isSubmitter(),
+    //   this.roleService.isController(),
+    //   this.roleService.isAdmin(),
+    // ]).pipe(
+    //   map(([isSubmitter, isController, isAdmin]) => {
+    //     // Pure submitter
+    //     if (isSubmitter && !isController && !isAdmin) {
+    //       return 'workspace';
+    //     }
+
+    //     // Workflow users
+    //     return 'workflow';
+    //   }),
+    // );
   }
 
   /**

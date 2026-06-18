@@ -17,6 +17,7 @@
 
 import 'zone.js/node';
 import 'reflect-metadata';
+import helmet from 'helmet';
 
 /* eslint-disable import/no-namespace */
 import * as morgan from 'morgan';
@@ -126,6 +127,75 @@ export function app() {
    * See [body-parser](https://github.com/expressjs/body-parser)
    */
   server.use(json());
+
+  // /*
+  //  * Content Security Policy (CSP)
+  //  */
+  // server.use(
+  //   helmet({
+  //     contentSecurityPolicy: {
+  //       directives: {
+  //         defaultSrc: ["'self'"],
+
+  //         scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+
+  //         scriptSrcAttr: ["'unsafe-inline'"],
+
+  //         styleSrc: [
+  //           "'self'",
+  //           "'unsafe-inline'",
+  //           'https://fonts.googleapis.com',
+  //         ],
+
+  //         styleSrcElem: [
+  //           "'self'",
+  //           "'unsafe-inline'",
+  //           'https://fonts.googleapis.com',
+  //         ],
+
+  //         fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
+
+  //         imgSrc: ["'self'", 'data:', 'blob:', 'https:', 'http:'],
+
+  //         connectSrc: [
+  //           "'self'",
+  //           'http://localhost:8083',
+  //           'http://localhost:4001',
+  //           'https://*.trycloudflare.com',
+  //           'wss:',
+  //           'https:',
+  //         ],
+
+  //         frameSrc: ["'self'"],
+
+  //         objectSrc: ["'none'"],
+
+  //         frameAncestors: ["'self'"],
+
+  //         baseUri: ["'self'"],
+
+  //         mediaSrc: ["'self'", 'blob:'],
+
+  //         workerSrc: ["'self'", 'blob:'],
+  //       },
+  //     },
+
+  //     frameguard: {
+  //       action: 'deny',
+  //     },
+
+  //     // hsts: {
+  //     //   maxAge: 31536000,
+  //     //   includeSubDomains: true,
+  //     // },
+
+  //     noSniff: true,
+
+  //     referrerPolicy: {
+  //       policy: 'strict-origin-when-cross-origin',
+  //     },
+  //   }),
+  // );
 
   server.engine('ejs', ejs.renderFile);
 
@@ -298,6 +368,7 @@ function serverSideRender(req, res, next, sendToUser: boolean = true) {
             new RegExp(REST_BASE_URL, 'g'),
             environment.rest.baseUrl,
           );
+          html = html.replace(/\sng-version="[^"]*"/g, '');
         }
 
         // save server side rendered page to cache (if any are enabled)
@@ -344,6 +415,7 @@ function clientSideRender(req, res) {
     /<base href="[^"]*">/,
     `<base href="${namespace.endsWith('/') ? namespace : namespace + '/'}">`,
   );
+  html = html.replace(/\sng-version="[^"]*"/g, '');
 
   // Replace REST URL with UI URL
   if (

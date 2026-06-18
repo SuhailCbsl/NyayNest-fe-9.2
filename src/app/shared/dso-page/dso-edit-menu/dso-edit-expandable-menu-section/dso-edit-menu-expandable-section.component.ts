@@ -1,13 +1,5 @@
-import {
-  AsyncPipe,
-  NgComponentOutlet,
-} from '@angular/common';
-import {
-  Component,
-  Inject,
-  Injector,
-  OnInit,
-} from '@angular/core';
+import { AsyncPipe, CommonModule, NgComponentOutlet } from '@angular/common';
+import { Component, Inject, Injector, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   NgbDropdownModule,
@@ -21,35 +13,37 @@ import { MenuSection } from 'src/app/shared/menu/menu-section.model';
 import { AbstractMenuSectionComponent } from 'src/app/shared/menu/menu-section/abstract-menu-section.component';
 
 import { BtnDisabledDirective } from '../../../btn-disabled.directive';
-import {
-  hasValue,
-  isNotEmpty,
-} from '../../../empty.util';
+import { hasValue, isNotEmpty } from '../../../empty.util';
 import { MenuService } from '../../../menu/menu.service';
+import { FormsModule } from '@angular/forms';
 
 /**
  * Represents an expandable section in the dso edit menus
  */
 @Component({
+  standalone: true,
   selector: 'ds-dso-edit-menu-expandable-section',
   templateUrl: './dso-edit-menu-expandable-section.component.html',
   styleUrls: ['./dso-edit-menu-expandable-section.component.scss'],
   imports: [
+    CommonModule,
     AsyncPipe,
     BtnDisabledDirective,
     NgbDropdownModule,
     NgbTooltipModule,
     NgComponentOutlet,
     TranslateModule,
+    FormsModule,
   ],
 })
-export class DsoEditMenuExpandableSectionComponent extends AbstractMenuSectionComponent implements OnInit {
-
+export class DsoEditMenuExpandableSectionComponent
+  extends AbstractMenuSectionComponent
+  implements OnInit
+{
   /**
    * This section resides in the DSO edit menu
    */
   menuID: MenuID = MenuID.DSO_EDIT;
-
 
   /**
    * The MenuItemModel of the top section
@@ -82,13 +76,21 @@ export class DsoEditMenuExpandableSectionComponent extends AbstractMenuSectionCo
 
     this.renderIcons$ = this.subSections$.pipe(
       map((sections: MenuSection[]) => {
-        return sections.some(section => hasValue(section.icon));
+        return sections.some((section) => hasValue(section.icon));
       }),
     );
 
     this.hasSubSections$ = this.subSections$.pipe(
       map((subSections) => isNotEmpty(subSections)),
     );
+    console.log('hasSubSections$', this.hasSubSections$);
+    console.log('renderIcons$', this.renderIcons$);
+    console.log('subSections$', this.subSections$);
+    console.log('section', this.section);
+    console.log('itemModel', this.itemModel);
+  }
 
+  trackBySectionId(index: number, item: MenuSection): string {
+    return item.id;
   }
 }

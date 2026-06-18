@@ -46,7 +46,7 @@ npm install
 npm start
 ```
 
-Then go to [http://localhost:4000](http://localhost:4000) in your browser
+Then go to [http://localhost:4001](http://localhost:4001) in your browser
 
 Not sure where to start? watch the training videos linked in the [Introduction to the technology](#introduction-to-the-technology) section below.
 
@@ -150,7 +150,7 @@ The same settings can also be overwritten by setting system environment variable
 
 ```bash
 export DSPACE_HOST=demo.dspace.org
-export DSPACE_UI_PORT=4000
+export DSPACE_UI_PORT=4001
 ```
 
 The priority works as follows: **environment variable** overrides **variable in `.env` file** overrides external config set by `DSPACE_APP_CONFIG_PATH` overrides **`config.(prod or dev).yml`**
@@ -194,7 +194,7 @@ import { environment } from "../environment.ts";
 
 ## Running the app
 
-After you have installed all dependencies you can now run the app. Run `npm run start:dev` to start a local server which will watch for changes, rebuild the code, and reload the server for you. You can visit it at `http://localhost:4000`.
+After you have installed all dependencies you can now run the app. Run `npm run start:dev` to start a local server which will watch for changes, rebuild the code, and reload the server for you. You can visit it at `http://localhost:4001`.
 
 ### Running in production mode
 
@@ -253,8 +253,8 @@ If you would like to contribute by testing a Pull Request (PR), here's how to do
    - Click it, and follow "Step 1" of those instructions to checkout the pull down the PR branch.
 2. `npm run clean` (This resets your local dependencies to ensure you are up-to-date with this PR)
 3. `npm install` (Updates your local dependencies to those in the PR)
-4. `npm start` (Rebuilds the project, and deploys to localhost:4000, by default)
-5. At this point, the code from the PR will be deployed to http://localhost:4000. Test it out, and ensure that it does what is described in the PR (or fixes the bug described in the ticket linked to the PR).
+4. `npm start` (Rebuilds the project, and deploys to localhost:4001, by default)
+5. At this point, the code from the PR will be deployed to http://localhost:4001. Test it out, and ensure that it does what is described in the PR (or fixes the bug described in the ticket linked to the PR).
 
 Once you have tested the Pull Request, please add a comment and/or approval to the PR to let us know whether you found it to be successful (or not). Thanks!
 
@@ -286,7 +286,7 @@ Before you can run e2e tests, two things are REQUIRED:
      ```
      DSPACE_REST_SSL = false
      DSPACE_REST_HOST = localhost
-     DSPACE_REST_PORT = 8081
+     DSPACE_REST_PORT = 8083
      ```
 2. Your backend MUST include our [Entities Test Data set](https://github.com/DSpace-Labs/AIP-Files/releases/tag/demo-entities-data). Some tests run against a specific Community/Collection/Item UUID. These UUIDs are all valid for our Entities Test Data set.
    - (Recommended) The Entities Test Data set may be installed easily via Docker, see https://github.com/DSpace/DSpace/tree/main/dspace/src/main/docker-compose#ingest-option-2-ingest-entities-test-data
@@ -510,7 +510,7 @@ import * as _ from "lodash";
 - Where do I write my tests?
   - You can write your tests next to your component files. e.g. for `src/app/home/home.component.ts` call it `src/app/home/home.component.spec.ts`
 - How do I start the app when I get `EACCES` and `EADDRINUSE` errors?
-  - The `EADDRINUSE` error means the port `4000` is currently being used and `EACCES` is lack of permission to build files to `./dist/`
+  - The `EADDRINUSE` error means the port `4001` is currently being used and `EACCES` is lack of permission to build files to `./dist/`
 - What are the naming conventions for Angular?
   - See [the official angular style guide](https://angular.io/styleguide)
 - Why is the size of my app larger in development?

@@ -95,7 +95,7 @@ export const HealthInfoResponseObj: HealthInfoResponse = {
   app: {
     name: 'DSpace at My University',
     dir: '/home/giuseppe/development/java/install/dspace7-review',
-    url: 'http://localhost:8081/server',
+    url: 'http://localhost:8083/server',
     db: 'jdbc:postgresql://localhost:5432/dspace7',
     solr: {
       server: 'http://localhost:8983/solr',
@@ -110,10 +110,10 @@ export const HealthInfoResponseObj: HealthInfoResponse = {
       'alert-recipient': 'dspace-help@myu.edu',
     },
     cors: {
-      'allowed-origins': 'http://localhost:4000',
+      'allowed-origins': 'http://localhost:4001',
     },
     ui: {
-      url: 'http://localhost:4000',
+      url: 'http://localhost:4001',
     },
   },
   java: {
@@ -135,7 +135,7 @@ export const HealthInfoResponseObj: HealthInfoResponse = {
 export const HealthInfoComponentOne: HealthInfoComponent = {
   name: 'DSpace at My University',
   dir: '/home/giuseppe/development/java/install/dspace7-review',
-  url: 'http://localhost:8081/server',
+  url: 'http://localhost:8083/server',
   db: 'jdbc:postgresql://localhost:5432/dspace7',
   solr: {
     server: 'http://localhost:8983/solr',
@@ -150,10 +150,10 @@ export const HealthInfoComponentOne: HealthInfoComponent = {
     'alert-recipient': 'dspace-help@myu.edu',
   },
   cors: {
-    'allowed-origins': 'http://localhost:4000',
+    'allowed-origins': 'http://localhost:4001',
   },
   ui: {
-    url: 'http://localhost:4000',
+    url: 'http://localhost:4001',
   },
 };
 

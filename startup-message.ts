@@ -9,11 +9,4 @@ import { BuildConfig } from './src/config/build-config.interface';
 export const logStartupMessage = (environment: Partial<BuildConfig>) => {
   const env: string = environment.production ? 'Production' : 'Development';
   const color: string = environment.production ? 'red' : 'green';
-
-  console.info('');
-  console.info(`%cdspace-angular`, `font-weight: bold;`);
-  console.info(`Version: %c${PACKAGE_JSON.version}`, `font-weight: bold;`);
-  console.info(`Environment: %c${env}`, `color: ${color}; font-weight: bold;`);
-  console.info('');
-
-}
+};

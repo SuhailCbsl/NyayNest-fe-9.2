@@ -10,9 +10,6 @@
 // :host ::ng-deep #docViewerContainer .tool img[alt="Share Note Button"] {
 //   display: none !important;
 // }
-// :host ::ng-deep .header-navbar-wrapper {
-//   display: none !important;
-// }
 :host {
   position: fixed;
   top: 0;
@@ -21,7 +18,7 @@
   height: 100vh;
   background: #fff;
   z-index: 9999;
-  overflow: hidden;
+  // overflow: hidden;
 }
 
 /* remove any inherited spacing */
@@ -45,4 +42,12 @@ html {
 #viewerContainer,
 #viewer {
   height: 100% !important;
+}
+
+:host ::ng-deep #metadata {
+  overflow: auto !important;
+}
+
+:host ::ng-deep .js-summary-button {
+  display: none !important;
 }

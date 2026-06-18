@@ -32,7 +32,17 @@
 .thumbnail-wrapper {
   width: 120px;
   min-width: 120px;
-  margin-right: 12px;
+  height: 160px;
+
+  margin-right: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #f3f4f6;
+
+  overflow: hidden;
 }
 
 /* Real thumbnail */
@@ -99,4 +109,43 @@ a:visited {
   align-items: center !important;
 
   text-decoration: none !important;
+}
+:host ::ng-deep .thumbnail.limit-width {
+  width: 120px !important;
+  height: 160px !important;
+  display: block !important;
+}
+
+:host ::ng-deep .thumbnail-content.outer {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+:host ::ng-deep .thumbnail-content.outer > .inner {
+  width: 100% !important;
+  height: 100% !important;
+
+  display: flex !important;
+}
+
+:host ::ng-deep .thumbnail-placeholder.centered {
+  width: 100% !important;
+  height: 100% !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  text-align: center !important;
+
+  background: #e9ecef !important;
+  color: #6c757d !important;
+
+  // padding: 8px;
+}
+.actions-container {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  margin-top: 16px;
 }

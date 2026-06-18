@@ -39,39 +39,47 @@ export class ImportMenuProvider extends AbstractExpandableMenuProvider {
   }
 
   public getTopSection(): Observable<PartialMenuSection> {
-    return of(
-      {
-        model: {
-          type: MenuItemType.TEXT,
-          text: 'menu.section.import',
-        },
-        icon: 'file-import',
-        visible: true,
+    return of({
+      model: {
+        type: MenuItemType.TEXT,
+        text: 'menu.section.import',
       },
-    );
+      icon: 'file-import',
+      visible: true,
+    });
   }
 
   public getSubSections(): Observable<PartialMenuSection[]> {
     return observableCombineLatest([
       this.authorizationService.isAuthorized(FeatureID.AdministratorOf),
-      this.scriptDataService.scriptWithNameExistsAndCanExecute(METADATA_IMPORT_SCRIPT_NAME),
+      this.scriptDataService.scriptWithNameExistsAndCanExecute(
+        METADATA_IMPORT_SCRIPT_NAME,
+      ),
     ]).pipe(
       map(([authorized, metadataImportScriptExists]) => {
         return [
+          // {
+          //   visible: authorized && metadataImportScriptExists,
+          //   model: {
+          //     type: MenuItemType.LINK,
+          //     text: 'menu.section.import_metadata',
+          //     link: '/admin/metadata-import',
+          //   },
+          // },
+          // {
+          //   visible: authorized && metadataImportScriptExists,
+          //   model: {
+          //     type: MenuItemType.LINK,
+          //     text: 'menu.section.import_batch',
+          //     link: '/admin/batch-import',
+          //   },
+          // },
           {
             visible: authorized && metadataImportScriptExists,
             model: {
               type: MenuItemType.LINK,
-              text: 'menu.section.import_metadata',
-              link: '/admin/metadata-import',
-            },
-          },
-          {
-            visible: authorized && metadataImportScriptExists,
-            model: {
-              type: MenuItemType.LINK,
-              text: 'menu.section.import_batch',
-              link: '/admin/batch-import',
+              text: 'admin.workflow-import-batch.title',
+              link: '/admin/workflow-import-batch',
             },
           },
         ];

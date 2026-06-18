@@ -7,10 +7,7 @@ import {
   UrlTree,
 } from '@angular/router';
 
-import {
-  APP_CONFIG,
-  AppConfig,
-} from '../../../config/app-config.interface';
+import { APP_CONFIG, AppConfig } from '../../../config/app-config.interface';
 import { HOME_PAGE_PATH } from '../../app-routing-paths';
 import { isNotEmpty } from '../../shared/empty.util';
 

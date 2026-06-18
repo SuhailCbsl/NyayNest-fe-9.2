@@ -505,6 +505,8 @@ export class SearchFormComponent implements OnChanges, OnInit {
   }
 
   selectSuggestion(suggestion: any): void {
+    console.log('Suggestion object:', suggestion);
+    console.log('Backend search href:', suggestion?._links?.search?.href);
     this.applyFilter(this.searchCaseBy, suggestion.label);
     this.searchMetadata = '';
     this.metadataSuggestions = [];
@@ -589,7 +591,11 @@ export class SearchFormComponent implements OnChanges, OnInit {
 
     // Clear active scope and remove query params (including dateFrom/dateTo) ---
     this.selectedScope.next(undefined);
-
+    // clear value from dashboard flow if present
+    this.caseTypeNameFilter = null;
+    this.caseNatureFilter = null;
+    this.dashboardFlag = null;
+    this.uuidFromDashBoard = null;
     void this.router.navigate([], {
       queryParams: {
         flag: null,
@@ -605,7 +611,7 @@ export class SearchFormComponent implements OnChanges, OnInit {
         dateTo: null,
         userQuery: null,
       },
-      queryParamsHandling: 'merge',
+      // queryParamsHandling: 'merge',
     });
 
     // Clear all date-related state (Dates + Ngb models + internal query + flags) ---
@@ -1218,7 +1224,8 @@ export class SearchFormComponent implements OnChanges, OnInit {
 
       return;
     }
-
+    console.log('Applying filter', type, value);
+    console.log('Current URL', this.router.url);
     // NORMAL FACET FILTERS
     const filterParam = `f.${type}`;
 
@@ -1479,16 +1486,33 @@ export class SearchFormComponent implements OnChanges, OnInit {
   removeFilterTag(index: number) {
     const removed = this.filterTags.splice(index, 1)[0];
 
-    if (!removed) return;
+    if (!removed) {
+      return;
+    }
 
     this.appliedFilterTypes.delete(removed.type);
-
-    // remove from map
     this.searchFilters.delete(removed.type);
 
-    // remove from URL
-    const queryParams: any = {};
-    queryParams[`f.${removed.type}`] = null;
+    const queryParams: any = {
+      [`f.${removed.type}`]: null,
+      'spc.page': 1,
+    };
+
+    // dashboard-origin filter removed
+    if (this.dashboardFlag === 'dashboard') {
+      queryParams.flag = null;
+      queryParams.uuid = null;
+      queryParams.name = null;
+      queryParams.casenature = null;
+      queryParams.count = null;
+
+      this.dashboardInitialized = false;
+    }
+
+    // rebuild all remaining filters
+    this.searchFilters.forEach((value, key) => {
+      queryParams[`f.${key}`] = `${value},equals`;
+    });
 
     this.router.navigate([], {
       queryParams,

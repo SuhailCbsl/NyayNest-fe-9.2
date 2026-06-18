@@ -35,7 +35,10 @@
     }
 
     img#admin-sidebar-logo {
-      height: var(--ds-admin-sidebar-logo-height);
+      height: 30px !important;
+      width: auto !important;
+      max-width: none !important;
+      display: block !important;
     }
 
     ::ng-deep {
@@ -57,44 +60,54 @@
 
       // These classes handle the collapsing behavior
       .sidebar-section-wrapper {
+        position: relative;
         display: flex;
         flex-direction: row;
         flex-wrap: nowrap;
         align-items: stretch;
-        background-color: rgb(30, 68, 116) !important;
 
-        // These elements have fixed width and determine the width of the collapsed sidebar
+        width: calc(100% - 8px);
+        margin: 2px 4px;
+
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+
+        background-color: transparent !important;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
         & > .sidebar-fixed-element-wrapper {
           min-width: var(--ds-admin-sidebar-fixed-element-width);
-          flex: 1 1 auto; // Fill available space
+          flex: 0 0 var(--ds-admin-sidebar-fixed-element-width);
 
-          // Align the icons
           display: flex;
-          flex-direction: row;
-          justify-content: center;
+          justify-content: flex-start;
           align-items: center;
+
+          padding-left: 15px !important;
         }
 
         & > .sidebar-collapsible-element-outer-wrapper {
           display: flex;
           flex-wrap: wrap;
-          justify-content: flex-end; // make inner wrapper slide on the left when collapsing
-          max-width: calc(
-            100% - var(--ds-admin-sidebar-fixed-element-width)
-          ); // fill available space
-          padding-left: var(
-            --ds-dark-scrollbar-width
-          ); // leave room for scrollbar
-          overflow-x: hidden; // hide inner wrapper when sidebar is collapsed
+          justify-content: flex-end;
 
-          // These elements have fixed width and slide on the left when the sidebar is collapsed
-          // Their content should fill all available space
+          max-width: calc(100% - var(--ds-admin-sidebar-fixed-element-width));
+
+          padding-left: var(--ds-dark-scrollbar-width);
+
+          overflow-x: visible;
+
           & > .sidebar-collapsible-element-inner-wrapper {
             min-width: calc(
               var(--ds-admin-sidebar-collapsible-element-width) - var(
                   --ds-dark-scrollbar-width
                 )
             );
+
             height: 100%;
             padding-right: var(--ds-admin-sidebar-item-padding);
           }
@@ -152,3 +165,140 @@
     --ds-dark-scrollbar-width: 20px;
   }
 }
+::ng-deep #sidebar-top-level-items {
+  line-height: normal;
+}
+nav#admin-sidebar {
+  background-color: rgb(30, 68, 116) !important;
+}
+
+#sidebar-header-container,
+#sidebar-header-container .sidebar-section-wrapper,
+#sidebar-header-container .sidebar-fixed-element-wrapper,
+#sidebar-header-container .sidebar-collapsible-element-outer-wrapper,
+#sidebar-header-container .sidebar-collapsible-element-inner-wrapper {
+  background-color: rgb(30, 68, 116) !important;
+}
+
+#sidebar-header-container {
+  .sidebar-fixed-element-wrapper {
+    justify-content: center !important;
+    padding-left: 0 !important;
+  }
+}
+
+#admin-sidebar-logo-full {
+  height: 42px;
+  width: auto;
+}
+
+#admin-sidebar-logo-mini {
+  height: 28px;
+  width: 28px;
+  display: none;
+}
+#sidebar-header-container {
+  .sidebar-section-wrapper {
+    overflow: visible !important;
+  }
+
+  .sidebar-collapsible-element-outer-wrapper {
+    overflow: visible !important;
+  }
+}
+nav#admin-sidebar.collapsed {
+  ::ng-deep .toggler-wrapper .fa-chevron-right {
+    display: none !important;
+  }
+}
+nav#admin-sidebar.expanded {
+  #admin-sidebar-logo {
+    height: 36px !important;
+    width: auto !important;
+  }
+}
+#sidebar-header-container {
+  .sidebar-fixed-element-wrapper {
+    min-width: var(--ds-admin-sidebar-fixed-element-width);
+    width: var(--ds-admin-sidebar-fixed-element-width);
+
+    display: flex;
+    justify-content: center !important;
+    align-items: center !important;
+
+    padding-left: 0 !important;
+  }
+}
+
+#sidebar-header-container img#admin-sidebar-logo {
+  height: 30px !important;
+  width: auto !important;
+  object-fit: contain;
+}
+
+#sidebar-header-container {
+  padding: 12px 0;
+}
+
+#sidebar-header-container .logo-wrapper {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+
+  width: fit-content;
+  margin: 0;
+}
+
+#admin-sidebar-logo {
+  height: 20px;
+  width: fit-content;
+  display: block;
+}
+.sidebar-section-wrapper {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: transparent;
+    transition: all 0.3s ease;
+    pointer-events: none;
+  }
+
+  &:hover:not(.disabled)::after {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+nav#admin-sidebar {
+  ::ng-deep {
+    .sidebar-section-wrapper {
+      position: relative;
+      overflow: hidden;
+
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: transparent;
+        pointer-events: none;
+        transition: all 0.3s ease;
+      }
+
+      &:hover::after {
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+}
+// .sidebar-section-wrapper {
+//   border-radius: 15px;
+//   transition: all 0.3s ease;
+// }
+
+// .sidebar-section-wrapper:hover {
+//   background-color: #3d6296 !important;
+// }

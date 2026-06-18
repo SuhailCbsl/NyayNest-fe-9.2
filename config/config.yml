@@ -1,5 +1,11 @@
 rest:
   ssl: false
   host: localhost
-  port: 8081
+  port: 8083
   nameSpace: /server
+
+# rest:
+#   ssl: false
+#   host: 192.168.3.136
+#   port: 8083
+#   nameSpace: /server

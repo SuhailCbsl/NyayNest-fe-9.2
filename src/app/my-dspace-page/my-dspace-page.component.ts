@@ -24,6 +24,7 @@ import {
 } from './my-dspace-configuration.service';
 import { MyDSpaceNewSubmissionComponent } from './my-dspace-new-submission/my-dspace-new-submission.component';
 import { MyDspaceQaEventsNotificationsComponent } from './my-dspace-qa-events-notifications/my-dspace-qa-events-notifications.component';
+import { ActivatedRoute } from '@angular/router';
 
 export const MYDSPACE_ROUTE = '/mydspace';
 
@@ -51,7 +52,6 @@ export const MYDSPACE_ROUTE = '/mydspace';
   ],
 })
 export class MyDSpacePageComponent implements OnInit {
-
   /**
    * The list of available configuration options
    */
@@ -77,9 +77,16 @@ export class MyDSpacePageComponent implements OnInit {
    */
   viewModeList = [ViewMode.ListElement, ViewMode.DetailedListElement];
 
-  constructor(private service: SearchService,
-              @Inject(SEARCH_CONFIG_SERVICE) public searchConfigService: MyDSpaceConfigurationService) {
-    this.service.setServiceOptions(MyDSpaceResponseParsingService, MyDSpaceRequest);
+  constructor(
+    private service: SearchService,
+    private route: ActivatedRoute,
+    @Inject(SEARCH_CONFIG_SERVICE)
+    public searchConfigService: MyDSpaceConfigurationService,
+  ) {
+    this.service.setServiceOptions(
+      MyDSpaceResponseParsingService,
+      MyDSpaceRequest,
+    );
   }
 
   /**
@@ -95,13 +102,21 @@ export class MyDSpacePageComponent implements OnInit {
    * If something changes, update the current context
    */
   ngOnInit(): void {
-    this.configurationList$ = this.searchConfigService.getAvailableConfigurationOptions();
+    this.configurationList$ =
+      this.searchConfigService.getAvailableConfigurationOptions();
 
-    this.configurationList$.pipe(take(1)).subscribe((configurationList: SearchConfigurationOption[]) => {
-      this.configuration = configurationList[0].value;
-      this.context = configurationList[0].context;
-    });
+    this.configurationList$
+      .pipe(take(1))
+      .subscribe((configurationList: SearchConfigurationOption[]) => {
+        const queryConfig =
+          this.route.snapshot.queryParamMap.get('configuration');
 
+        const selectedConfig =
+          configurationList.find((config) => config.value === queryConfig) ||
+          configurationList[0];
+
+        this.configuration = selectedConfig.value;
+        this.context = selectedConfig.context;
+      });
   }
-
 }

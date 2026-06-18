@@ -1,0 +1,196 @@
+<div class="container my-4">
+  <div class="card shadow-lg border-0">
+    <div class="card-body p-4">
+      <form [formGroup]="importForm">
+        <div class="row g-4">
+          <!-- COLLECTION + FOLDER ID -->
+          <div class="col-md-12">
+            <label class="fw-semibold mb-1">
+              {{ "workflow.batch-import.collection" | translate }}
+              <span class="text-danger">*</span>
+            </label>
+            <div class="border rounded-3 p-3 bg-light">
+              <div *ngIf="dso; else noCollection">
+                <p class="mb-1">
+                  <span class="badge bg-success ms-2">
+                    {{ "workflow.batch-import.handle-id" | translate }}:
+                    {{ handle }}
+                  </span>
+                </p>
+                <p class="mb-1">
+                  {{ "workflow.batch-import.selected-collection" | translate }}:
+                  <b>{{ selectedCollectionName }}</b>
+                </p>
+                <a
+                  href="javascript:void(0)"
+                  class="text-decoration-none text-danger"
+                  (click)="removeDspaceObject()"
+                >
+                  {{ "workflow.batch-import.clear-selection" | translate }}
+                </a>
+              </div>
+
+              <ng-template #noCollection>
+                <p class="mb-2 text-muted">
+                  {{
+                    "workflow.batch-import.no-collection-selected" | translate
+                  }}
+                </p>
+              </ng-template>
+
+              <button
+                type="button"
+                class="btn btn-outline-primary mt-2"
+                (click)="selectCollection()"
+              >
+                {{ "workflow.batch-import.select-collection" | translate }}
+              </button>
+
+              <input type="hidden" formControlName="folder_id" />
+            </div>
+          </div>
+
+          <!-- METADATA FOLDER (CSV FILE HIERARCHY) -->
+          <div class="col-md-6">
+            <label class="fw-semibold mb-1">
+              {{ "workflow.batch-import.metadata-csv" | translate }}
+              <span class="text-danger">*</span>
+            </label>
+            <small class="text-muted d-block mb-2">
+              {{ "workflow.batch-import.metadata-csv-description" | translate }}
+            </small>
+
+            <div class="input-group">
+              <input
+                class="form-control bg-light"
+                formControlName="metadata_file"
+                [placeholder]="
+                  'workflow.batch-import.metadata-csv-placeholder' | translate
+                "
+                readonly
+              />
+              <button
+                class="btn btn-outline-primary"
+                type="button"
+                (click)="metadataDirInput.click()"
+              >
+                Browse…
+              </button>
+            </div>
+
+            <!-- Folder select for CSV (webkitdirectory) -->
+            <input
+              type="file"
+              #metadataDirInput
+              webkitdirectory
+              directory
+              multiple
+              accept=".csv"
+              (change)="onMetadataFolderSelect($event)"
+              hidden
+            />
+
+            <div
+              class="form-text text-danger"
+              *ngIf="
+                importForm.get('metadata_file')?.invalid &&
+                importForm.get('metadata_file')?.touched
+              "
+            >
+              {{ "workflow.batch-import.metadata-csv-validation" | translate }}
+            </div>
+          </div>
+
+          <!-- TEMPORARY DIRECTORY -->
+          <div class="col-md-6">
+            <label class="fw-semibold mb-1">
+              {{ "workflow.batch-import.temporary-location" | translate }}
+              <span class="text-danger">*</span>
+            </label>
+            <small class="text-muted d-block mb-2">
+              {{
+                "workflow.batch-import.temporary-location-description"
+                  | translate
+              }}
+            </small>
+
+            <div class="input-group">
+              <input
+                class="form-control bg-light"
+                formControlName="temporary_location"
+                [placeholder]="
+                  'workflow.batch-import.temporary-location-placeholder'
+                    | translate
+                "
+                readonly
+              />
+            </div>
+          </div>
+          <!-- EMAIL (READONLY) -->
+          <div class="col-md-6">
+            <label class="fw-semibold mb-1">
+              {{ "workflow.batch-import.email" | translate }}
+            </label>
+            <small class="text-muted d-block mb-2">
+              {{ "workflow.batch-import.email-description" | translate }}
+            </small>
+
+            <div class="input-group">
+              <input
+                type="email"
+                class="form-control bg-light"
+                formControlName="email"
+                readonly
+              />
+            </div>
+          </div>
+
+          <!-- OUTPUT LOG FILE (READONLY) + SUBMIT -->
+          <div class="col-md-6">
+            <label class="fw-semibold mb-1">
+              {{ "workflow.batch-import.output-log-file" | translate }}
+            </label>
+            <small class="text-muted d-block mb-2">
+              {{
+                "workflow.batch-import.output-log-file-description" | translate
+              }}
+              (e.g. <code>map.txt</code>)
+            </small>
+
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control bg-light"
+                formControlName="output_log_file"
+                readonly
+              />
+              &nbsp; &nbsp;
+              <button
+                class="btn btn-primary px-4"
+                type="submit"
+                [disabled]="importForm.invalid"
+                (click)="onSubmit()"
+              >
+                {{ "workflow.batch-import.run-import" | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- ⬇⬇ FULLSCREEN OVERLAY DURING IMPORT ⬇⬇ -->
+        <div *ngIf="isImportRunning" class="fullscreen-overlay">
+          <div class="overlay-content text-center">
+            <div
+              class="spinner-border text-light mb-3"
+              style="width: 4rem; height: 4rem"
+            ></div>
+            <h3 class="text-white">
+              {{ "workflow.batch-import.import-in-progress" | translate }}
+            </h3>
+            <!-- <p class="text-white fs-4 mt-2">⏳ {{ elapsedSeconds }} seconds elapsed</p> -->
+          </div>
+        </div>
+        <!-- ⬆⬆ END block -->
+      </form>
+    </div>
+  </div>
+</div>

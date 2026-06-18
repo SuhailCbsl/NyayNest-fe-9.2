@@ -105,19 +105,19 @@ export const APP_ROUTES: Route[] = [
           import('./community-list-page/community-list-page-routes').then(
             (m) => m.ROUTES,
           ),
-        canActivate: [endUserAgreementCurrentUserGuard],
+        canActivate: [endUserAgreementCurrentUserGuard, authenticatedGuard],
       },
       {
         path: 'id',
         loadChildren: () =>
           import('./lookup-by-id/lookup-by-id-routes').then((m) => m.ROUTES),
-        canActivate: [endUserAgreementCurrentUserGuard],
+        canActivate: [endUserAgreementCurrentUserGuard, authenticatedGuard],
       },
       {
         path: 'handle',
         loadChildren: () =>
           import('./lookup-by-id/lookup-by-id-routes').then((m) => m.ROUTES),
-        canActivate: [endUserAgreementCurrentUserGuard],
+        canActivate: [endUserAgreementCurrentUserGuard, authenticatedGuard],
       },
       {
         path: REGISTER_PATH,
@@ -143,7 +143,7 @@ export const APP_ROUTES: Route[] = [
           import('./community-page/community-page-routes').then(
             (m) => m.ROUTES,
           ),
-        canActivate: [endUserAgreementCurrentUserGuard],
+        canActivate: [endUserAgreementCurrentUserGuard, authenticatedGuard],
       },
       {
         path: COLLECTION_MODULE_PATH,
@@ -151,19 +151,19 @@ export const APP_ROUTES: Route[] = [
           import('./collection-page/collection-page-routes').then(
             (m) => m.ROUTES,
           ),
-        canActivate: [endUserAgreementCurrentUserGuard],
+        canActivate: [endUserAgreementCurrentUserGuard, authenticatedGuard],
       },
       {
         path: ITEM_MODULE_PATH,
         loadChildren: () =>
           import('./item-page/item-page-routes').then((m) => m.ROUTES),
-        canActivate: [endUserAgreementCurrentUserGuard],
+        canActivate: [endUserAgreementCurrentUserGuard, authenticatedGuard],
       },
       {
         path: 'entities/:entity-type',
         loadChildren: () =>
           import('./item-page/item-page-routes').then((m) => m.ROUTES),
-        canActivate: [endUserAgreementCurrentUserGuard],
+        canActivate: [endUserAgreementCurrentUserGuard, authenticatedGuard],
       },
       {
         path: LEGACY_BITSTREAM_MODULE_PATH,
@@ -171,7 +171,7 @@ export const APP_ROUTES: Route[] = [
           import('./bitstream-page/bitstream-page-routes').then(
             (m) => m.ROUTES,
           ),
-        canActivate: [endUserAgreementCurrentUserGuard],
+        canActivate: [endUserAgreementCurrentUserGuard, authenticatedGuard],
       },
       {
         path: BITSTREAM_MODULE_PATH,
@@ -179,7 +179,7 @@ export const APP_ROUTES: Route[] = [
           import('./bitstream-page/bitstream-page-routes').then(
             (m) => m.ROUTES,
           ),
-        canActivate: [endUserAgreementCurrentUserGuard],
+        canActivate: [endUserAgreementCurrentUserGuard, authenticatedGuard],
       },
       {
         path: 'mydspace',
@@ -196,20 +196,20 @@ export const APP_ROUTES: Route[] = [
         loadChildren: () =>
           import('./search-page/search-page-routes').then((m) => m.ROUTES),
         data: { enableRSS: true },
-        canActivate: [endUserAgreementCurrentUserGuard],
+        canActivate: [endUserAgreementCurrentUserGuard, authenticatedGuard],
       },
       {
         path: 'browse',
         loadChildren: () =>
           import('./browse-by/browse-by-page-routes').then((m) => m.ROUTES),
-        canActivate: [endUserAgreementCurrentUserGuard],
+        canActivate: [endUserAgreementCurrentUserGuard, authenticatedGuard],
       },
       {
         path: ADMIN_MODULE_PATH,
         loadChildren: () =>
           import('./admin/admin-routes').then((m) => m.ROUTES),
         data: { enableRSS: true },
-        canActivate: [siteAdministratorGuard, endUserAgreementCurrentUserGuard],
+        canActivate: [endUserAgreementCurrentUserGuard, authenticatedGuard],
       },
       {
         path: NOTIFICATIONS_MODULE_PATH,
@@ -237,7 +237,7 @@ export const APP_ROUTES: Route[] = [
         loadChildren: () =>
           import('./submit-page/submit-page-routes').then((m) => m.ROUTES),
         providers: [provideSubmissionState()],
-        canActivate: [endUserAgreementCurrentUserGuard],
+        canActivate: [endUserAgreementCurrentUserGuard, authenticatedGuard],
       },
       {
         path: 'import-external',
@@ -324,6 +324,7 @@ export const APP_ROUTES: Route[] = [
         canActivate: [
           groupAdministratorGuard,
           endUserAgreementCurrentUserGuard,
+          authenticatedGuard,
         ],
       },
       {

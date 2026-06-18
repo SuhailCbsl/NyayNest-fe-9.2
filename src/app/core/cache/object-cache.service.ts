@@ -277,8 +277,8 @@ export class ObjectCacheService {
    * a class.
    *
    * e.g. getList([
-   *        'http://localhost:8081/api/core/collections/c96588c6-72d3-425d-9d47-fa896255a695',
-   *        'http://localhost:8081/api/core/collections/cff860da-cf5f-4fda-b8c9-afb7ec0b2d9e'
+   *        'http://localhost:8083/api/core/collections/c96588c6-72d3-425d-9d47-fa896255a695',
+   *        'http://localhost:8083/api/core/collections/cff860da-cf5f-4fda-b8c9-afb7ec0b2d9e'
    *      ], Collection)
    *
    * @param selfLinks

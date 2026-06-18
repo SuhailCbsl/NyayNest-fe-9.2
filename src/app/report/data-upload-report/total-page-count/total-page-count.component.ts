@@ -6,6 +6,7 @@ import {
   HostListener,
   Inject,
   Output,
+  ViewEncapsulation,
 } from '@angular/core';
 import { FormBuilder, FormsModule } from '@angular/forms';
 import { NotificationsService } from 'src/app/shared/notifications/notifications.service';
@@ -14,6 +15,7 @@ import { DataUploadService } from '../data-upload-report.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'ds-total-page-count',
   imports: [CommonModule, FormsModule],
   templateUrl: './total-page-count.component.html',
@@ -48,7 +50,7 @@ export class TotalPageCountComponent {
   }
 
   @HostListener('document:keydown.escape', ['$event'])
-  onEsc(event: KeyboardEvent) {
+  onEsc(event: Event) {
     if (this.show) {
       this.close();
     }

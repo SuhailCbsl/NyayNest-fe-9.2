@@ -80,10 +80,15 @@
       </div>
     </div>
 
-    <!-- Admin Actions -->
-    <div class="mt-2">
-      <ds-item-admin-search-result-actions-element [item]="dso" [small]="false">
-      </ds-item-admin-search-result-actions-element>
-    </div>
+    @if (isAdmin$ | async) {
+      <!-- Admin Actions -->
+      <div class="actions-container">
+        <ds-item-admin-search-result-actions-element
+          [item]="dso"
+          [small]="false"
+        >
+        </ds-item-admin-search-result-actions-element>
+      </div>
+    }
   </div>
 </div>

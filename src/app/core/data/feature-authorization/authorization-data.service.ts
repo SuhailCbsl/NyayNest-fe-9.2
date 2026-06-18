@@ -1,19 +1,8 @@
 import { Injectable } from '@angular/core';
-import {
-  Observable,
-  of,
-} from 'rxjs';
-import {
-  catchError,
-  map,
-  switchMap,
-} from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
 
-import {
-  hasNoValue,
-  hasValue,
-  isNotEmpty,
-} from '../../../shared/empty.util';
+import { hasNoValue, hasValue, isNotEmpty } from '../../../shared/empty.util';
 import {
   followLink,
   FollowLinkConfig,
@@ -25,10 +14,7 @@ import { Authorization } from '../../shared/authorization.model';
 import { HALEndpointService } from '../../shared/hal-endpoint.service';
 import { getFirstCompletedRemoteData } from '../../shared/operators';
 import { BaseDataService } from '../base/base-data.service';
-import {
-  SearchData,
-  SearchDataImpl,
-} from '../base/search-data';
+import { SearchData, SearchDataImpl } from '../base/search-data';
 import { FindListOptions } from '../find-list-options.model';
 import { PaginatedList } from '../paginated-list.model';
 import { RemoteData } from '../remote-data';
@@ -42,7 +28,10 @@ import { FeatureID } from './feature-id';
  * A service to retrieve {@link Authorization}s from the REST API
  */
 @Injectable({ providedIn: 'root' })
-export class AuthorizationDataService extends BaseDataService<Authorization> implements SearchData<Authorization> {
+export class AuthorizationDataService
+  extends BaseDataService<Authorization>
+  implements SearchData<Authorization>
+{
   protected linkPath = 'authorizations';
   protected searchByObjectPath = 'object';
 
@@ -55,9 +44,22 @@ export class AuthorizationDataService extends BaseDataService<Authorization> imp
     protected halService: HALEndpointService,
     protected siteService: SiteDataService,
   ) {
-    super('authorizations', requestService, rdbService, objectCache, halService);
+    super(
+      'authorizations',
+      requestService,
+      rdbService,
+      objectCache,
+      halService,
+    );
 
-    this.searchData = new SearchDataImpl(this.linkPath, requestService, rdbService, objectCache, halService, this.responseMsToLive);
+    this.searchData = new SearchDataImpl(
+      this.linkPath,
+      requestService,
+      rdbService,
+      objectCache,
+      halService,
+      this.responseMsToLive,
+    );
   }
 
   /**
@@ -79,11 +81,29 @@ export class AuthorizationDataService extends BaseDataService<Authorization> imp
    * @param reRequestOnStale            Whether or not the request should automatically be re-
    *                                    requested after the response becomes stale
    */
-  isAuthorized(featureId?: FeatureID, objectUrl?: string, ePersonUuid?: string, useCachedVersionIfAvailable = true, reRequestOnStale = true): Observable<boolean> {
-    return this.searchByObject(featureId, objectUrl, ePersonUuid, {}, useCachedVersionIfAvailable, reRequestOnStale, followLink('feature')).pipe(
+  isAuthorized(
+    featureId?: FeatureID,
+    objectUrl?: string,
+    ePersonUuid?: string,
+    useCachedVersionIfAvailable = true,
+    reRequestOnStale = true,
+  ): Observable<boolean> {
+    return this.searchByObject(
+      featureId,
+      objectUrl,
+      ePersonUuid,
+      {},
+      useCachedVersionIfAvailable,
+      reRequestOnStale,
+      followLink('feature'),
+    ).pipe(
       getFirstCompletedRemoteData(),
       map((authorizationRD) => {
-        if (authorizationRD.statusCode !== 401 && hasValue(authorizationRD.payload) && isNotEmpty(authorizationRD.payload.page)) {
+        if (
+          authorizationRD.statusCode !== 401 &&
+          hasValue(authorizationRD.payload) &&
+          isNotEmpty(authorizationRD.payload.page)
+        ) {
           return authorizationRD.payload.page;
         } else {
           return [];
@@ -110,13 +130,19 @@ export class AuthorizationDataService extends BaseDataService<Authorization> imp
    * @param linksToFollow               List of {@link FollowLinkConfig} that indicate which
    *                                    {@link HALLink}s should be automatically resolved
    */
-  searchByObject(featureId?: FeatureID, objectUrl?: string, ePersonUuid?: string, options: FindListOptions = {}, useCachedVersionIfAvailable = true, reRequestOnStale = true, ...linksToFollow: FollowLinkConfig<Authorization>[]): Observable<RemoteData<PaginatedList<Authorization>>> {
+  searchByObject(
+    featureId?: FeatureID,
+    objectUrl?: string,
+    ePersonUuid?: string,
+    options: FindListOptions = {},
+    useCachedVersionIfAvailable = true,
+    reRequestOnStale = true,
+    ...linksToFollow: FollowLinkConfig<Authorization>[]
+  ): Observable<RemoteData<PaginatedList<Authorization>>> {
     const objectUrl$ = of(objectUrl).pipe(
       switchMap((url) => {
         if (hasNoValue(url)) {
-          return this.siteService.find().pipe(
-            map((site) => site.self),
-          );
+          return this.siteService.find().pipe(map((site) => site.self));
         } else {
           return of(url);
         }
@@ -124,9 +150,23 @@ export class AuthorizationDataService extends BaseDataService<Authorization> imp
     );
 
     const out$ = objectUrl$.pipe(
-      map((url: string) => new AuthorizationSearchParams(url, ePersonUuid, featureId)),
+      map(
+        (url: string) =>
+          new AuthorizationSearchParams(url, ePersonUuid, featureId),
+      ),
       switchMap((params: AuthorizationSearchParams) => {
-        return this.searchBy(this.searchByObjectPath, this.createSearchOptions(params.objectUrl, options, params.ePersonUuid, params.featureId), useCachedVersionIfAvailable, reRequestOnStale, ...linksToFollow);
+        return this.searchBy(
+          this.searchByObjectPath,
+          this.createSearchOptions(
+            params.objectUrl,
+            options,
+            params.ePersonUuid,
+            params.featureId,
+          ),
+          useCachedVersionIfAvailable,
+          reRequestOnStale,
+          ...linksToFollow,
+        );
       }),
     );
 
@@ -142,7 +182,12 @@ export class AuthorizationDataService extends BaseDataService<Authorization> imp
    * @param ePersonUuid Optional parameter value to add to {@link RequestParam} "eperson"
    * @param featureId   Optional parameter value to add to {@link RequestParam} "feature"
    */
-  private createSearchOptions(objectUrl: string, options: FindListOptions = {}, ePersonUuid?: string, featureId?: FeatureID): FindListOptions {
+  private createSearchOptions(
+    objectUrl: string,
+    options: FindListOptions = {},
+    ePersonUuid?: string,
+    featureId?: FeatureID,
+  ): FindListOptions {
     let params = [];
     if (isNotEmpty(options.searchParams)) {
       params = [...options.searchParams];
@@ -174,7 +219,19 @@ export class AuthorizationDataService extends BaseDataService<Authorization> imp
    * @return {Observable<RemoteData<PaginatedList<T>>}
    *    Return an observable that emits response from the server
    */
-  searchBy(searchMethod: string, options?: FindListOptions, useCachedVersionIfAvailable?: boolean, reRequestOnStale?: boolean, ...linksToFollow: FollowLinkConfig<Authorization>[]): Observable<RemoteData<PaginatedList<Authorization>>> {
-    return this.searchData.searchBy(searchMethod, options, useCachedVersionIfAvailable, reRequestOnStale, ...linksToFollow);
+  searchBy(
+    searchMethod: string,
+    options?: FindListOptions,
+    useCachedVersionIfAvailable?: boolean,
+    reRequestOnStale?: boolean,
+    ...linksToFollow: FollowLinkConfig<Authorization>[]
+  ): Observable<RemoteData<PaginatedList<Authorization>>> {
+    return this.searchData.searchBy(
+      searchMethod,
+      options,
+      useCachedVersionIfAvailable,
+      reRequestOnStale,
+      ...linksToFollow,
+    );
   }
 }

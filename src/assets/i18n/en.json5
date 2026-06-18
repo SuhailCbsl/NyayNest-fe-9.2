@@ -1029,7 +1029,8 @@
 
   "browse.comcol.by.nsi": "By Norwegian Science Index",
 
-  "browse.comcol.by.title": "By Title",
+  "browse.comcol.by.title": "Case No",
+  "browse.comcol.by.Search": "Recent Submissions",
 
   "browse.comcol.head": "Browse",
 
@@ -7254,10 +7255,13 @@
   "dashboard.case_types": "Case Types",
   "dashboard.current_date_time": "{{date}} | {{time}} IST",
   "dashboard.loading": "Loading...",
-  "dashboard.search_cases_placeholder": "Search by Case Type/Case Year",
+  "dashboard.search_cases_placeholder": "Search by Case Type",
   "dashboard.criminal_tab": "Criminal",
   "dashboard.civil_tab": "Civil",
   "dashboard.session_tab": "Session",
+  "dashboard.no_criminal_case_data": "No Criminal case data is available",
+  "dashboard.no_civil_case_data": "No Civil case data is available",
+  "dashboard.no_session_case_data": "No Session case data is available",
 
   // Footer
   "footer.link.nyaynest": "Copyright © 2026 NyayNest ",
@@ -7453,6 +7457,7 @@
   "custom_browse_by_case_year_placeholder": "Enter Case Year",
   "custom_browse_by_reset": "Reset",
   "custom_browse_by_search": "Search",
+  "admin_search_no_results": "No Results Found",
 
   "admin_search_section_title": "Administrative Search",
   "admin_search_results_count": "Now showing {{range}} of {{total}}",
@@ -7463,9 +7468,112 @@
   "admin_search_respondent": "Respondent",
   "admin_search_respondent_advocate": "Respondent's Advocate",
   "admin_search_judge": "Honourable Judge",
-  "admin_search_judgment": "Judgment"
+  "admin_search_judgment": "Judgment",
 
 
+  // custom sidebar
+  "admin.workflow-import-batch.breadcrumbs": "Workflow Import Batch",
+  "admin.workflow-import-batch.title": "Workflow Import Batch",
+  "menu.section.longTermArchival": "Long Term Archival",
+  "menu.section.archivedFiles": "Archive Files",
+  "menu.section.allArchivedFiles": "All Archived Files",
+  "admin.longtermarchival.breadcrumbs": "Long Term Archival",
+  "archivefiles.breadcrumbs": "Archive Files",
+  "allarchivedfiles.breadcrumbs": "All Archived Files",
 
+  "browse.comcol.by.CaseTypeName": "Case Type",
+  "browse.comcol.by.CaseYear": "Case Year",
+  "browse.comcol.by.CaseTypeNameCaseNoCaseYear": "Case Type/Case No/Case Year",
+  "browse.comcol.by.CaseStatus": "Case Status",
+  "browse.comcol.by.CNRNo": "CNR No",
+  "browse.comcol.by.GoshwaraNo": "Goshwara No",
+  "browse.comcol.by.JudgeName": "Judge",
+  "browse.comcol.by.Petitioner": "Petitioner",
+  "browse.comcol.by.Respondent": "Respondent",
+  "browse.comcol.by.AdvocateNameofPetitioner": "Petitioner’s Advocate",
+  "browse.comcol.by.AdvocateNameofRespondent": "Respondent’s Advocate",
+
+  // custom rate limiter message
+  "auth.errors.too-many-attempts" :  "Too many login attempts. Please try again later.",
+
+  "admin.access-control.epeople.form.password": "Password",
+
+  //======= Admin Page ===========
+  "admin.search.normal": "Normal Search",
+  "admin.search.fuzzy": "Fuzzy Search",
+  "admin.search.phonetic": "Phonetic Search",
+
+  "admin.search.phonetic_tooltip" : "Finds words that sound similar like 'Sara' and 'Sarah'",
+  "admin.search.fuzzy_tooltip": "Finds similar or misspelled words like 'Jyoti' and 'Jyoty'",
+  "admin.search.normal_tooltip": "Exact Search",
+  "admin.search.from_date": "From Date",
+  "admin.search.to_date": "To Date",
+  "admin_search_case_by": "Search Case by",
+  "admin_search_metadata": "Search Metadata",
+  "admin_search_sort_by": "Sort By",
+  "admin_search_case_number": "Case Number",
+  "admin_search_case_year": "Case Year",
+  "admin_search_case_status": "Case Status",
+  "admin_search_petitioner_name": "Petitioner Name",
+  "admin_search_sort_order": "Sort Order",
+  "admin_search_sort_order_ascending": "Ascending",
+  "admin_search_sort_order_descending": "Descending",
+  "admin_search_results_per_page": "Result Per Pages",
+
+  //==== workflow batch import ==========
+  "workflow.batch-import.collection": "Select Collection",
+  "workflow.batch-import.handle-id": "Handle Id",
+  "workflow.batch-import.selected-collection": "Selected collection",
+  "workflow.batch-import.clear-selection": "Clear Selection",
+  "workflow.batch-import.no-collection-selected": "No collection selected yet.",
+  "workflow.batch-import.select-collection": "Select Collection",
+  "workflow.batch-import.metadata-csv": "Metadata CSV (Folder Based)",
+  "workflow.batch-import.metadata-csv-description": "Select the folder that contains your CSV metadata file.",
+  "workflow.batch-import.metadata-csv-placeholder": "No CSV selected",
+  "workflow.batch-import.metadata-csv-validation": "Please select a folder that contains at least one CSV file.",
+  "workflow.batch-import.temporary-location": "Temporary Location",  
+  "workflow.batch-import.temporary-location-description": "Directory where temporary files will be created (client view).",
+  "workflow.batch-import.temporary-location-placeholder": "Select temporary directory",
+  "workflow.batch-import.email": "Email",
+  "workflow.batch-import.email-description": "Notifications about this import will be sent here.",
+  "workflow.batch-import.output-log-file": "Output Log File",
+  "workflow.batch-import.output-log-file-description": "Name of the log file that will be generated",
+  "workflow.batch-import.run-import": "Run Import",
+  "workflow.batch-import.import-in-progress": "Import in progress…",
+
+
+  //============== Long term archival ===========================
+  "long-term-archival.title": "Long-Term Archival",
+  "long-term-archival.subtitle": "Archive case files based on selected criteria",
+  "long-term-archival.filter-title": "Select Filter Criteria",
+  "long-term-archival.filter-type": "Filter Type",
+  "long-term-archival.select-filter": "Select filter",
+  "long-term-archival.select-option": "Select",
+  "long-term-archival.search-year": "Search Year",
+  "long-term-archival.no-year-found": "No year found",
+  "long-term-archival.from-date": "From Date",
+  "long-term-archival.to": "to",
+  "long-term-archival.to-date": "To Date",
+  "long-term-archival.search": "Search Case Files",
+  "long-term-archival.how-archival-works": "How Archival Works",
+  "long-term-archival.how-archival-works-description": "Follow these steps to archive case files:",
+  "long-term-archival.step-1-description": "Select a filter type and specify the value for the files you want to archive",
+  "long-term-archival.step-2-click": "Click",
+  "long-term-archival.step-2-add-filter": "Add Filter",
+  "long-term-archival.step-2-last-part": "to add the selected criteria. You can add multiple filters.",
+  "long-term-archival.step-3-description": "Review or remove filters from the list shown below the form",
+  "long-term-archival.step-4-click": "Click",
+  "long-term-archival.step-4-search-case-file": "Search Case Files",
+  "long-term-archival.step-4-last-part": "to view the number of files matching the selected criteria",
+  "long-term-archival.step-5-description": "Confirm the archival request and monitor progress in real time",
+  "long-term-archival.warning-note": "Note: Multiple filters can be applied at a time. Changing the filters will reset the current selection.",
+  "long-term-archival.modal-title": "Files Ready For Archival",
+  "long-term-archival.files-ready": "files are ready for archival",
+  "long-term-archival.warning-text-part-1": "Once you click",
+  "long-term-archival.warning-text-part-2": "Archive Files",
+  "long-term-archival.warning-text-part-3": "the archival process will begin. This action cannot be undone.",
+  "long-term-archival.btn-archive": "Archive Files",
+  "long-term-archival.loading-title": "Retrieving Files",
+  "long-term-archival.loading-text": "Please wait while we retrieve the selected cases from archive...",
 
 }

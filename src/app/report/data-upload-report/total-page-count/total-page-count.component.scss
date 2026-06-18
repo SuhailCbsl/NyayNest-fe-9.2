@@ -4,8 +4,6 @@
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
   z-index: 20000;
-
-  /* start transparent, animate to visible */
   opacity: 0;
   animation: cnr-backdrop-fade-in 180ms ease-out forwards;
 }
@@ -19,8 +17,6 @@
   justify-content: center;
   align-items: center;
   padding: 1rem;
-
-  /* start small + transparent, animate in */
   opacity: 0;
   transform: scale(0.94) translateY(-6px);
   animation: cnr-modal-pop-in 180ms ease-out forwards;
@@ -28,8 +24,8 @@
 
 /* MODAL BOX */
 .cnr-modal-box {
-  width: 100%;
-  max-width: 700px;
+  width: 90%;
+  max-width: 600px;
   background: #fff;
   border-radius: 8px;
   max-height: 90vh;
@@ -39,42 +35,109 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
 }
 
-/* HEADER, BODY, FOOTER stay same as before */
+/* HEADER — plain white */
 .cnr-modal-header {
-  padding: 1rem;
-  border-bottom: 1px solid #ddd;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #dee2e6;
+  background: #fff;
   position: relative;
+  display: flex;
+  align-items: center;
+
+  h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #212529;
+  }
 }
 
+/* CLOSE BUTTON */
 .close-btn {
   position: absolute;
   right: 1rem;
-  top: 0.8rem;
-  font-size: 26px;
+  top: 50%;
+  transform: translateY(-50%);
   background: transparent;
   border: none;
+  font-size: 26px;
+  line-height: 1;
   cursor: pointer;
+  color: #444;
+
+  &:hover {
+    color: #000;
+  }
 }
 
+/* BODY */
 .cnr-modal-body {
   padding: 1rem;
   overflow-y: auto;
 }
 
-.cnr-modal-footer {
-  padding: 0.8rem 1rem;
-  border-top: 1px solid #ddd;
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.8rem;
+/* ✅ Override Bootstrap 5.3 CSS variables — the ONLY way to beat --bs-table-bg */
+.cnr-modal-box .cnr-modal-body table.table {
+  thead tr th {
+    // Reset ALL Bootstrap table CSS vars on th
+    --bs-table-bg: #caced2;
+    --bs-table-color: #000;
+    --bs-table-border-color: #b0b4b8;
+    --bs-table-striped-bg: #caced2;
+    --bs-table-striped-color: #000;
+    --bs-table-active-bg: #caced2;
+    --bs-table-hover-bg: #caced2;
+    background-color: #caced2 !important;
+    vertical-align: middle;
+    text-align: center;
+  }
+
+  tbody tr.total-row td {
+    // Same override for total row
+    --bs-table-bg: #caced2;
+    --bs-table-color: #000;
+    --bs-table-striped-bg: #caced2;
+    --bs-table-active-bg: #caced2;
+    --bs-table-hover-bg: #caced2;
+    background-color: #caced2 !important;
+    vertical-align: middle;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  td,
+  th {
+    vertical-align: middle;
+    text-align: center;
+  }
 }
 
-/* Inputs full width inside modal */
-.cnr-modal .form-select,
-.cnr-modal .form-control {
-  width: 100%;
-  min-width: 0;
-  display: block;
+:host ::ng-deep .header-cell {
+  background-color: #caced2 !important;
+}
+
+:host ::ng-deep .total-row td {
+  background-color: #caced2 !important;
+}
+
+.header-cell,
+.total-row td {
+  background-color: #caced2 !important;
+}
+
+thead th.header-cell {
+  --bs-table-bg: #caced2 !important;
+  background-color: #caced2 !important;
+}
+
+.total-row td {
+  --bs-table-bg: #caced2 !important;
+  background-color: #caced2 !important;
+}
+
+.cnr-modal-body thead th,
+.cnr-modal-body .total-row td {
+  box-shadow: none !important;
 }
 
 /* ANIMATIONS */
@@ -82,7 +145,6 @@
   from {
     opacity: 0;
   }
-
   to {
     opacity: 1;
   }
@@ -93,49 +155,8 @@
     opacity: 0;
     transform: scale(0.94) translateY(-6px);
   }
-
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
   }
-}
-
-.table td,
-.table th {
-  vertical-align: middle;
-}
-
-.cnr-modal-box {
-  max-width: 600px;
-  width: 90%;
-}
-
-.breadcrumb-header {
-  background: #e7ecf0;
-  /* same light grey */
-  padding: 10px 15px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-radius: 4px 4px 0 0;
-  border-bottom: 1px solid #ccc;
-}
-
-.breadcrumb-title span {
-  font-size: 18px;
-  font-weight: 600;
-  color: #003366;
-  /* DSpace default dark blue */
-}
-
-.close-btn {
-  background: transparent;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #444;
-}
-
-.close-btn:hover {
-  color: #000;
 }

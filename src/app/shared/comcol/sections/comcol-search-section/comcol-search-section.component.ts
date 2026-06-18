@@ -1,13 +1,6 @@
 import { AsyncPipe } from '@angular/common';
-import {
-  Component,
-  Inject,
-  OnInit,
-} from '@angular/core';
-import {
-  ActivatedRoute,
-  Data,
-} from '@angular/router';
+import { Component, Inject, OnInit } from '@angular/core';
+import { ActivatedRoute, Data } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -36,13 +29,9 @@ import { ThemedSearchComponent } from '../../../search/themed-search.component';
       useClass: SearchConfigurationService,
     },
   ],
-  imports: [
-    AsyncPipe,
-    ThemedSearchComponent,
-  ],
+  imports: [AsyncPipe, ThemedSearchComponent],
 })
 export class ComcolSearchSectionComponent implements OnInit {
-
   comcol$: Observable<Community | Collection>;
 
   showSidebar$: Observable<boolean>;
@@ -50,16 +39,19 @@ export class ComcolSearchSectionComponent implements OnInit {
   constructor(
     @Inject(APP_CONFIG) public appConfig: AppConfig,
     protected route: ActivatedRoute,
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     this.comcol$ = this.route.parent.data.pipe(
-      map((data: Data) => (data.dso as RemoteData<Community | Collection>).payload),
+      map((data: Data) => (data.dso as RemoteData<any>).payload),
     );
+
     this.showSidebar$ = this.comcol$.pipe(
-      map((comcol: Community | Collection) => hasValue(comcol) && this.appConfig[comcol.type as any].searchSection.showSidebar),
+      map(
+        (comcol) =>
+          hasValue(comcol) &&
+          this.appConfig[comcol.type as any].searchSection.showSidebar,
+      ),
     );
   }
-
 }

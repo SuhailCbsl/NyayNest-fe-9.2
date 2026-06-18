@@ -105,3 +105,51 @@ a:visited {
   text-decoration: none !important;
 }
 // yaha khatam ho rha hai
+:host {
+  display: block;
+  width: 100%;
+}
+
+.custom-admin-card {
+  width: 100%;
+  max-width: 100%;
+  gap: 24px;
+  padding: 12px 0;
+}
+
+.thumbnail-wrapper {
+  flex: 0 0 140px !important;
+  max-width: 140px !important;
+}
+
+.thumbnail-wrapper ds-thumbnail,
+.thumbnail-wrapper img {
+  width: 100% !important;
+  height: auto !important;
+  object-fit: contain;
+}
+
+.metadata-wrapper {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+.case-metadata {
+  width: 100%;
+}
+
+.row-item {
+  align-items: flex-start;
+}
+
+.value {
+  word-break: break-word;
+}
+
+ds-search-results,
+ds-object-list,
+ds-pagination,
+ds-listable-object-component-loader {
+  width: 100%;
+  display: block;
+}

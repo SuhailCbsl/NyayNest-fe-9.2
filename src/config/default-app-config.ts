@@ -43,7 +43,7 @@ export class DefaultAppConfig implements AppConfig {
   ui: UIServerConfig = {
     ssl: false,
     host: 'localhost',
-    port: 4000,
+    port: 4001,
     // NOTE: Space is capitalized because 'namespace' is a reserved string in TypeScript
     nameSpace: '/',
 
@@ -62,7 +62,7 @@ export class DefaultAppConfig implements AppConfig {
   rest: ServerConfig = {
     ssl: false,
     host: 'localhost',
-    port: 8081,
+    port: 8083,
     // NOTE: Space is capitalized because 'namespace' is a reserved string in TypeScript
     nameSpace: '/',
   };

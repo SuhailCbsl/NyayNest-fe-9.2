@@ -32,7 +32,7 @@ const configRes = Object.assign(new SubmissionFormsModel(), {
   type: 'submissionaccessoption',
   _links: {
     self: {
-      href: 'http://localhost:8081/server/api/config/submissionaccessoptions/AccessConditionDefaultConfiguration',
+      href: 'http://localhost:8083/server/api/config/submissionaccessoptions/AccessConditionDefaultConfiguration',
     },
   },
 });
@@ -69,7 +69,7 @@ const configResNotChangeDiscoverable = Object.assign(
     type: 'submissionaccessoption',
     _links: {
       self: {
-        href: 'http://localhost:8081/server/api/config/submissionaccessoptions/AccessConditionDefaultConfiguration',
+        href: 'http://localhost:8083/server/api/config/submissionaccessoptions/AccessConditionDefaultConfiguration',
       },
     },
   },

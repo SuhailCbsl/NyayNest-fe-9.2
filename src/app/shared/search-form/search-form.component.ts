@@ -826,6 +826,29 @@ export class SearchFormComponent implements OnChanges, OnInit {
       )
       .subscribe((params) => {
         console.log('QUERY PARAMS:', params);
+        // Rebuild filter chips from URL on refresh
+        Object.keys(params).forEach((key) => {
+          if (key.startsWith('f.')) {
+            const filterType = key.replace('f.', '');
+
+            const filterValue = String(params[key]).split(',')[0];
+
+            const alreadyExists = this.filterTags.some(
+              (f) => f.type === filterType && f.value === filterValue,
+            );
+
+            if (!alreadyExists) {
+              this.filterTags.push({
+                label: filterType,
+                value: filterValue,
+                type: filterType,
+              });
+
+              this.searchFilters.set(filterType, filterValue);
+              this.appliedFilterTypes.add(filterType);
+            }
+          }
+        });
 
         const userQueryParam = params['userQuery'];
 

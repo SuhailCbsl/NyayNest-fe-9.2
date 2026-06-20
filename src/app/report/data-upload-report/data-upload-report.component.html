@@ -178,11 +178,11 @@
             <td>{{ e.pdfA ? "Yes" : "No" }}</td>
             <td>{{ e.hasDigitalSignatures ? "Yes" : "No" }}</td>
             <td>{{ e.signee }}</td>
-            <td>{{ e.signedAt | date: "dd-MM-yy HH:mm" }}</td>
+            <td>{{ e.signedAt | date: "dd-MM-yyyy HH:mm" }}</td>
             <td>{{ e.deleteStatus ? "Yes" : "No" }}</td>
             <td>{{ e.mediaFileSize }}</td>
             <td>{{ e.typeOfFile }}</td>
-            <td>{{ e.dateOfUpload | date: "dd-MM-yy HH:mm" }}</td>
+            <td>{{ e.dateOfUpload | date: "dd-MM-yyyy HH:mm" }}</td>
             <td class="mono">{{ e.itemId }}</td>
           </tr>
 

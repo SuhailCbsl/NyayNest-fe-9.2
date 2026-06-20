@@ -28,6 +28,7 @@
         (dateSelect)="onFromDateSelect($event)"
         (click)="dFrom.toggle()"
         class="form-control"
+        [maxDate]="maxDate"
         readonly
       />
       <span class="calendar-icon"><i class="pi pi-calendar"></i></span>
@@ -45,6 +46,7 @@
         (dateSelect)="onToDateSelect($event)"
         (click)="dTo.toggle()"
         class="form-control"
+        [maxDate]="maxDate"
         readonly
       />
       <span class="calendar-icon"><i class="pi pi-calendar"></i></span>

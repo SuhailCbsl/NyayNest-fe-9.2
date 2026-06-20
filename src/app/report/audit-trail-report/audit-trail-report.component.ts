@@ -57,6 +57,8 @@ export class AuditTrailReportComponent {
   filteredEvents: AuditTrailModel[] = [];
   private fetchSub: Subscription | null = null;
 
+  maxDate: NgbDateStruct;
+
   constructor(
     private auditService: AuditTrailService,
     private cdf: ChangeDetectorRef,
@@ -81,6 +83,12 @@ export class AuditTrailReportComponent {
       day: lastWeek.getDate(),
     };
     this.fromDate = this.toIsoString(this.fromDateModel);
+
+    this.maxDate = {
+      year: today.getFullYear(),
+      month: today.getMonth() + 1,
+      day: today.getDate(),
+    };
 
     this.searchAuditData();
   }
@@ -126,6 +134,12 @@ export class AuditTrailReportComponent {
   }
 
   onToDateSelect(date: NgbDateStruct) {
+    const today = new Date();
+    const selectedDate = new Date(date.year, date.month - 1, date.day);
+    if (selectedDate > today) {
+      this.notificationService.error('To date cannot be greater than today!');
+      return;
+    }
     this.toDateModel = date;
     this.toDate = this.toIsoString(this.toDateModel);
     this.validateDates();

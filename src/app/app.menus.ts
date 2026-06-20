@@ -29,6 +29,7 @@ import { WithdrawnReinstateItemMenuProvider } from './shared/menu/providers/with
 import { ReportMenuProvider } from './report/report-menu.provider';
 import { ArchiveMenuProvider } from './item-page/Long-term-archival/archive.menu';
 import { WorkflowMenuProvider } from './shared/menu/providers/workflow.menu';
+import { ExportMenuProvider } from './shared/menu/providers/export.menu';
 
 /**
  * Represents and builds the menu structure for the three available menus (public navbar, admin sidebar and the dso edit
@@ -56,7 +57,7 @@ export const MENUS = buildMenuStructure({
     NewMenuProvider,
     EditMenuProvider,
     ImportMenuProvider,
-    // ExportMenuProvider,
+    ExportMenuProvider,
     ReportMenuProvider,
     ArchiveMenuProvider,
     // NotificationsMenuProvider,

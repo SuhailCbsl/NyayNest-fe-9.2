@@ -1,22 +1,10 @@
-import {
-  Inject,
-  Injectable,
-  InjectionToken,
-} from '@angular/core';
+import { Inject, Injectable, InjectionToken } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Operation } from 'fast-json-patch';
 import cloneDeep from 'lodash/cloneDeep';
 import debounce from 'lodash/debounce';
-import {
-  combineLatest as observableCombineLatest,
-  Observable,
-  of,
-} from 'rxjs';
-import {
-  map,
-  switchMap,
-  take,
-} from 'rxjs/operators';
+import { combineLatest as observableCombineLatest, Observable, of } from 'rxjs';
+import { map, switchMap, take } from 'rxjs/operators';
 
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/auth/auth.service';
@@ -31,11 +19,7 @@ import {
 } from '../../core/services/window.service';
 import { getFirstCompletedRemoteData } from '../../core/shared/operators';
 import { MATOMO_ENABLED } from '../../statistics/matomo.service';
-import {
-  hasValue,
-  isEmpty,
-  isNotEmpty,
-} from '../empty.util';
+import { hasValue, isEmpty, isNotEmpty } from '../empty.util';
 import { OrejimeService } from './orejime.service';
 import {
   ANONYMOUS_STORAGE_NAME_OREJIME,
@@ -71,23 +55,20 @@ const updateDebounce = 300;
 /**
  * By using this injection token instead of importing directly we can keep Orejime out of the main bundle
  */
-const LAZY_OREJIME = new InjectionToken<Promise<any>>(
-  'Lazily loaded Orejime',
-  {
-    providedIn: 'root',
-    factory: async () => (await import('orejime/dist/orejime')),
-  },
-);
+const LAZY_OREJIME = new InjectionToken<Promise<any>>('Lazily loaded Orejime', {
+  providedIn: 'root',
+  factory: async () => await import('orejime/dist/orejime'),
+});
 
 /**
  * Browser implementation for the OrejimeService, representing a service for handling Orejime consent preferences and UI
  */
 @Injectable()
 export class BrowserOrejimeService extends OrejimeService {
-
   private readonly GOOGLE_ANALYTICS_KEY = 'google.analytics.key';
 
-  private readonly REGISTRATION_VERIFICATION_ENABLED_KEY = 'registration.verification.enabled';
+  private readonly REGISTRATION_VERIFICATION_ENABLED_KEY =
+    'registration.verification.enabled';
 
   private readonly GOOGLE_ANALYTICS_SERVICE_NAME = 'google-analytics';
 
@@ -121,30 +102,53 @@ export class BrowserOrejimeService extends OrejimeService {
    */
   initialize() {
     if (!environment.info.enablePrivacyStatement) {
-      this.orejimeConfig.translations.zz.consentModal.privacyPolicy.text = 'cookies.consent.content-modal.no-privacy-policy.text';
+      this.orejimeConfig.translations.zz.consentModal.privacyPolicy.text =
+        'cookies.consent.content-modal.no-privacy-policy.text';
     }
 
-    const hideGoogleAnalytics$ = this.configService.findByPropertyName(this.GOOGLE_ANALYTICS_KEY).pipe(
-      getFirstCompletedRemoteData(),
-      map(remoteData => !remoteData.hasSucceeded || !remoteData.payload || isEmpty(remoteData.payload.values)),
-    );
-
-    const hideRegistrationVerification$ = this.configService.findByPropertyName(this.REGISTRATION_VERIFICATION_ENABLED_KEY).pipe(
-      getFirstCompletedRemoteData(),
-      map((remoteData) =>
-        !remoteData.hasSucceeded || !remoteData.payload || isEmpty(remoteData.payload.values) || remoteData.payload.values[0].toLowerCase() !== 'true',
-      ),
-    );
-
-    const hideMatomo$ =
-      this.configService.findByPropertyName(this.MATOMO_ENABLED).pipe(
+    const hideGoogleAnalytics$ = this.configService
+      .findByPropertyName(this.GOOGLE_ANALYTICS_KEY)
+      .pipe(
         getFirstCompletedRemoteData(),
-        map((remoteData) =>
-          !remoteData.hasSucceeded || !remoteData.payload || isEmpty(remoteData.payload.values) || remoteData.payload.values[0].toLowerCase() !== 'true',
+        map(
+          (remoteData) =>
+            !remoteData.hasSucceeded ||
+            !remoteData.payload ||
+            isEmpty(remoteData.payload.values),
         ),
       );
 
-    const appsToHide$: Observable<string[]> = observableCombineLatest([hideGoogleAnalytics$, hideRegistrationVerification$, hideMatomo$]).pipe(
+    const hideRegistrationVerification$ = this.configService
+      .findByPropertyName(this.REGISTRATION_VERIFICATION_ENABLED_KEY)
+      .pipe(
+        getFirstCompletedRemoteData(),
+        map(
+          (remoteData) =>
+            !remoteData.hasSucceeded ||
+            !remoteData.payload ||
+            isEmpty(remoteData.payload.values) ||
+            remoteData.payload.values[0].toLowerCase() !== 'true',
+        ),
+      );
+
+    const hideMatomo$ = this.configService
+      .findByPropertyName(this.MATOMO_ENABLED)
+      .pipe(
+        getFirstCompletedRemoteData(),
+        map(
+          (remoteData) =>
+            !remoteData.hasSucceeded ||
+            !remoteData.payload ||
+            isEmpty(remoteData.payload.values) ||
+            remoteData.payload.values[0].toLowerCase() !== 'true',
+        ),
+      );
+
+    const appsToHide$: Observable<string[]> = observableCombineLatest([
+      hideGoogleAnalytics$,
+      hideRegistrationVerification$,
+      hideMatomo$,
+    ]).pipe(
       map(([hideGoogleAnalytics, hideRegistrationVerification, hideMatomo]) => {
         const appsToHideArray: string[] = [];
         if (hideGoogleAnalytics) {
@@ -164,43 +168,48 @@ export class BrowserOrejimeService extends OrejimeService {
 
     const user$: Observable<EPerson> = this.getUser$();
 
-    const translationServiceReady$ = this.translateService.get('loading.default').pipe(take(1));
+    const translationServiceReady$ = this.translateService
+      .get('loading.default')
+      .pipe(take(1));
 
-    observableCombineLatest([user$, appsToHide$, translationServiceReady$])
-      .subscribe(([user, appsToHide, _]: [EPerson, string[], string]) => {
-        user = cloneDeep(user);
+    observableCombineLatest([
+      user$,
+      appsToHide$,
+      translationServiceReady$,
+    ]).subscribe(([user, appsToHide, _]: [EPerson, string[], string]) => {
+      user = cloneDeep(user);
 
-        if (hasValue(user)) {
-          this.initializeUser(user);
-        }
+      if (hasValue(user)) {
+        this.initializeUser(user);
+      }
 
-        /**
-         * Add all message keys for apps and purposes
-         */
-        this.addAppMessages();
+      /**
+       * Add all message keys for apps and purposes
+       */
+      this.addAppMessages();
 
-        /**
-         * Create categories based on the purposes of the apps
-         */
-        this.createCategories();
+      /**
+       * Create categories based on the purposes of the apps
+       */
+      this.createCategories();
 
-        /**
-         * Subscribe on a message to make sure the translation service is ready
-         * Translate all keys in the translation section of the configuration
-         * Show the configuration if the configuration has not been confirmed
-         */
-        this.translateConfiguration();
+      /**
+       * Subscribe on a message to make sure the translation service is ready
+       * Translate all keys in the translation section of the configuration
+       * Show the configuration if the configuration has not been confirmed
+       */
+      this.translateConfiguration();
 
-        if (!environment.info?.enableCookieConsentPopup) {
-          this.orejimeConfig.apps = [];
-        } else {
-          this.orejimeConfig.apps = this.filterConfigApps(appsToHide);
-        }
-        this.applyUpdateSettingsCallbackToApps(user);
-        this.lazyOrejime.then(({ init }) => {
-          this.orejimeInstance = init(this.orejimeConfig);
-        });
+      if (!environment.info?.enableCookieConsentPopup) {
+        this.orejimeConfig.apps = [];
+      } else {
+        this.orejimeConfig.apps = this.filterConfigApps(appsToHide);
+      }
+      this.applyUpdateSettingsCallbackToApps(user);
+      this.lazyOrejime.then(({ init }) => {
+        this.orejimeInstance = init(this.orejimeConfig);
       });
+    });
   }
 
   /**
@@ -214,7 +223,10 @@ export class BrowserOrejimeService extends OrejimeService {
    * @param {EPerson} user - The authenticated user whose settings are being updated.
    */
   applyUpdateSettingsCallbackToApps(user: EPerson) {
-    const updateSettingsCallback = debounce(() => this.updateSettingsForUsers(user), updateDebounce);
+    const updateSettingsCallback = debounce(
+      () => this.updateSettingsForUsers(user),
+      updateDebounce,
+    );
 
     this.orejimeConfig.apps.forEach((app) => {
       const originalCallback = app.callback;
@@ -255,7 +267,11 @@ export class BrowserOrejimeService extends OrejimeService {
     if (hasValue(this.getSettingsForUser(user))) {
       this.restoreSettingsForUsers(user);
     } else if (hasValue(anonCookie)) {
-      this.cookieService.set(this.getStorageName(user.uuid), anonCookie);
+      this.cookieService.set(this.getStorageName(user.uuid), anonCookie, {
+        secure: location.protocol === 'https:',
+        sameSite: 'Strict',
+        path: '/',
+      });
       this.updateSettingsForUsers(user);
     }
   }
@@ -265,17 +281,16 @@ export class BrowserOrejimeService extends OrejimeService {
    * Returns undefined when no one is logged in
    */
   private getUserId$() {
-    return this.authService.isAuthenticated()
-      .pipe(
-        take(1),
-        switchMap((loggedIn: boolean) => {
-          if (loggedIn) {
-            return this.authService.getAuthenticatedUserIdFromStore();
-          }
-          return of(undefined);
-        }),
-        take(1),
-      );
+    return this.authService.isAuthenticated().pipe(
+      take(1),
+      switchMap((loggedIn: boolean) => {
+        if (loggedIn) {
+          return this.authService.getAuthenticatedUserIdFromStore();
+        }
+        return of(undefined);
+      }),
+      take(1),
+    );
   }
 
   /**
@@ -283,17 +298,16 @@ export class BrowserOrejimeService extends OrejimeService {
    * Returns undefined when no one is logged in
    */
   private getUser$() {
-    return this.authService.isAuthenticated()
-      .pipe(
-        take(1),
-        switchMap((loggedIn: boolean) => {
-          if (loggedIn) {
-            return this.authService.getAuthenticatedUserFromStore();
-          }
-          return of(undefined);
-        }),
-        take(1),
-      );
+    return this.authService.isAuthenticated().pipe(
+      take(1),
+      switchMap((loggedIn: boolean) => {
+        if (loggedIn) {
+          return this.authService.getAuthenticatedUserFromStore();
+        }
+        return of(undefined);
+      }),
+      take(1),
+    );
   }
 
   /**
@@ -337,7 +351,8 @@ export class BrowserOrejimeService extends OrejimeService {
         description: this.getDescriptionTranslation(app.name),
       };
       app.purposes.forEach((purpose) => {
-        this.orejimeConfig.translations.zz.purposes[purpose] = this.getPurposeTranslation(purpose);
+        this.orejimeConfig.translations.zz.purposes[purpose] =
+          this.getPurposeTranslation(purpose);
       });
     });
   }
@@ -358,19 +373,26 @@ export class BrowserOrejimeService extends OrejimeService {
    * Create categories based on the purposes of the apps
    */
   createCategories() {
-    this.orejimeConfig.categories = this.orejimeConfig.apps.reduce((accumulator, current) => {
-      let category = accumulator.find((cat) => cat.name === current.purposes[0]);
-      if (!category) {
-        category = {
-          name: current.purposes[0],
-          title: this.translateService.instant(this.getPurposeTranslation(current.purposes[0])),
-          apps: [],
-        };
-        accumulator.push(category);
-      }
-      category.apps.push(current.name);
-      return accumulator;
-    }, []);
+    this.orejimeConfig.categories = this.orejimeConfig.apps.reduce(
+      (accumulator, current) => {
+        let category = accumulator.find(
+          (cat) => cat.name === current.purposes[0],
+        );
+        if (!category) {
+          category = {
+            name: current.purposes[0],
+            title: this.translateService.instant(
+              this.getPurposeTranslation(current.purposes[0]),
+            ),
+            apps: [],
+          };
+          accumulator.push(category);
+        }
+        category.apps.push(current.name);
+        return accumulator;
+      },
+      [],
+    );
   }
 
   /**
@@ -378,7 +400,7 @@ export class BrowserOrejimeService extends OrejimeService {
    * @param object The object containing translation keys
    */
   private translate(object) {
-    if (typeof (object) === 'string') {
+    if (typeof object === 'string') {
       return this.translateService.instant(object);
     }
     Object.entries(object).forEach(([key, value]: [string, any]) => {
@@ -407,7 +429,8 @@ export class BrowserOrejimeService extends OrejimeService {
     } else {
       user.removeMetadata(COOKIE_MDFIELD);
     }
-    this.ePersonService.createPatchFromCache(user)
+    this.ePersonService
+      .createPatchFromCache(user)
       .pipe(
         take(1),
         switchMap((operations: Operation[]) => {
@@ -415,9 +438,9 @@ export class BrowserOrejimeService extends OrejimeService {
             return this.ePersonService.patch(user, operations);
           }
           return of(undefined);
-        },
-        ),
-      ).subscribe();
+        }),
+      )
+      .subscribe();
   }
 
   /**
@@ -425,7 +448,15 @@ export class BrowserOrejimeService extends OrejimeService {
    * @param user The user to save the settings for
    */
   restoreSettingsForUsers(user: EPerson) {
-    this.cookieService.set(this.getStorageName(user.uuid), this.getSettingsForUser(user));
+    this.cookieService.set(
+      this.getStorageName(user.uuid),
+      this.getSettingsForUser(user),
+      {
+        secure: location.protocol === 'https:',
+        sameSite: 'Strict',
+        path: '/',
+      },
+    );
   }
 
   /**
@@ -434,7 +465,10 @@ export class BrowserOrejimeService extends OrejimeService {
    */
   updateSettingsForUsers(user: EPerson) {
     if (user) {
-      this.setSettingsForUser(user, this.cookieService.get(this.getStorageName(user.uuid)));
+      this.setSettingsForUser(
+        user,
+        this.cookieService.get(this.getStorageName(user.uuid)),
+      );
     }
   }
 
@@ -451,10 +485,15 @@ export class BrowserOrejimeService extends OrejimeService {
    */
   private filterConfigApps(appsToHide: string[]) {
     this.orejimeConfig.categories.forEach((category) => {
-      category.apps = category.apps.filter(service => !appsToHide.some(name => name === service));
+      category.apps = category.apps.filter(
+        (service) => !appsToHide.some((name) => name === service),
+      );
     });
-    this.orejimeConfig.categories = this.orejimeConfig.categories.filter(category => category.apps.length > 0);
-    return this.orejimeConfig.apps.filter(service => !appsToHide.some(name => name === service.name));
+    this.orejimeConfig.categories = this.orejimeConfig.categories.filter(
+      (category) => category.apps.length > 0,
+    );
+    return this.orejimeConfig.apps.filter(
+      (service) => !appsToHide.some((name) => name === service.name),
+    );
   }
-
 }

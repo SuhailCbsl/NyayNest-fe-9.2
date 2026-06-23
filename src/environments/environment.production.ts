@@ -31,12 +31,12 @@ export const environment: Partial<BuildConfig> & {
   metadataBasePaths: {
     //change these paths as per production server setup
     windows: 'D:/nyaynest/',
-    linux: '/nyaynest/',
-    dms_directory_windows: 'D:/nyaynest/dspace-9.2/bin/',
-    dms_directory_linux: '/nyaynest/dspace-9.2/bin/',
+    linux: '/home/cbsl-dms/nyaynest/',
+    dms_directory_windows: 'D:/dspace-9.2/bin/',                           
+    dms_directory_linux: '/home/cbsl-dms/nyaynest/dspace-9.2/bin/',
     email_templates: 'admin@dspace.com',
     temp_directory_windows: 'D:/nyaynest/workflowuploadcsv/temp/',
-    temp_directory_linux: '/nyaynest/workflowuploadcsv/temp/',
+    temp_directory_linux: '/home/cbsl-dms/nyaynest/workflowuploadcsv/temp/',
   },
   // Authentication settings
   auth: {

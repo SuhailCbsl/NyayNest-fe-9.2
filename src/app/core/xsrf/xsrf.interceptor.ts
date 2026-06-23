@@ -8,14 +8,8 @@ import {
   HttpXsrfTokenExtractor,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {
-  Observable,
-  throwError,
-} from 'rxjs';
-import {
-  catchError,
-  tap,
-} from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 
 import { CookieService } from '../services/cookie.service';
 import { RESTURLCombiner } from '../url-combiner/rest-url-combiner';
@@ -52,16 +46,20 @@ import {
  */
 @Injectable()
 export class XsrfInterceptor implements HttpInterceptor {
-
-  constructor(private tokenExtractor: HttpXsrfTokenExtractor, private cookieService: CookieService) {
-  }
+  constructor(
+    private tokenExtractor: HttpXsrfTokenExtractor,
+    private cookieService: CookieService,
+  ) {}
 
   /**
-     * Intercept http requests and add the XSRF/CSRF token to the X-Forwarded-For header
-     * @param httpRequest
-     * @param next
-     */
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+   * Intercept http requests and add the XSRF/CSRF token to the X-Forwarded-For header
+   * @param httpRequest
+   * @param next
+   */
+  intercept(
+    req: HttpRequest<any>,
+    next: HttpHandler,
+  ): Observable<HttpEvent<any>> {
     // Ensure EVERY request from Angular includes "withCredentials: true".
     // This allows Angular to receive & send cookies via a CORS request (to
     // the backend). ONLY requests with credentials will:
@@ -80,13 +78,19 @@ export class XsrfInterceptor implements HttpInterceptor {
     // Skip any non-mutating request. This is because our REST API does NOT
     // require CSRF verification for read-only requests like GET or HEAD
     // Also skip any request which is NOT to our trusted/configured REST API
-    if (req.method !== 'GET' && req.method !== 'HEAD' && reqUrl.startsWith(restUrl)) {
+    if (
+      req.method !== 'GET' &&
+      req.method !== 'HEAD' &&
+      reqUrl.startsWith(restUrl)
+    ) {
       // parse token from XSRF-TOKEN (client-side) cookie
       const token = this.tokenExtractor.getToken() as string;
 
       // send token in request's X-XSRF-TOKEN header (anti-CSRF security) to backend
       if (token !== null && !req.headers.has(XSRF_REQUEST_HEADER)) {
-        req = req.clone({ headers: req.headers.set(XSRF_REQUEST_HEADER, token) });
+        req = req.clone({
+          headers: req.headers.set(XSRF_REQUEST_HEADER, token),
+        });
       }
     }
     // Pass to next interceptor, but intercept EVERY response event as well
@@ -118,14 +122,18 @@ export class XsrfInterceptor implements HttpInterceptor {
   }
 
   /**
-     * Save XSRF token found in response
-     * @param token token found
-     */
+   * Save XSRF token found in response
+   * @param token token found
+   */
   private saveXsrfToken(token: string) {
     // Save token value as a *new* value of our client-side XSRF-TOKEN cookie.
     // This is the cookie that is parsed by Angular's tokenExtractor(),
     // which we will send back in the X-XSRF-TOKEN header per Angular best practices.
     this.cookieService.remove(XSRF_COOKIE);
-    this.cookieService.set(XSRF_COOKIE, token);
+    this.cookieService.set(XSRF_COOKIE, token, {
+      secure: location.protocol === 'https:',
+      sameSite: 'Strict',
+      path: '/',
+    });
   }
 }

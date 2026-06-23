@@ -7,10 +7,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import {
-  combineLatest as observableCombineLatest,
-  Observable,
-} from 'rxjs';
+import { combineLatest as observableCombineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { ConfigurationDataService } from '../../../core/data/configuration-data.service';
@@ -39,10 +36,17 @@ export class CreateReportMenuProvider extends AbstractExpandableMenuProvider {
 
   getSubSections(): Observable<PartialMenuSection[]> {
     return observableCombineLatest([
-      this.configurationDataService.findByPropertyName('contentreport.enable').pipe(
-        getFirstCompletedRemoteData(),
-        map((res: RemoteData<ConfigurationProperty>) => res.hasSucceeded && res.payload && res.payload.values[0] === 'true'),
-      ),
+      this.configurationDataService
+        .findByPropertyName('contentreport.enable')
+        .pipe(
+          getFirstCompletedRemoteData(),
+          map(
+            (res: RemoteData<ConfigurationProperty>) =>
+              res.hasSucceeded &&
+              res.payload &&
+              res.payload.values[0] === 'true',
+          ),
+        ),
       this.authorizationService.isAuthorized(FeatureID.AdministratorOf),
     ]).pipe(
       map(([reportEnabled, isSiteAdmin]: [boolean, boolean]) => {
@@ -68,15 +72,23 @@ export class CreateReportMenuProvider extends AbstractExpandableMenuProvider {
             icon: 'user-check',
           },
         ];
-      }));
+      }),
+    );
   }
 
   getTopSection(): Observable<PartialMenuSection> {
     return observableCombineLatest([
-      this.configurationDataService.findByPropertyName('contentreport.enable').pipe(
-        getFirstCompletedRemoteData(),
-        map((res: RemoteData<ConfigurationProperty>) => res.hasSucceeded && res.payload && res.payload.values[0] === 'true'),
-      ),
+      this.configurationDataService
+        .findByPropertyName('contentreport.enable')
+        .pipe(
+          getFirstCompletedRemoteData(),
+          map(
+            (res: RemoteData<ConfigurationProperty>) =>
+              res.hasSucceeded &&
+              res.payload &&
+              res.payload.values[0] === 'true',
+          ),
+        ),
       this.authorizationService.isAuthorized(FeatureID.AdministratorOf),
     ]).pipe(
       map(([reportEnabled, isSiteAdmin]: [boolean, boolean]) => {
@@ -88,6 +100,7 @@ export class CreateReportMenuProvider extends AbstractExpandableMenuProvider {
           } as TextMenuItemModel,
           icon: 'file-alt',
         };
-      }));
+      }),
+    );
   }
 }

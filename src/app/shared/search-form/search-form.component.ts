@@ -885,22 +885,24 @@ export class SearchFormComponent implements OnChanges, OnInit {
           this.uuidFromDashBoard &&
           !this.dashboardInitialized
         ) {
+          this.dashboardInitialized = true;
           this.dsoService
             .findById(this.uuidFromDashBoard)
             .pipe(getFirstSucceededRemoteDataPayload())
             .subscribe((scope: DSpaceObject) => {
               this.selectedScope.next(scope);
 
-              if (this.caseNatureFilter) {
-                this._addFilter('CaseNature', this.caseNatureFilter);
-              }
+              const queryParams: any = {
+                'f.CaseNature': `${this.caseNatureFilter},equals`,
+                'f.CaseTypeName': `${this.caseTypeNameFilter},equals`,
+              };
 
-              if (this.caseTypeNameFilter) {
-                this._addFilter('CaseTypeName', this.caseTypeNameFilter);
-              }
-
-              this.dashboardInitialized = true;
+              this.router.navigate([], {
+                queryParams,
+                queryParamsHandling: 'merge',
+              });
             });
+          return;
         }
 
         // ---------------- date handling ----------------
@@ -971,7 +973,6 @@ export class SearchFormComponent implements OnChanges, OnInit {
         }
 
         // ---------------- no date params ----------------
-        // ---------------- no date params ----------------
         if (!dateFromParam || !dateToParam) {
           this.internalQuery = null;
           this.selectedFromDate = null;
@@ -983,6 +984,13 @@ export class SearchFormComponent implements OnChanges, OnInit {
             this.cdf.detectChanges();
           } catch (e) {}
         }
+
+        console.log('SEARCH EMITTED', {
+          dashboardFlag: this.dashboardFlag,
+          dashboardInitialized: this.dashboardInitialized,
+          caseNature: this.caseNatureFilter,
+          caseType: this.caseTypeNameFilter,
+        });
 
         // normal search refresh
         this.submitSearch.emit({

@@ -1,11 +1,5 @@
-import {
-  Inject,
-  Injectable,
-} from '@angular/core';
-import {
-  select,
-  Store,
-} from '@ngrx/store';
+import { Inject, Injectable } from '@angular/core';
+import { select, Store } from '@ngrx/store';
 import { take } from 'rxjs/operators';
 
 import { AppState } from '../app.reducer';
@@ -20,10 +14,7 @@ import {
   CORRELATION_ID_COOKIE,
   CORRELATION_ID_OREJIME_KEY,
 } from '../shared/cookies/orejime-configuration';
-import {
-  hasValue,
-  isEmpty,
-} from '../shared/empty.util';
+import { hasValue, isEmpty } from '../shared/empty.util';
 import { SetCorrelationIdAction } from './correlation-id.actions';
 import { correlationIdSelector } from './correlation-id.selector';
 
@@ -34,7 +25,6 @@ import { correlationIdSelector } from './correlation-id.selector';
   providedIn: 'root',
 })
 export class CorrelationIdService {
-
   constructor(
     protected cookieService: CookieService,
     protected uuidService: UUIDService,
@@ -43,7 +33,8 @@ export class CorrelationIdService {
     @Inject(NativeWindowService) protected _window: NativeWindowRef,
   ) {
     if (this._window?.nativeWindow) {
-      this._window.nativeWindow.initCorrelationId = () => this.initCorrelationId();
+      this._window.nativeWindow.initCorrelationId = () =>
+        this.initCorrelationId();
     }
   }
 
@@ -51,12 +42,11 @@ export class CorrelationIdService {
    * Check if the correlation id is allowed to be set, then set it
    */
   initCorrelationId(): void {
-    this.orejimeService?.getSavedPreferences().subscribe(preferences => {
+    this.orejimeService?.getSavedPreferences().subscribe((preferences) => {
       if (hasValue(preferences) && preferences[CORRELATION_ID_OREJIME_KEY]) {
         this.setCorrelationId();
       }
-    },
-    );
+    });
   }
 
   /**
@@ -78,7 +68,11 @@ export class CorrelationIdService {
 
     // Store the correct id both in the store and as a cookie to ensure they're in sync
     this.store.dispatch(new SetCorrelationIdAction(correlationId));
-    this.cookieService.set(CORRELATION_ID_COOKIE, correlationId);
+    this.cookieService.set(CORRELATION_ID_COOKIE, correlationId, {
+      secure: location.protocol === 'https:',
+      sameSite: 'Strict',
+      path: '/',
+    });
   }
 
   /**
@@ -87,13 +81,12 @@ export class CorrelationIdService {
   getCorrelationId(): string {
     let correlationId;
 
-    this.store.pipe(
-      select(correlationIdSelector),
-      take(1),
-    ).subscribe((storeId: string) => {
-      // we can do this because ngrx selects are synchronous
-      correlationId = storeId;
-    });
+    this.store
+      .pipe(select(correlationIdSelector), take(1))
+      .subscribe((storeId: string) => {
+        // we can do this because ngrx selects are synchronous
+        correlationId = storeId;
+      });
 
     return correlationId;
   }

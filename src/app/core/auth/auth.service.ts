@@ -537,7 +537,12 @@ export class AuthService {
 
     // Set the cookie expire date
     const expires = new Date(expireDate);
-    const options: Cookies.CookieAttributes = { expires: expires };
+    const options: Cookies.CookieAttributes = {
+      expires,
+      secure: true,
+      sameSite: 'Strict',
+      path: '/',
+    };
 
     // Save cookie with the token
     return this.storage.set(TOKENITEM, token, options);
@@ -625,7 +630,12 @@ export class AuthService {
 
     // Set the cookie expire date
     const expires = new Date(expireDate);
-    const options: Cookies.CookieAttributes = { expires: expires };
+    const options: Cookies.CookieAttributes = {
+      expires: expires,
+      secure: true,
+      sameSite: 'Strict',
+      path: '/',
+    };
     this.storage.set(REDIRECT_COOKIE, url, options);
     this.store.dispatch(
       new SetRedirectUrlAction(isNotUndefined(url) ? url : ''),
@@ -697,7 +707,11 @@ export class AuthService {
    * @param epersonId ID of the EPerson to impersonate
    */
   impersonate(epersonId: string) {
-    this.storage.set(IMPERSONATING_COOKIE, epersonId);
+    this.storage.set(IMPERSONATING_COOKIE, epersonId, {
+      secure: true,
+      sameSite: 'Strict',
+      path: '/',
+    });
     this.refreshAfterLogout();
   }
 
